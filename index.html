@@ -1,7 +1,7 @@
 <title>에어컨 무료 견적</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
-/* Layout: one mobile-first column (max 720px). The page is a single intake form → brand-by-brand quote cards → AI 모의 설치 플랜 → 예약. */
+/* Layout: one mobile-first column (max 720px). The page is a single intake form → brand-by-brand quote cards → 모의 설치 플랜 → 예약. */
 :root{
   --bg:#F1F5F8; --surface:#FFFFFF; --surface-2:#E9F0F4;
   --fg:#15222C; --muted:#5B6C78; --line:#D3DEE5;
@@ -180,7 +180,7 @@ footer{padding-block:28px;font-size:.8rem;color:var(--muted);display:grid;gap:4p
 <main class="wrap">
 
 <section class="hero" id="top">
-  <span class="eyebrow">AI 모의 설치 견적 · 구매 + 설치</span>
+  <span class="eyebrow">모의 설치 견적 · 구매 + 설치</span>
   <h1>설치 조건만 고르면<br><em>브랜드별 견적</em>이 바로 나옵니다.</h1>
   <p class="lead">거주 형태, 설치 대수와 평수, 주소, 거주 여부, 추가 옵션을 입력하면 삼성·LG·캐리어·위니아 제품으로 설치까지 한 총액을 비교해 드립니다. 견적은 무료이고, 견적에 없던 비용은 고객님 동의 없이 청구하지 않습니다.</p>
   <div class="cta-row">
@@ -196,7 +196,7 @@ footer{padding-block:28px;font-size:.8rem;color:var(--muted);display:grid;gap:4p
 </section>
 
 <section id="quote">
-  <div class="sec-head"><span class="eyebrow">모의 설치 견적</span><h2>설치 조건을 알려 주세요</h2><p class="small muted">입력한 조건으로 설치비를 계산하고, AI가 집 구조에 맞는 모의 설치 플랜을 함께 만들어 드립니다.</p></div>
+  <div class="sec-head"><span class="eyebrow">모의 설치 견적</span><h2>설치 조건을 알려 주세요</h2><p class="small muted">입력한 조건으로 설치비를 계산하고, 집 구조에 맞는 모의 설치 플랜을 함께 보여 드립니다.</p></div>
 
   <form class="form" id="qform" novalidate>
     <div class="fs">
@@ -212,22 +212,17 @@ footer{padding-block:28px;font-size:.8rem;color:var(--muted);display:grid;gap:4p
       <div class="seg" id="count-seg">
         <label><input type="radio" name="count" value="1">1대</label>
         <label><input type="radio" name="count" value="2" checked>2대</label>
-        <label><input type="radio" name="count" value="3">3대</label>
-        <label><input type="radio" name="count" value="4">4대</label>
+        <label><input type="radio" name="count" value="3">3대<small>시스템</small></label>
+        <label><input type="radio" name="count" value="4">4대<small>시스템</small></label>
       </div>
       <div class="units" id="units"></div>
-      <span class="hint">10평 이하는 벽걸이, 11평 이상은 스탠드로 계산합니다. 거실 스탠드와 방 벽걸이를 한 실외기로 묶는 2in1은 결과에서 함께 제안합니다.</span>
+      <span class="hint" id="units-hint">10평 이하는 벽걸이, 11평 이상은 스탠드로 계산합니다. 거실 스탠드와 방 벽걸이를 한 실외기로 묶는 2in1은 결과에서 함께 제안합니다.</span>
     </div>
 
     <div class="fs">
       <div class="lbl"><span class="n">3</span>거주지 주소</div>
       <input type="text" id="addr" autocomplete="street-address" placeholder="서울시 마포구 성산동 ○○아파트 101동">
       <span class="hint" id="addr-hint">아파트 단지·평형을 적어 주시면 더 정확합니다. 부동산 플랫폼 연동 후에는 주소만으로 단지 구조(베란다 위치, 배관 길이)를 자동으로 파악할 예정입니다.</span>
-      <div class="file" id="plan-box" hidden>
-        <label for="plan-file"><b>설계도·평면도 사진</b> <span class="hint">선택 · 주택은 평면도를 올리면 AI가 배관 경로와 실외기 자리를 함께 봅니다</span></label>
-        <input type="file" id="plan-file" accept="image/*">
-        <img id="plan-preview" alt="업로드한 평면도 미리보기" hidden>
-      </div>
     </div>
 
     <div class="fs">
@@ -265,11 +260,11 @@ footer{padding-block:28px;font-size:.8rem;color:var(--muted);display:grid;gap:4p
   <div class="sum" id="r-sum"></div>
   <div class="brands" id="r-brands" style="margin-top:12px"></div>
 
-  <div class="sec-head" style="margin-top:28px"><span class="eyebrow">AI 모의 설치 플랜</span><h2>이 집에는 이렇게 설치됩니다</h2></div>
+  <div class="sec-head" style="margin-top:28px"><span class="eyebrow">모의 설치 플랜</span><h2>이 집에는 이렇게 설치됩니다</h2></div>
   <div class="plan" id="r-plan"></div>
   <div class="note" style="margin-top:12px">
     <span>· 현장 변수(벽 두께, 배관 경로, 실외기 자리)에 따라 범위 안에서 확정됩니다. 견적에 없는 항목은 고객 동의 없이 청구하지 않습니다.</span>
-    <span>· 제품 판매가와 재고는 예시이며 매입가 확정 후 갱신됩니다.</span>
+    <span>· 제품 판매가는 예시이며 매입가 확정 후 갱신됩니다.</span>
   </div>
 </section>
 
@@ -282,7 +277,7 @@ footer{padding-block:28px;font-size:.8rem;color:var(--muted);display:grid;gap:4p
 <section id="process">
   <div class="sec-head"><span class="eyebrow">진행 절차</span><h2>접수부터 A/S까지</h2></div>
   <div class="steps">
-    <div class="step"><div><b>모의 견적</b><span>조건을 입력하면 브랜드별 총액과 AI 설치 플랜이 바로 나옵니다. 회원가입이 없습니다.</span></div></div>
+    <div class="step"><div><b>모의 견적</b><span>조건을 입력하면 브랜드별 총액과 모의 설치 플랜이 바로 나옵니다. 회원가입이 없습니다.</span></div></div>
     <div class="step"><div><b>브랜드 선택·예약</b><span>마음에 드는 브랜드를 고르고 희망 일자와 연락처를 남깁니다.</span></div></div>
     <div class="step"><div><b>기사 배정</b><span>지역 제휴 기사에게 알림이 가고, 수락한 기사 정보를 문자로 안내합니다.</span></div></div>
     <div class="step"><div><b>제품 출고·시공</b><span>회사 재고에서 제품이 출고됩니다. 견적 외 비용이 생기면 사유와 금액을 먼저 안내하고 동의 후 진행합니다.</span></div></div>
@@ -302,8 +297,8 @@ footer{padding-block:28px;font-size:.8rem;color:var(--muted);display:grid;gap:4p
 
 <section id="faq" class="faq">
   <div class="sec-head"><span class="eyebrow">자주 묻는 질문</span><h2>궁금한 점</h2></div>
-  <details><summary>AI 모의 설치 플랜은 얼마나 정확한가요?</summary><p>입력한 거주 형태, 평수, 주소와 평면도를 바탕으로 일반적인 설치 방식을 설명합니다. 실제 자리와 배관 경로는 기사가 방문해 확정하며, 금액은 견적 범위 안에서 정해집니다.</p></details>
-  <details><summary>견적 금액이 왜 범위로 나오나요?</summary><p>배관 길이, 벽 두께, 실외기 자리처럼 현장에서만 확인되는 변수가 있어서입니다. 평면도나 설치 자리 사진을 보내 주시면 범위를 좁혀 드립니다.</p></details>
+  <details><summary>모의 설치 플랜은 얼마나 정확한가요?</summary><p>입력한 거주 형태, 대수와 평수, 거주 여부를 바탕으로 일반적인 설치 방식을 설명합니다. 실제 자리와 배관 경로는 기사가 방문해 확정하며, 금액은 견적 범위 안에서 정해집니다.</p></details>
+  <details><summary>견적 금액이 왜 범위로 나오나요?</summary><p>배관 길이, 벽 두께, 실외기 자리처럼 현장에서만 확인되는 변수가 있어서입니다. 설치 자리 사진을 보내 주시면 범위를 좁혀 드립니다.</p></details>
   <details><summary>현장에서 추가 비용이 생기면 어떻게 되나요?</summary><p>기사가 사유와 금액을 먼저 안내하고, 고객님이 동의한 경우에만 진행합니다.</p></details>
   <details><summary>주소를 넣으면 집 구조를 어떻게 아나요?</summary><p>지금은 입력한 단지명과 평형, 참고 사항으로 판단합니다. 부동산 플랫폼 연동 후에는 주소만으로 베란다 위치와 배관 길이를 자동으로 파악할 예정입니다.</p></details>
   <details><summary>계약금이 필요한가요?</summary><p>현재는 계약금 없이 예약 접수만 받고 시공 후 결제합니다.</p></details>
@@ -381,22 +376,30 @@ const RATES = {
   paper:   {wall:[20000,40000],   stand:[30000,50000],   two:[40000,70000],   src:'가정 · 배관 자리 부분 도배'},
   protect: {wall:[10000,20000],   stand:[15000,25000],   two:[20000,30000],   src:'가정 · 거주 중 가구 이동·보양'},
   ladder:[300000,300000], hole:[30000,50000], elecBase:[50000,80000], elecPer:[20000,30000],
-  housePipe:[3,8], multiDiscount:0.1, seasonFactor:1.1, commission:0.05
+  housePipe:[3,8], multiDiscount:0.1, seasonFactor:1.1, commission:0.05,
+  /* 3대 이상: 시스템 에어컨 (천장형 실내기 + 실외기 1대) */
+  ceil:{ indoor:[250000,350000], outdoor:[200000,300000], hatch:[30000,50000], drain:[50000,100000],
+         protect:[20000,30000], paper:[30000,60000], remove:[50000,90000], gas:[50000,100000],
+         src:'가정 · 시스템 에어컨 시공 시세 참고' }
 };
 /* 브랜드별 예시 제품 (평수대 → 모델, 판매가) */
 const BRANDS = [
   {id:'samsung', name:'삼성', line:'무풍·윈드프리', note:'무풍 냉방, 비스포크 색상', models:{
     wall:{6:['윈드프리 벽걸이 6평',520000],7:['윈드프리 벽걸이 7평',620000],9:['윈드프리 벽걸이 9평',790000]},
-    stand:{11:['비스포크 무풍 11평',1290000],13:['비스포크 무풍 13평',1490000],15:['비스포크 무풍 15평',1690000],17:['비스포크 무풍 17평',1890000],19:['비스포크 무풍 19평',2090000],23:['비스포크 무풍 23평',2390000]}}},
+    stand:{11:['비스포크 무풍 11평',1290000],13:['비스포크 무풍 13평',1490000],15:['비스포크 무풍 15평',1690000],17:['비스포크 무풍 17평',1890000],19:['비스포크 무풍 19평',2090000],23:['비스포크 무풍 23평',2390000]},
+    ceil:{9:['무풍 천장형 1way 9평',890000],15:['무풍 천장형 4way 15평',1290000],23:['무풍 천장형 4way 23평',1690000]}, outdoor:['시스템 실외기 (멀티)',2200000]}},
   {id:'lg', name:'LG', line:'휘센', note:'오브제 디자인, 인공지능 절전', models:{
     wall:{6:['휘센 벽걸이 6평',490000],7:['휘센 벽걸이 7평',590000],9:['휘센 벽걸이 9평',760000]},
-    stand:{11:['휘센 오브제 11평',1240000],13:['휘센 오브제 13평',1440000],15:['휘센 오브제 15평',1640000],17:['휘센 오브제 17평',1790000],19:['휘센 오브제 19평',1990000],23:['휘센 오브제 23평',2290000]}}},
+    stand:{11:['휘센 오브제 11평',1240000],13:['휘센 오브제 13평',1440000],15:['휘센 오브제 15평',1640000],17:['휘센 오브제 17평',1790000],19:['휘센 오브제 19평',1990000],23:['휘센 오브제 23평',2290000]},
+    ceil:{9:['휘센 천장형 1way 9평',860000],15:['휘센 천장형 4way 15평',1250000],23:['휘센 천장형 4way 23평',1640000]}, outdoor:['휘센 시스템 실외기 (멀티)',2100000]}},
   {id:'carrier', name:'캐리어', line:'인버터', note:'가성비, 기본 성능', models:{
     wall:{6:['캐리어 벽걸이 6평',450000],7:['캐리어 벽걸이 7평',520000],9:['캐리어 벽걸이 9평',650000]},
-    stand:{11:['캐리어 스탠드 11평',990000],13:['캐리어 스탠드 13평',1150000],15:['캐리어 스탠드 15평',1290000],17:['캐리어 스탠드 17평',1450000],19:['캐리어 스탠드 19평',1650000],23:['캐리어 스탠드 23평',1890000]}}},
+    stand:{11:['캐리어 스탠드 11평',990000],13:['캐리어 스탠드 13평',1150000],15:['캐리어 스탠드 15평',1290000],17:['캐리어 스탠드 17평',1450000],19:['캐리어 스탠드 19평',1650000],23:['캐리어 스탠드 23평',1890000]},
+    ceil:{9:['캐리어 천장형 1way 9평',690000],15:['캐리어 천장형 4way 15평',990000],23:['캐리어 천장형 4way 23평',1290000]}, outdoor:['캐리어 시스템 실외기 (멀티)',1700000]}},
   {id:'winia', name:'위니아', line:'둘레바람', note:'국산 저가형, 단순 기능', models:{
     wall:{6:['위니아 벽걸이 6평',420000],7:['위니아 벽걸이 7평',490000],9:['위니아 벽걸이 9평',620000]},
-    stand:{11:['위니아 스탠드 11평',950000],13:['위니아 스탠드 13평',1090000],15:['위니아 스탠드 15평',1230000],17:['위니아 스탠드 17평',1390000],19:['위니아 스탠드 19평',1590000],23:['위니아 스탠드 23평',1790000]}}}
+    stand:{11:['위니아 스탠드 11평',950000],13:['위니아 스탠드 13평',1090000],15:['위니아 스탠드 15평',1230000],17:['위니아 스탠드 17평',1390000],19:['위니아 스탠드 19평',1590000],23:['위니아 스탠드 23평',1790000]},
+    ceil:{9:['위니아 천장형 1way 9평',650000],15:['위니아 천장형 4way 15평',950000],23:['위니아 천장형 4way 23평',1250000]}, outdoor:['위니아 시스템 실외기 (멀티)',1600000]}}
 ];
 const PY = [6,7,9,11,13,15,17,19,23];
 const ROOMS = ['거실','안방','작은방','아이방','서재','주방·식당','사무실'];
@@ -417,6 +420,7 @@ const isPeak = d => { if(!d) return false; const m=+d.slice(5,7); return m>=6&&m
 const load = k => { try{ return JSON.parse(localStorage.getItem(k)||'[]'); }catch(e){ return []; } };
 const save = (k,v) => { try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} };
 const typeOf = py => py<=9 ? 'wall' : 'stand';
+const isSystem = units => units.length>=3; /* 3대부터 시스템 에어컨: 천장형 실내기 + 실외기 1대 */
 
 /* ---------- 입력 UI ---------- */
 function renderUnits(){
@@ -435,29 +439,48 @@ function readUnits(){
   return Array.from(document.querySelectorAll('#units .unit')).map(u=>({room:u.querySelector('[data-u=room]').value, py:+u.querySelector('[data-u=py]').value}));
 }
 function updateKinds(){
-  document.querySelectorAll('#units .unit').forEach(u=>{ const py=+u.querySelector('[data-u=py]').value; u.querySelector('.kind').textContent = TYPE_LABEL[typeOf(py)]+' 형 · '+(py<=9?'벽 상단 설치, 실외기 소형':'바닥 설치, 실외기 대형'); });
+  const sys = +radio('count')>=3;
+  document.querySelectorAll('#units .unit').forEach(u=>{ const py=+u.querySelector('[data-u=py]').value; u.querySelector('.kind').textContent = sys ? '천장형 실내기 · 실외기 1대 공용 (시스템 에어컨)' : TYPE_LABEL[typeOf(py)]+' 형 · '+(py<=9?'벽 상단 설치, 실외기 소형':'바닥 설치, 실외기 대형'); });
+  $('units-hint').textContent = sys ? '3대부터는 시스템 에어컨으로 계산합니다. 천장형 실내기를 실외기 1대에 묶는 구성이며 천장 점검구·드레인 배관이 포함됩니다.' : '10평 이하는 벽걸이, 11평 이상은 스탠드로 계산합니다. 거실 스탠드와 방 벽걸이를 한 실외기로 묶는 2in1은 결과에서 함께 제안합니다.';
 }
 $('count-seg').addEventListener('change', renderUnits);
 $('units').addEventListener('change', updateKinds);
 document.querySelectorAll('input[name=home]').forEach(r=>r.addEventListener('change', ()=>{
   const house = radio('home')==='house';
-  $('plan-box').hidden = !house;
-  $('addr-hint').textContent = house ? '주택은 실외기 자리(외벽·지상·옥상)와 배관 길이가 집마다 달라, 평면도를 올려 주시면 AI 플랜이 훨씬 정확해집니다.' : '아파트 단지·평형을 적어 주시면 더 정확합니다. 부동산 플랫폼 연동 후에는 주소만으로 단지 구조(베란다 위치, 배관 길이)를 자동으로 파악할 예정입니다.';
+  $('addr-hint').textContent = house ? '주택은 실외기 자리(외벽·지상·옥상)와 배관 길이가 집마다 달라 범위가 넓어집니다. 참고 사항에 실외기 자리를 적어 주시면 좋습니다.' : '아파트 단지·평형을 적어 주시면 더 정확합니다. 부동산 플랫폼 연동 후에는 주소만으로 단지 구조(베란다 위치, 배관 길이)를 자동으로 파악할 예정입니다.';
 }));
-let planBlob = null;
-$('plan-file').addEventListener('change', e=>{
-  const f = e.target.files && e.target.files[0]; planBlob = f||null;
-  const img=$('plan-preview'); if(f){ img.src=URL.createObjectURL(f); img.hidden=false; } else { img.hidden=true; }
-});
 
 /* ---------- 견적 엔진 ---------- */
 function readInput(){
   const opts = Array.from(document.querySelectorAll('input[name=opt]:checked')).map(c=>c.value);
-  return {home:radio('home'), units:readUnits(), addr:$('addr').value.trim(), occupied:radio('occupied'), opts, date:$('q-date').value, memo:$('q-memo').value.trim(), hasPlan:!!planBlob};
+  return {home:radio('home'), units:readUnits(), addr:$('addr').value.trim(), occupied:radio('occupied'), opts, date:$('q-date').value, memo:$('q-memo').value.trim()};
 }
 function laborFor(inp){
   /* 브랜드와 무관한 설치비 항목 */
   const items=[]; const house = inp.home==='house';
+  if(isSystem(inp.units)){
+    const C=RATES.ceil; const n=inp.units.length;
+    inp.units.forEach((u,i)=>{
+      items.push({label:(i+1)+'번 '+u.room+' 천장형 실내기 설치', r:C.indoor});
+      items.push({label:(i+1)+'번 천장 점검구·타공, 드레인 배관', r:add(C.hatch,C.drain)});
+      if(inp.occupied==='living') items.push({label:(i+1)+'번 가구 이동·천장 작업 보양', r:C.protect});
+      if(inp.opts.includes('paper')) items.push({label:(i+1)+'번 천장·벽 부분 도배 마감', r:C.paper});
+      if(inp.opts.includes('remove')) items.push({label:(i+1)+'번 기존 에어컨 철거', r:C.remove});
+    });
+    items.push({label:'실외기 1대 설치 (시스템 멀티, '+n+'대 공용)', r:C.outdoor});
+    if(house){
+      items.push({label:'메인 배관 연장 '+RATES.housePipe[0]+'~'+RATES.housePipe[1]+'m (외벽·지상 경로)', r:[RATES.pipePerM.stand[0]*RATES.housePipe[0], RATES.pipePerM.stand[1]*RATES.housePipe[1]]});
+      items.push({label:'외벽 타공 1곳', r:RATES.hole});
+    }
+    if(inp.opts.includes('gas')) items.push({label:'냉매 추가 충전 (긴 배관 분)', r:C.gas});
+    if(inp.opts.includes('angle')) items.push({label:'실외기 앵글', r:RATES.angle.stand});
+    else if(house) items.push({label:'실외기 앵글 (외벽 설치 시, 필요 없으면 제외)', r:[0,RATES.angle.stand[1]]});
+    if(inp.opts.includes('elec')) items.push({label:'전용 전기 작업 (기본 + 대당)', r:add(RATES.elecBase, mul(RATES.elecPer, n))});
+    if(inp.opts.includes('ladder')) items.push({label:'사다리차·스카이차 (4시간)', r:RATES.ladder});
+    let labor = items.reduce((a,i)=>add(a,i.r),[0,0]);
+    if(isPeak(inp.date)){ const ex=mul(labor, RATES.seasonFactor-1); items.push({label:'성수기 계수 ×'+RATES.seasonFactor+' (6~8월 시공비)', r:ex}); labor=add(labor,ex); }
+    return {items, labor};
+  }
   inp.units.forEach((u,i)=>{
     const t=typeOf(u.py); const disc = i>0 ? (1-RATES.multiDiscount) : 1;
     items.push({label:(i+1)+'번 '+u.room+' '+TYPE_LABEL[t]+' 기본 설치'+(i>0?' (동시 설치 10% 할인)':''), r:mul(RATES.base[t],disc)});
@@ -475,11 +498,12 @@ function laborFor(inp){
   if(isPeak(inp.date)){ const ex=mul(labor, RATES.seasonFactor-1); items.push({label:'성수기 계수 ×'+RATES.seasonFactor+' (6~8월 시공비)', r:ex}); labor=add(labor,ex); }
   return {items, labor};
 }
-function pickModel(brand, py){ const t=typeOf(py); const tbl=brand.models[t]; const keys=Object.keys(tbl).map(Number).sort((a,b)=>a-b); const k = keys.find(x=>x>=py) ?? keys[keys.length-1]; return {name:tbl[k][0], price:tbl[k][1], py:k, type:t}; }
+function pickModel(brand, py, t){ t = t || typeOf(py); const tbl=brand.models[t]; const keys=Object.keys(tbl).map(Number).sort((a,b)=>a-b); const k = keys.find(x=>x>=py) ?? keys[keys.length-1]; return {name:tbl[k][0], price:tbl[k][1], py:k, type:t}; }
 function quoteAll(inp){
-  const L = laborFor(inp);
+  const L = laborFor(inp); const sys = isSystem(inp.units);
   const brands = BRANDS.map(b=>{
-    const models = inp.units.map(u=>Object.assign({room:u.room}, pickModel(b,u.py)));
+    const models = inp.units.map(u=>Object.assign({room:u.room}, pickModel(b,u.py, sys?'ceil':null)));
+    if(sys) models.push({room:'실외기', name:b.models.outdoor[0], price:b.models.outdoor[1], type:'outdoor', outdoor:true});
     const prod = models.reduce((a,m)=>a+m.price,0);
     return {id:b.id, name:b.name, line:b.line, note:b.note, models, product:prod, labor:L.labor, total:[prod+L.labor[0], prod+L.labor[1]]};
   }).sort((a,b)=>a.total[0]-b.total[0]);
@@ -489,21 +513,24 @@ function quoteAll(inp){
 /* ---------- 결과 렌더 ---------- */
 let result=null, picked=null;
 function renderResult(){
-  const inp=result.input; const hasStand = inp.units.some(u=>typeOf(u.py)==='stand'), hasWall=inp.units.some(u=>typeOf(u.py)==='wall');
+  const inp=result.input; const sys=isSystem(inp.units); const hasStand = !sys && inp.units.some(u=>typeOf(u.py)==='stand'), hasWall= !sys && inp.units.some(u=>typeOf(u.py)==='wall');
   $('r-sum').innerHTML =
     '<span class="k">입력 조건</span>'+
-    '<div><b>'+(inp.home==='apt'?'아파트·오피스텔':'주택·빌라')+'</b> · '+inp.units.length+'대 ('+inp.units.map(u=>u.room+' '+u.py+'평').join(', ')+') · '+(inp.occupied==='empty'?'공실':'거주 중')+(inp.opts.length?' · 옵션 '+inp.opts.map(o=>OPT_LABEL[o]).join(', '):'')+'</div>'+
-    '<div class="small muted">'+(inp.addr?esc(inp.addr):'주소 미입력')+(inp.hasPlan?' · 평면도 첨부':'')+(result.peak?' · <span class="tag warn">성수기</span>':' · <span class="tag ok">비수기</span>')+'</div>'+
+    '<div><b>'+(inp.home==='apt'?'아파트·오피스텔':'주택·빌라')+'</b> · '+inp.units.length+'대 ('+inp.units.map(u=>u.room+' '+u.py+'평').join(', ')+')'+(sys?' · <b>시스템 에어컨 (천장형 '+inp.units.length+'대 + 실외기 1대)</b>':'')+' · '+(inp.occupied==='empty'?'공실':'거주 중')+(inp.opts.length?' · 옵션 '+inp.opts.map(o=>OPT_LABEL[o]).join(', '):'')+'</div>'+
+    '<div class="small muted">'+(inp.addr?esc(inp.addr):'주소 미입력')+(result.peak?' · <span class="tag warn">성수기</span>':' · <span class="tag ok">비수기</span>')+'</div>'+
     '<div class="small">설치비 합계 <b class="num">'+rangeText(result.labor[0],result.labor[1])+'</b> <span class="muted">(브랜드 공통)</span></div>';
   $('r-brands').innerHTML = result.brands.map((b,i)=>
     '<div class="bcard'+(picked===b.id?' pick':'')+'" data-brand="'+b.id+'">'+
       '<div class="hd"><h3>'+esc(b.name)+' <span class="tag">'+esc(b.line)+'</span>'+(i===0?'<span class="tag ok">최저가</span>':'')+'</h3><div class="amt num">'+rangeShort(b.total[0],b.total[1])+'</div>'+
       '<div class="sub">제품 '+won(b.product)+' + 설치 '+rangeText(b.labor[0],b.labor[1])+' · '+esc(b.note)+'</div></div>'+
-      '<div class="models">'+b.models.map(m=>'<div><span>'+esc(m.room)+' · '+esc(m.name)+(m.py!==undefined?'':'')+'</span><span class="num">'+won(m.price)+'</span></div>').join('')+'</div>'+
+      '<div class="models">'+b.models.map(m=>'<div><span>'+(m.outdoor?'<b>실외기</b> · ':esc(m.room)+' · ')+esc(m.name)+'</span><span class="num">'+won(m.price)+'</span></div>').join('')+'</div>'+
       '<details><summary>설치비 내역 보기</summary><div class="lines">'+result.items.map(it=>'<div class="line"><span class="k">'+esc(it.label)+'</span><span class="v num">'+rangeText(it.r[0],it.r[1])+'</span></div>').join('')+
         '<div class="line tot"><span class="k">총액 (제품 + 설치)</span><span class="v num">'+rangeText(b.total[0],b.total[1])+'</span></div></div></details>'+
       '<div class="ft"><button class="btn '+(picked===b.id?'primary':'')+' block" type="button" data-pick="'+b.id+'">'+(picked===b.id?'선택됨 · 아래에서 예약':esc(b.name)+'으로 예약 신청')+'</button></div>'+
     '</div>').join('');
+  if(sys){
+    $('r-brands').insertAdjacentHTML('beforeend','<div class="callout">3대 이상은 <b>시스템 에어컨</b>으로 계산했습니다. 천장형 실내기 '+inp.units.length+'대를 실외기 1대에 연결해 베란다 공간을 줄이고 배관을 천장 속으로 숨깁니다. 천장 점검구와 드레인 배관 작업이 포함되며, 거주 중 설치는 천장 작업 보양이 더해집니다.</div>');
+  }
   if(hasStand && hasWall && inp.units.length>=2){
     $('r-brands').insertAdjacentHTML('beforeend','<div class="callout">거실 스탠드와 방 벽걸이를 한 실외기로 묶는 <b>2in1 구성</b>을 고르면 실외기 1대를 줄여 설치비가 '+rangeShort(RATES.base.wall[0]*0.9,RATES.base.wall[1]*0.9)+' 가량 내려갈 수 있습니다. 제품은 두 브랜드 모두 2in1 라인업이 있으며, 예약 후 상담에서 바꿀 수 있습니다.</div>');
   }
@@ -511,13 +538,23 @@ function renderResult(){
 }
 const OPT_LABEL={paper:'부분 도배',gas:'냉매 보충',elec:'전기 작업',remove:'기존 철거',angle:'실외기 앵글',ladder:'사다리차'};
 
-/* ---------- AI 모의 설치 플랜 ---------- */
-let samplePromise = null;
-function getSample(){ if(!samplePromise) samplePromise = (window.claude && window.claude.use) ? window.claude.use('sample').catch(()=>null) : Promise.resolve(null); return samplePromise; }
-
+/* ---------- 모의 설치 플랜 (규칙 기반) ---------- */
 function rulePlan(inp){
-  /* AI를 쓸 수 없을 때의 규칙 기반 플랜 */
+  /* 입력 조건만으로 만드는 규칙 기반 플랜 */
   const house=inp.home==='house';
+  if(isSystem(inp.units)){
+    return {
+      units: inp.units.map(u=>({
+        room:u.room, kind:'천장형 '+u.py+'평',
+        indoor:'천장 매립형. 방 중앙 또는 출입문 반대편 천장에 설치하고 점검구를 함께 냅니다.',
+        outdoor: house ? '실외기 1대를 외벽 앵글 또는 지상·옥상에 두고 모든 실내기 배관을 모읍니다.' : '실외기 1대를 베란다 또는 실외기실에 두고 모든 실내기 배관을 한 경로로 모읍니다.',
+        pipe:'천장 속으로 냉매 배관과 드레인 배관을 지나 실외기까지 연결합니다. 드레인 기울기 확보가 필요합니다.',
+        caution: inp.occupied==='living' ? '천장 작업이라 가구를 옮기고 바닥·벽을 보양한 뒤 진행합니다.' : '입주 전 설치라 천장 마감과 부분 도배를 같은 날 끝낼 수 있습니다.'
+      })),
+      overall:'시스템 에어컨 구성은 실외기 1대로 '+inp.units.length+'개 공간을 냉방해 베란다 공간을 아끼고 외관이 깔끔합니다. 천장고와 점검구 위치는 방문 전 사진이나 평면도로 확인하면 범위를 좁힐 수 있습니다.',
+      tips:['천장 속 배관 경로를 짧게 잡으려면 실외기와 가까운 방부터 배치합니다.','여러 대 동시 가동 시 전력 여유가 필요해 전용 전기 작업 옵션을 권합니다.']
+    };
+  }
   return {
     units: inp.units.map(u=>{ const t=typeOf(u.py); return {
       room:u.room, kind:TYPE_LABEL[t]+' '+u.py+'평',
@@ -530,57 +567,17 @@ function rulePlan(inp){
     tips: ['실외기 여러 대는 같은 베란다에 나란히 두면 배관이 짧아집니다.','전용 콘센트가 없으면 전기 작업 옵션이 필요합니다.']
   };
 }
-function renderPlan(plan, source){
+function renderPlan(plan){
   const el=$('r-plan');
   el.innerHTML =
-    '<div class="state">'+(source==='ai'?'<span class="tag acc">AI 분석 완료</span>':'<span class="tag">규칙 기반 플랜</span>')+'<span>'+(source==='ai'?'입력한 조건'+(result.input.hasPlan?'과 평면도':'')+'를 바탕으로 Claude가 작성한 모의 설치 플랜입니다.':'AI 분석을 사용할 수 없어 일반 설치 규칙으로 작성했습니다.')+'</span></div>'+
+    '<div class="state"><span class="tag acc">모의 플랜</span><span>입력한 조건(거주 형태, 대수·평수, 거주 여부)으로 작성한 일반적인 설치 방식입니다. 실제 자리는 기사 방문 시 확정됩니다.</span></div>'+
     (plan.units||[]).map((u,i)=>'<div class="pu"><h4><span class="tag acc">'+(i+1)+'</span>'+esc(u.room)+' <span class="muted small">'+esc(u.kind||'')+'</span></h4>'+
       row('실내기',u.indoor)+row('실외기',u.outdoor)+row('배관',u.pipe)+row('주의',u.caution)+'</div>').join('')+
     (plan.overall?'<div class="callout">'+esc(plan.overall)+'</div>':'')+
     (plan.tips&&plan.tips.length?'<div class="note">'+plan.tips.map(t=>'<span>· '+esc(t)+'</span>').join('')+'</div>':'');
   function row(k,v){ return '<div class="row"><span>'+k+'</span><span>'+esc(v||'-')+'</span></div>'; }
 }
-async function runPlan(){
-  const inp=result.input; const el=$('r-plan');
-  el.innerHTML='<div class="state"><span class="spin"></span><span>AI가 집 구조에 맞는 모의 설치 플랜을 만들고 있습니다…</span></div>';
-  const sample = await getSample();
-  if(!sample){ renderPlan(rulePlan(inp),'rule'); return; }
-  const best=result.brands[0];
-  const prompt = [
-    '당신은 한국의 에어컨 설치 전문가입니다. 아래 고객 조건으로 "모의 설치 플랜"을 작성하세요.',
-    '설치 대수마다 실내기 위치, 실외기 위치, 배관 경로, 주의사항을 한국어로 각각 1~2문장, 구체적으로 적습니다.',
-    '아파트는 베란다·실외기실 설치가 기본이고, 주택은 외벽 앵글·지상 설치와 타공이 흔합니다. 거주 중이면 가구 이동·보양, 공실이면 도배 마감 가능성을 언급하세요.',
-    '금액은 쓰지 마세요. 과장하지 말고, 현장 확인이 필요한 점은 그렇다고 쓰세요.',
-    '',
-    '[고객 조건]',
-    '거주 형태: '+(inp.home==='apt'?'아파트·오피스텔':'주택·빌라'),
-    '설치 대수: '+inp.units.length+'대',
-    inp.units.map((u,i)=>(i+1)+'번: '+u.room+' '+u.py+'평 ('+TYPE_LABEL[typeOf(u.py)]+')').join('\n'),
-    '주소/단지: '+(inp.addr||'미입력'),
-    '거주 여부: '+(inp.occupied==='empty'?'공실·입주 전':'거주 중'),
-    '추가 옵션: '+(inp.opts.length?inp.opts.map(o=>OPT_LABEL[o]).join(', '):'없음'),
-    '참고 사항: '+(inp.memo||'없음'),
-    '첨부: '+(inp.hasPlan?'평면도 이미지 1장 (방 배치와 베란다·외벽 위치를 보고 배관 경로를 판단하세요)':'없음'),
-    '최저가 브랜드 구성: '+best.name+' · '+best.models.map(m=>m.room+' '+m.name).join(', '),
-    '',
-    '반드시 아래 JSON만 출력하세요. 다른 텍스트 없이.',
-    '{"units":[{"room":"거실","kind":"스탠드 17평","indoor":"...","outdoor":"...","pipe":"...","caution":"..."}],"overall":"전체 설치에 대한 2문장 요약","tips":["짧은 조언 1","짧은 조언 2"]}'
-  ].join('\n');
-  const opts = {modelTier:'default'};
-  if(inp.hasPlan && planBlob){
-    try{ const lim = await sample.limits(); if(lim && lim.images) opts.images=[planBlob]; }catch(e){}
-  }
-  try{
-    const data = await sample.json(prompt, opts);
-    if(data && Array.isArray(data.units) && data.units.length){ renderPlan(data,'ai'); }
-    else renderPlan(rulePlan(inp),'rule');
-  }catch(e){
-    const code = e && e.code;
-    if(code==='cancelled') return;
-    renderPlan(rulePlan(inp),'rule');
-    if(code && code!=='not_granted') el.insertAdjacentHTML('afterbegin','<div class="callout warn">AI 분석을 불러오지 못해 규칙 기반 플랜을 보여 드립니다. ('+esc(code)+')</div>');
-  }
-}
+function runPlan(){ renderPlan(rulePlan(result.input)); }
 
 /* ---------- 제출 ---------- */
 $('qform').addEventListener('submit', e=>{
@@ -601,7 +598,8 @@ function renderPriceTable(){
   const rt = r => r[0]===r[1] ? manWon(r[0]) : manWon(r[0])+'~'+manWon(r[1]);
   const rows = [['기본 설치 (배관 5m 포함)',RATES.base],['기존 에어컨 철거',RATES.remove],['배관 연장 (1m당)',RATES.pipePerM],['실외기 앵글',RATES.angle],['냉매 보충',RATES.gas],['부분 도배 마감',RATES.paper],['거주 중 가구 이동·보양',RATES.protect]]
     .map(([l,r])=>'<tr><td>'+l+'</td><td class="r num">'+rt(r.wall)+'</td><td class="r num">'+rt(r.stand)+'</td><td class="r num">'+rt(r.two)+'</td><td class="src">'+r.src+'</td></tr>');
-  const common = [['타공 (1곳)',RATES.hole,'가정'],['전용 전기 작업',null,'가정 · 기본 '+rt(RATES.elecBase)+' + 대당 '+rt(RATES.elecPer)],['사다리차·스카이차 (4시간)',RATES.ladder,'기준 · 에어아이'],['동시 설치 할인',null,'2대째부터 기본 설치비 10% (가정)'],['주택 배관 연장',null,'외벽·지상 경로 '+RATES.housePipe[0]+'~'+RATES.housePipe[1]+'m 가산 (가정)'],['성수기 계수 (6~8월)',null,'시공비 × '+RATES.seasonFactor+' (가정)']]
+  const C=RATES.ceil;
+  const common = [['천장형 실내기 설치 (1대, 3대 이상 시스템 구성)',C.indoor,C.src],['천장 점검구·타공 + 드레인 배관 (1대)',add(C.hatch,C.drain),'가정'],['시스템 실외기 1대 설치 (실내기 공용)',C.outdoor,'가정'],['타공 (1곳)',RATES.hole,'가정'],['전용 전기 작업',null,'가정 · 기본 '+rt(RATES.elecBase)+' + 대당 '+rt(RATES.elecPer)],['사다리차·스카이차 (4시간)',RATES.ladder,'기준 · 에어아이'],['동시 설치 할인',null,'2대째부터 기본 설치비 10% (가정)'],['주택 배관 연장',null,'외벽·지상 경로 '+RATES.housePipe[0]+'~'+RATES.housePipe[1]+'m 가산 (가정)'],['성수기 계수 (6~8월)',null,'시공비 × '+RATES.seasonFactor+' (가정)']]
     .map(([l,r,s])=>'<tr><td>'+l+'</td><td class="r num" colspan="3">'+(r?rt(r):'')+'</td><td class="src">'+s+'</td></tr>');
   document.querySelector('#price-table tbody').innerHTML = rows.concat(common).join('');
 }
@@ -635,7 +633,7 @@ $('book-form').addEventListener('submit', e=>{
     models:b.models.map(m=>m.room+' '+m.name), items:result.items.map(i=>({label:i.label,min:i.r[0],max:i.r[1]})),
     product:b.product, labor:b.labor, total:b.total,
     payout:[Math.round(b.labor[0]*(1-RATES.commission)), Math.round(b.labor[1]*(1-RATES.commission))],
-    home:result.input.home, occupied:result.input.occupied, memo:result.input.memo, hasPlan:result.input.hasPlan,
+    home:result.input.home, occupied:result.input.occupied, memo:result.input.memo,
     customer:{name, phone, addr:result.input.addr, addr2:$('b-addr2').value.trim(), date, slot:$('b-slot').value},
     status:'알림 발송'
   };
@@ -653,7 +651,7 @@ function showDone(b){
       row('설치 제품',esc(b.brand)+' '+b.models.length+'대 · '+esc(b.models.join(', '))+' (회사 창고 수령)')+
       row('희망 일자',fmtDate(b.customer.date)+' '+esc(b.customer.slot))+
       row('작업 내용',b.svcLabel+' · '+b.items.map(i=>esc(i.label)).join(', '))+
-      row('현장 정보',(b.home==='apt'?'아파트':'주택')+' · '+(b.occupied==='empty'?'공실':'거주 중')+(b.hasPlan?' · 평면도 첨부':'')+(b.memo?' · '+esc(b.memo):''))+
+      row('현장 정보',(b.home==='apt'?'아파트':'주택')+' · '+(b.occupied==='empty'?'공실':'거주 중')+(b.memo?' · '+esc(b.memo):''))+
       row('정산 금액','<b class="num">'+rangeText(b.payout[0],b.payout[1])+'</b> <span class="muted small">(시공비에서 수수료 5% 차감)</span>')+
       row('고객 연락처','<span class="muted">수락 후 공개</span>')+row('상세 주소','<span class="muted">수락 후 공개</span>')+
     '</div><div class="ft"><button class="btn primary sm" type="button" data-act="accept">수락</button><button class="btn sm" type="button" data-act="decline">거절</button><span class="small muted" style="align-self:center">2시간 안에 응답이 없으면 다음 기사에게 전달</span></div></div>'+

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>냉매 충전 견적 · 속시원</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top"></header>
+<main class="wrap">
+
+<div class="page-head">
+  <span class="eyebrow">냉매 충전 견적</span>
+  <h1>찬 바람이 약하면 냉매부터 확인합니다</h1>
+  <p>기종, 냉매 종류, 제조 연도를 고르면 출장 점검비와 충전 비용이 바로 나옵니다. 누설이 있으면 부위를 찾아 용접한 뒤 충전하며, 그 비용은 범위로 함께 보여 드립니다.</p>
+</div>
+
+<section id="quote">
+  <form class="form" id="qform" novalidate>
+    <div class="fs">
+      <div class="lbl"><span class="n">1</span>기종</div>
+      <div class="seg">
+        <label><input type="radio" name="type" value="wall" checked>벽걸이</label>
+        <label><input type="radio" name="type" value="stand">스탠드</label>
+        <label><input type="radio" name="type" value="two">2in1<small>스탠드+벽걸이</small></label>
+      </div>
+    </div>
+    <div class="fs">
+      <div class="lbl"><span class="n">2</span>냉매 종류 <span class="hint">실외기 명판에 적혀 있습니다. 모르면 '모름'</span></div>
+      <div class="seg">
+        <label><input type="radio" name="gas" value="unknown" checked>모름</label>
+        <label><input type="radio" name="gas" value="r410">R410A<small>일반</small></label>
+        <label><input type="radio" name="gas" value="r32">R32<small>최근 모델</small></label>
+        <label><input type="radio" name="gas" value="r22">R22<small>구형</small></label>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="fs"><label class="lbl" for="year">제조 연도</label><select id="year"><option value="new">2016년 이후</option><option value="old">2015년 이전</option></select></div>
+      <div class="fs"><label class="lbl" for="symptom">증상</label><select id="symptom"><option value="weak">찬 바람이 약함</option><option value="none">찬 바람이 전혀 안 나옴</option><option value="ice">실외기 배관에 성에가 낌</option><option value="repeat">작년에도 충전했음 (누설 의심)</option></select></div>
+    </div>
+    <div class="fs">
+      <div class="lbl"><span class="n">3</span>함께 할 작업 <span class="hint">선택</span></div>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" id="clean">실내기 분해 청소 같이</label>
+        <label class="chip"><input type="checkbox" id="outdoor">실외기 세척</label>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="fs"><label class="lbl" for="q-date">희망 방문일 <span class="hint">6~8월 성수기 계수</span></label><input type="date" id="q-date"></div>
+      <div class="fs"><label class="lbl" for="region">지역</label><select id="region"><option value="base">1차 서비스 지역 (기본)</option><option value="out">인접 지역 (출장 가산)</option></select></div>
+    </div>
+    <button class="btn primary block" type="submit">충전 견적 보기</button>
+  </form>
+</section>
+
+<section id="result" hidden>
+  <div class="sec-head"><span class="eyebrow">견적 결과</span><h2>예상 충전 금액</h2></div>
+  <div class="result">
+    <div class="total"><div><span class="eyebrow">예상 금액</span><div class="amt num" id="r-total"></div></div><span class="tag" id="r-season"></span></div>
+    <div id="r-lines"></div>
+    <div class="callout" id="r-advice"></div>
+    <div class="note"><span>· 누설 부위와 부품 교체가 필요한 경우 점검 후 금액을 먼저 안내하고 동의 후 진행합니다.</span><span>· 단가는 <a href="prices.html">단가표</a>에 전체 공개되어 있습니다.</span></div>
+    <button class="btn primary block" type="button" id="go-book">이 금액으로 예약 신청</button>
+  </div>
+</section>
+
+<section id="book">
+  <div class="sec-head"><span class="eyebrow">예약 신청</span><h2>희망 일자와 연락처를 남겨 주세요</h2></div>
+  <div id="booking"></div>
+</section>
+
+</main>
+<footer></footer>
+<script src="js/common.js"></script>
+<script>
+(function(){
+'use strict';
+const {TYPE_LABEL, RATES, $, mul, radio, isPeak, plusDays, applySeason, linesHtml, rangeShort, Booking} = window.SSW;
+const GAS_LABEL={unknown:'종류 모름',r410:'R410A',r32:'R32',r22:'R22 (구형)'};
+const ADVICE={
+  weak:'냉매가 조금 부족한 상태가 흔합니다. 충전 후 압력을 확인하고, 누설 흔적이 있으면 부위를 안내해 드립니다.',
+  none:'냉매가 거의 없거나 실외기가 돌지 않는 경우입니다. 점검 후 냉매 문제면 충전, 기판·콤프레서 문제면 수리 견적을 따로 안내합니다.',
+  ice:'냉매 부족으로 배관이 어는 전형적인 증상입니다. 충전과 함께 필터·열교환기 오염도 확인합니다.',
+  repeat:'해마다 충전이 필요하면 누설이 있는 것입니다. 누설 부위를 찾아 용접한 뒤 충전해야 다시 새지 않습니다. 용접 비용을 범위에 포함했습니다.'
+};
+let result=null;
+function calc(){
+  const t=radio('type'), g=radio('gas'), s=$('symptom').value, date=$('q-date').value; const items=[];
+  items.push({label:'출장·점검비 (압력 측정 포함)', r:RATES.visit});
+  const f=RATES.gasFactor[g];
+  items.push({label:TYPE_LABEL[t]+' 냉매 충전 ('+GAS_LABEL[g]+')', r:[RATES.gasFill[t][0]*f[0], RATES.gasFill[t][1]*f[1]]});
+  if(s==='repeat') items.push({label:'누설 부위 탐색·용접', r:[30000,80000]});
+  else items.push({label:'누설 점검·부위 용접 (필요 시)', r:RATES.leakCheck});
+  if($('year').value==='old') items.push({label:'구형 모델 부품 수급 가산', r:RATES.oldPart});
+  if($('clean').checked) items.push({label:TYPE_LABEL[t]+' 분해 청소 (동시 방문 10% 할인)', r:mul(RATES.clean[t],0.9)});
+  if($('outdoor').checked) items.push({label:'실외기 세척', r:RATES.outdoorClean});
+  if($('region').value==='out') items.push({label:'인접 지역 출장 가산', r:RATES.regionOut});
+  const total = applySeason(items, date);
+  const sym=$('symptom').options[$('symptom').selectedIndex].text;
+  result = {svc:'냉매 충전', summary:TYPE_LABEL[t]+' 냉매 충전 · '+sym, items, labor:total, total, date, site:GAS_LABEL[g]+' · '+$('year').options[$('year').selectedIndex].text};
+  $('r-total').textContent = rangeShort(total[0],total[1]);
+  $('r-season').textContent = isPeak(date)?'성수기 (6~8월)':'비수기'; $('r-season').className='tag '+(isPeak(date)?'warn':'ok');
+  $('r-lines').innerHTML = linesHtml(items, total, '총액');
+  $('r-advice').textContent = ADVICE[s] + (g==='r22' ? ' R22는 생산이 중단된 냉매라 단가가 높고, 오래된 기기는 교체를 권하는 경우도 있습니다.' : '');
+  $('result').hidden=false; Booking.refresh();
+}
+$('qform').addEventListener('submit', e=>{ e.preventDefault(); calc(); $('result').scrollIntoView({behavior:'smooth'}); });
+$('qform').addEventListener('change', ()=>{ if(result) calc(); });
+$('go-book').addEventListener('click', ()=>$('book').scrollIntoView({behavior:'smooth'}));
+Booking.mount({ el: $('booking'), getQuote: ()=>result });
+$('q-date').value = plusDays(2);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>이전·설치 견적 · 속시원</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top"></header>
+<main class="wrap">
+
+<div class="page-head">
+  <span class="eyebrow">이전/설치 견적 · 철거 + 운반 + 재설치</span>
+  <h1>이사할 때 떼고, 새집에 다시 답니다</h1>
+  <p>기종, 대수, 이동 거리, 도착지 조건을 고르면 철거비·운반비·재설치비가 항목별로 나옵니다. 배관 5m, 기존 위치 철거가 기본에 포함됩니다.</p>
+</div>
+
+<section id="quote">
+  <form class="form" id="qform" novalidate>
+    <div class="fs">
+      <div class="lbl"><span class="n">1</span>기종</div>
+      <div class="seg">
+        <label><input type="radio" name="type" value="wall" checked>벽걸이</label>
+        <label><input type="radio" name="type" value="stand">스탠드</label>
+        <label><input type="radio" name="type" value="two">2in1<small>스탠드+벽걸이</small></label>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="fs"><label class="lbl" for="count">대수</label><select id="count"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+      <div class="fs"><label class="lbl" for="dist">이동 거리</label><select id="dist"><option value="near">같은 동네 (10km 이내)</option><option value="city">같은 시·군</option><option value="far">다른 시·도</option></select></div>
+    </div>
+    <div class="fs">
+      <div class="lbl"><span class="n">2</span>도착지</div>
+      <div class="grid2">
+        <div class="fs"><label class="lbl" for="home">거주 형태</label><select id="home"><option value="apt">아파트·오피스텔</option><option value="house">주택·빌라</option></select></div>
+        <div class="fs"><label class="lbl" for="floor">층수</label><select id="floor"><option value="low">1~2층</option><option value="mid">3~5층</option><option value="high">6층 이상 (엘리베이터)</option></select></div>
+      </div>
+    </div>
+    <div class="fs">
+      <div class="lbl">추가 배관 <b class="num" id="pipe-v">0m</b> <span class="hint">(기본 5m 포함)</span></div>
+      <input type="range" id="pipe" min="0" max="15" step="1" value="0" aria-label="추가 배관 길이">
+    </div>
+    <div class="fs">
+      <div class="lbl"><span class="n">3</span>현장 조건</div>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" id="remove" checked>기존 위치 철거 포함</label>
+        <label class="chip"><input type="checkbox" id="buried">도착지 매립 배관</label>
+        <label class="chip"><input type="checkbox" id="angle">실외기 앵글 재설치</label>
+        <label class="chip"><input type="checkbox" id="gas">냉매 보충</label>
+        <label class="chip"><input type="checkbox" id="elec">전용 전기 작업</label>
+        <label class="chip"><input type="checkbox" id="ladder">사다리차 필요</label>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="fs"><label class="lbl" for="q-date">희망 설치일 <span class="hint">6~8월 성수기 계수</span></label><input type="date" id="q-date"></div>
+      <div class="fs"><label class="lbl" for="region">지역</label><select id="region"><option value="base">1차 서비스 지역 (기본)</option><option value="out">인접 지역 (출장 가산)</option></select></div>
+    </div>
+    <button class="btn primary block" type="submit">이전 설치 견적 보기</button>
+  </form>
+</section>
+
+<section id="result" hidden>
+  <div class="sec-head"><span class="eyebrow">견적 결과</span><h2>예상 이전 설치 금액</h2></div>
+  <div class="result">
+    <div class="total"><div><span class="eyebrow">예상 금액</span><div class="amt num" id="r-total"></div></div><span class="tag" id="r-season"></span></div>
+    <div id="r-lines"></div>
+    <div class="callout" id="r-advice"></div>
+    <div class="note"><span>· 현장 변수(벽 두께, 배관 경로, 실외기 자리)에 따라 범위 안에서 확정됩니다. 견적에 없는 항목은 고객 동의 없이 청구하지 않습니다.</span><span>· 이사 당일 철거와 설치를 같은 날 진행하려면 이사 업체 시간과 맞춰 주세요.</span></div>
+    <button class="btn primary block" type="button" id="go-book">이 금액으로 예약 신청</button>
+  </div>
+</section>
+
+<section id="book">
+  <div class="sec-head"><span class="eyebrow">예약 신청</span><h2>도착지 주소와 희망 일자를 남겨 주세요</h2><p class="small muted">방문 주소에는 설치할 새집 주소를 적어 주세요. 출발지는 요청 사항에 적어 주시면 됩니다.</p></div>
+  <div id="booking"></div>
+</section>
+
+</main>
+<footer></footer>
+<script src="js/common.js"></script>
+<script>
+(function(){
+'use strict';
+const {TYPE_LABEL, RATES, $, mul, add, isPeak, plusDays, applySeason, linesHtml, rangeShort, radio, Booking} = window.SSW;
+let result=null;
+$('pipe').addEventListener('input', ()=>{ $('pipe-v').textContent=$('pipe').value+'m'; });
+function calc(){
+  const t=radio('type'), n=+$('count').value, date=$('q-date').value, house=$('home').value==='house'; const items=[];
+  items.push({label:TYPE_LABEL[t]+' 이전 설치 기본 (배관 5m 포함)'+(n>1?' × '+n+'대':''), r:mul(RATES.moveBase[t],n)});
+  if($('remove').checked) items.push({label:'기존 위치 철거'+(n>1?' × '+n+'대':''), r:mul(RATES.remove[t],n)});
+  const d=$('dist').value;
+  if(d==='city') items.push({label:'운반 (같은 시·군)', r:RATES.distCity});
+  if(d==='far') items.push({label:'운반 (다른 시·도)', r:RATES.distFar});
+  const f=$('floor').value;
+  if(f==='mid') items.push({label:'도착지 3~5층 작업 가산', r:RATES.floorMid});
+  if(f==='high') items.push({label:'도착지 고층 작업 가산', r:RATES.floorHigh});
+  const pipe=+$('pipe').value;
+  if(pipe>0) items.push({label:'배관 연장 '+pipe+'m', r:mul(RATES.pipePerM[t],pipe)});
+  if(house){ items.push({label:'주택 외벽·지상 경로 배관 '+RATES.housePipe[0]+'~'+RATES.housePipe[1]+'m', r:[RATES.pipePerM[t][0]*RATES.housePipe[0], RATES.pipePerM[t][1]*RATES.housePipe[1]]}); items.push({label:'타공 '+n+'곳', r:mul(RATES.hole,n)}); }
+  if($('buried').checked) items.push({label:'매립 배관 교체·연결', r:RATES.pipeReplace[t]});
+  if($('angle').checked) items.push({label:'실외기 앵글 재설치', r:RATES.angle[t]});
+  if($('gas').checked) items.push({label:'냉매 보충', r:RATES.gas[t]});
+  if($('elec').checked) items.push({label:'전용 전기 작업 (기본 + 대당)', r:add(RATES.elecBase, mul(RATES.elecPer,n))});
+  if($('ladder').checked) items.push({label:'사다리차·스카이차 (4시간)', r:RATES.ladder});
+  if($('region').value==='out') items.push({label:'인접 지역 출장 가산', r:RATES.regionOut});
+  const total = applySeason(items, date);
+  result = {svc:'이전 설치', summary:TYPE_LABEL[t]+' '+n+'대 이전 설치', items, labor:total, total, date,
+    site:(house?'주택':'아파트')+' '+$('floor').options[$('floor').selectedIndex].text+' · '+$('dist').options[$('dist').selectedIndex].text};
+  $('r-total').textContent = rangeShort(total[0],total[1]);
+  $('r-season').textContent = isPeak(date)?'성수기 (6~8월)':'비수기'; $('r-season').className='tag '+(isPeak(date)?'warn':'ok');
+  $('r-lines').innerHTML = linesHtml(items, total, '총액');
+  $('r-advice').textContent = (house ? '주택 도착지는 외벽 타공과 배관 커버 마감이 들어가고, 실외기를 앵글에 올리면 앵글 비용이 추가됩니다. ' : '아파트는 세대 배관 구조가 비슷해 기본 범위 안에서 대부분 마무리됩니다. ')+(pipe+(house?RATES.housePipe[1]:0) > 8 ? '배관이 길어지면 냉매 보충이 필요할 수 있어 옵션을 함께 켜 두는 것이 안전합니다.' : '기존 배관을 재사용할 수 있으면 배관 연장비가 줄어듭니다.');
+  $('result').hidden=false; Booking.refresh();
+}
+$('qform').addEventListener('submit', e=>{ e.preventDefault(); calc(); $('result').scrollIntoView({behavior:'smooth'}); });
+$('qform').addEventListener('change', ()=>{ if(result) calc(); });
+$('go-book').addEventListener('click', ()=>$('book').scrollIntoView({behavior:'smooth'}));
+Booking.mount({ el: $('booking'), getQuote: ()=>result });
+$('q-date').value = plusDays(7);
+})();
+</script>
+</body>
+</html>

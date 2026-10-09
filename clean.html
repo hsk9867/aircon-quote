@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>청소 견적 · 속시원</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top"></header>
+<main class="wrap">
+
+<div class="page-head">
+  <span class="eyebrow">청소 견적 · 분해 세척</span>
+  <h1>기종과 대수를 고르면 청소 금액이 바로 나옵니다</h1>
+  <p>냄새·곰팡이, 여름 전 정기 세척. 실내기 완전 분해 세척 기준이고 실외기 세척과 송풍팬 분해는 옵션으로 더합니다. 3대부터 10% 할인입니다.</p>
+</div>
+
+<section id="quote">
+  <form class="form" id="qform" novalidate>
+    <div class="fs">
+      <div class="lbl"><span class="n">1</span>기종</div>
+      <div class="seg">
+        <label><input type="radio" name="type" value="wall" checked>벽걸이</label>
+        <label><input type="radio" name="type" value="stand">스탠드</label>
+        <label><input type="radio" name="type" value="two">2in1<small>스탠드+벽걸이</small></label>
+        <label><input type="radio" name="type" value="ceil">천장형<small>시스템</small></label>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="fs"><label class="lbl" for="count">대수 <span class="hint">3대부터 10% 할인</span></label><select id="count"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+      <div class="fs"><label class="lbl" for="years">사용 연수</label><select id="years"><option value="0">1년 미만</option><option value="1">1~3년</option><option value="2">3년 이상 또는 청소한 적 없음</option></select></div>
+    </div>
+    <div class="fs">
+      <div class="lbl"><span class="n">2</span>설치 높이</div>
+      <div class="seg">
+        <label><input type="radio" name="height" value="normal" checked>일반<small>3m 미만</small></label>
+        <label><input type="radio" name="height" value="high">높음<small>3m 이상, 사다리 필요</small></label>
+      </div>
+    </div>
+    <div class="fs">
+      <div class="lbl"><span class="n">3</span>추가 작업</div>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" id="outdoor">실외기 세척</label>
+        <label class="chip"><input type="checkbox" id="fan">송풍팬 완전 분해</label>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="fs"><label class="lbl" for="q-date">희망 방문일 <span class="hint">6~8월 성수기 계수</span></label><input type="date" id="q-date"></div>
+      <div class="fs"><label class="lbl" for="region">지역</label><select id="region"><option value="base">1차 서비스 지역 (기본)</option><option value="out">인접 지역 (출장 가산)</option></select></div>
+    </div>
+    <button class="btn primary block" type="submit">청소 견적 보기</button>
+  </form>
+</section>
+
+<section id="result" hidden>
+  <div class="sec-head"><span class="eyebrow">견적 결과</span><h2>예상 청소 금액</h2></div>
+  <div class="result">
+    <div class="total"><div><span class="eyebrow">예상 금액</span><div class="amt num" id="r-total"></div></div><span class="tag" id="r-season"></span></div>
+    <div id="r-lines"></div>
+    <div class="note"><span>· 오염도와 설치 상태에 따라 범위 안에서 확정됩니다. 견적에 없는 항목은 고객 동의 없이 청구하지 않습니다.</span><span>· 단가는 <a href="prices.html">단가표</a>에 전체 공개되어 있습니다.</span></div>
+    <button class="btn primary block" type="button" id="go-book">이 금액으로 예약 신청</button>
+  </div>
+</section>
+
+<section id="book">
+  <div class="sec-head"><span class="eyebrow">예약 신청</span><h2>희망 일자와 연락처를 남겨 주세요</h2></div>
+  <div id="booking"></div>
+</section>
+
+</main>
+<footer></footer>
+<script src="js/common.js"></script>
+<script>
+(function(){
+'use strict';
+const {TYPE_LABEL, RATES, $, mul, add, radio, isPeak, plusDays, applySeason, linesHtml, rangeShort, Booking} = window.SSW;
+const CLEAN_CEIL=[120000,150000], FAN_CEIL=[40000,60000]; /* 천장형 청소 (가정) */
+let result=null;
+function calc(){
+  const t=radio('type'), n=+$('count').value, date=$('q-date').value; const items=[];
+  const base = t==='ceil' ? CLEAN_CEIL : RATES.clean[t];
+  items.push({label:TYPE_LABEL[t]+' 분해 청소'+(n>1?' × '+n+'대':''), r:mul(base,n)});
+  const dirt = RATES.dirt[+$('years').value];
+  if(dirt[1]>0) items.push({label:'오염도 가산 (사용 연수 기준)', r:mul(dirt,n)});
+  if(radio('height')==='high') items.push({label:'고소 작업 (3m 이상)', r:RATES.highMount});
+  if($('outdoor').checked) items.push({label:'실외기 세척'+(n>1?' × '+n+'대':''), r:mul(RATES.outdoorClean,n)});
+  if($('fan').checked) items.push({label:'송풍팬 완전 분해'+(n>1?' × '+n+'대':''), r:mul(t==='ceil'?FAN_CEIL:RATES.fan[t],n)});
+  if(n>=3){ const sub=items.reduce((a,i)=>add(a,i.r),[0,0]); items.push({label:'다량 할인 10% ('+n+'대)', r:mul(sub,-0.1)}); }
+  if($('region').value==='out') items.push({label:'인접 지역 출장 가산', r:RATES.regionOut});
+  const total = applySeason(items, date);
+  result = {svc:'분해 청소', summary:TYPE_LABEL[t]+' '+n+'대 분해 청소', items, labor:total, total, date, site:'사용 '+$('years').options[$('years').selectedIndex].text};
+  $('r-total').textContent = rangeShort(total[0],total[1]);
+  $('r-season').textContent = isPeak(date)?'성수기 (6~8월)':'비수기'; $('r-season').className='tag '+(isPeak(date)?'warn':'ok');
+  $('r-lines').innerHTML = linesHtml(items, total, '총액');
+  $('result').hidden=false; Booking.refresh();
+}
+$('qform').addEventListener('submit', e=>{ e.preventDefault(); calc(); $('result').scrollIntoView({behavior:'smooth'}); });
+$('qform').addEventListener('change', ()=>{ if(result) calc(); });
+$('go-book').addEventListener('click', ()=>$('book').scrollIntoView({behavior:'smooth'}));
+Booking.mount({ el: $('booking'), getQuote: ()=>result });
+$('q-date').value = plusDays(3);
+})();
+</script>
+</body>
+</html>

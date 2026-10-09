@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>에어컨 렌탈 · 속시원</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top"></header>
+<main class="wrap">
+
+<div class="page-head">
+  <span class="eyebrow">에어컨 렌탈 · 설치비 0원, 월 렌탈료만</span>
+  <h1>목돈 없이 설치하고, 관리는 속시원이 맡습니다</h1>
+  <p>기종과 평수, 약정 기간, 관리 서비스를 고르면 브랜드별 월 렌탈료가 바로 나옵니다. 설치비와 설치 하자 보증이 렌탈료에 포함되고, 약정이 끝나면 제품은 고객 소유가 됩니다.</p>
+</div>
+
+<section id="quote">
+  <form class="form" id="qform" novalidate>
+    <div class="fs">
+      <div class="lbl"><span class="n">1</span>기종과 평수</div>
+      <div class="seg">
+        <label><input type="radio" name="type" value="wall" checked>벽걸이<small>6~9평</small></label>
+        <label><input type="radio" name="type" value="stand">스탠드<small>11~23평</small></label>
+      </div>
+      <div class="grid2">
+        <div class="fs"><label class="lbl" for="py">평수</label><select id="py"></select></div>
+        <div class="fs"><label class="lbl" for="count">대수 <span class="hint">2대부터 월 5% 할인</span></label><select id="count"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+      </div>
+    </div>
+    <div class="fs">
+      <div class="lbl"><span class="n">2</span>약정 기간</div>
+      <div class="seg">
+        <label><input type="radio" name="term" value="36">36개월<small>3년</small></label>
+        <label><input type="radio" name="term" value="48" checked>48개월<small>4년</small></label>
+        <label><input type="radio" name="term" value="60">60개월<small>5년 · 월 부담 최소</small></label>
+      </div>
+    </div>
+    <div class="fs">
+      <div class="lbl"><span class="n">3</span>관리 서비스</div>
+      <div class="seg">
+        <label><input type="radio" name="care" value="0" checked>기본<small>설치 하자 보증만</small></label>
+        <label><input type="radio" name="care" value="1">연 1회 청소<small>여름 전 분해 세척</small></label>
+        <label><input type="radio" name="care" value="2">연 2회 청소<small>여름 전·후</small></label>
+      </div>
+    </div>
+    <div class="fs">
+      <div class="lbl"><span class="n">4</span>설치 환경</div>
+      <div class="grid2">
+        <div class="fs"><label class="lbl" for="home">거주 형태</label><select id="home"><option value="apt">아파트·오피스텔</option><option value="house">주택·빌라</option><option value="biz">매장·사무실</option></select></div>
+        <div class="fs"><label class="lbl" for="q-date">희망 설치일</label><input type="date" id="q-date"></div>
+      </div>
+    </div>
+    <button class="btn primary block" type="submit">브랜드별 월 렌탈료 보기</button>
+  </form>
+</section>
+
+<section id="result" hidden>
+  <div class="sec-head"><span class="eyebrow">렌탈 견적</span><h2>브랜드별 월 렌탈료</h2><p class="small muted">월 렌탈료에 제품, 설치, 설치 하자 보증, 선택한 관리 서비스가 모두 들어 있습니다. 브랜드를 고르면 아래에서 상담 신청할 수 있습니다.</p></div>
+  <div class="sum" id="r-sum"></div>
+  <div class="brands" id="r-brands" style="margin-top:12px"></div>
+  <div class="note" style="margin-top:12px">
+    <span>· 월 렌탈료는 예시 제품가와 가정 금리로 계산한 참고 금액입니다. 렌탈사 제휴와 심사 조건이 정해지면 바뀝니다.</span>
+    <span>· 주택·매장은 외벽 배관, 앵글, 전기 공사가 필요할 수 있으며 그 부분만 설치 시 별도 안내 후 동의하에 진행합니다.</span>
+    <span>· 중도 해지 시 남은 기간 렌탈료의 일부가 위약금으로 발생합니다. 조건은 계약서에 명시됩니다.</span>
+  </div>
+</section>
+
+<section id="book">
+  <div class="sec-head"><span class="eyebrow">렌탈 상담 신청</span><h2>희망 설치일과 연락처를 남겨 주세요</h2><p class="small muted">담당자가 렌탈 심사 서류와 설치 일정을 안내해 드립니다.</p></div>
+  <div id="booking"></div>
+</section>
+
+</main>
+<footer></footer>
+<script src="js/common.js"></script>
+<script>
+(function(){
+'use strict';
+const {TYPE_LABEL, RATES, BRANDS, $, won, rangeText, rangeShort, mul, add, radio, esc, plusDays, linesHtml, Booking} = window.SSW;
+/* 렌탈 계산 가정: 월 렌탈료 = 제품가 × 렌탈 계수 ÷ 약정 개월 + 설치비 분할 + 관리 서비스 + 보증·보험 */
+const RENT = { factor:{36:[1.18,1.26],48:[1.24,1.34],60:[1.30,1.42]}, care:{0:[0,0],1:[5500,7000],2:[10500,13500]}, warranty:[2500,3500], multiDiscount:0.05,
+  installExtra:{apt:[0,0], house:[20000,60000], biz:[20000,80000]} };
+const PY = {wall:[6,7,9], stand:[11,13,15,17,19,23]};
+function fillPy(){ const t=radio('type'); $('py').innerHTML=PY[t].map(p=>'<option value="'+p+'">'+p+'평</option>').join(''); if(t==='stand') $('py').value='17'; }
+document.querySelectorAll('input[name=type]').forEach(r=>r.addEventListener('change', fillPy)); fillPy();
+
+function pickModel(b, t, py){ const tbl=b.models[t]; const keys=Object.keys(tbl).map(Number).sort((a,b)=>a-b); const k=keys.find(x=>x>=py) ?? keys[keys.length-1]; return {name:tbl[k][0], price:tbl[k][1]}; }
+let result=null, picked=null;
+function calc(){
+  const t=radio('type'), py=+$('py').value, n=+$('count').value, term=+radio('term'), care=+radio('care'), home=$('home').value, date=$('q-date').value;
+  const f=RENT.factor[term]; const disc = n>1 ? 1-RENT.multiDiscount : 1;
+  const install = add(RATES.base[t], RENT.installExtra[home]); /* 설치비는 렌탈료에 분할 포함 */
+  const brands = BRANDS.map(b=>{
+    const m=pickModel(b,t,py);
+    const items=[
+      {label:'제품 '+m.name+' (×'+n+') 분할', r:mul([m.price*f[0]/term, m.price*f[1]/term], n)},
+      {label:'설치비 분할 (배관 5m, 하자 보증 포함)', r:mul([install[0]/term, install[1]/term], n)},
+      {label:'보증·보험', r:mul(RENT.warranty, n)}
+    ];
+    if(care>0) items.push({label:'관리 서비스 (연 '+care+'회 분해 청소)', r:mul(RENT.care[care], n)});
+    let monthly = items.reduce((a,i)=>add(a,i.r),[0,0]);
+    if(n>1){ const d=mul(monthly,-RENT.multiDiscount); items.push({label:'다대 할인 5%', r:d}); monthly=add(monthly,d); }
+    monthly=[Math.round(monthly[0]/100)*100, Math.round(monthly[1]/100)*100];
+    return {id:b.id, name:b.name, line:b.line, note:b.note, model:m, items, monthly, total:mul(monthly,term), product:m.price*n, install:mul(install,n)};
+  }).sort((a,b)=>a.monthly[0]-b.monthly[0]);
+  result={t,py,n,term,care,home,date,brands};
+  $('r-sum').innerHTML='<span class="k">입력 조건</span><div><b>'+TYPE_LABEL[t]+' '+py+'평 × '+n+'대</b> · '+term+'개월 약정 · '+(care?'연 '+care+'회 청소 포함':'기본 보증')+' · '+$('home').options[$('home').selectedIndex].text+'</div><div class="small muted">약정 종료 후 제품 소유권은 고객에게 이전됩니다.</div>';
+  renderBrands(); $('result').hidden=false; Booking.refresh();
+}
+function renderBrands(){
+  $('r-brands').innerHTML = result.brands.map((b,i)=>
+    '<div class="bcard'+(picked===b.id?' pick':'')+'">'+
+      '<div class="hd"><h3>'+esc(b.name)+' <span class="tag">'+esc(b.line)+'</span>'+(i===0?'<span class="tag ok">최저가</span>':'')+'</h3><div class="amt num">월 '+rangeShort(b.monthly[0],b.monthly[1])+'</div>'+
+      '<div class="sub">'+esc(b.model.name)+(result.n>1?' × '+result.n:'')+' · 총 납입 '+rangeShort(b.total[0],b.total[1])+' ('+result.term+'개월) · 일시불 구매+설치 '+rangeShort(b.product+b.install[0], b.product+b.install[1])+'</div></div>'+
+      '<details><summary>월 렌탈료 구성 보기</summary>'+linesHtml(b.items, b.monthly, '월 렌탈료')+'<div style="height:12px"></div></details>'+
+      '<div class="ft"><button class="btn '+(picked===b.id?'primary':'')+' block" type="button" data-pick="'+b.id+'">'+(picked===b.id?'선택됨 · 아래에서 상담 신청':esc(b.name)+' 렌탈 상담 신청')+'</button></div>'+
+    '</div>').join('');
+  document.querySelectorAll('[data-pick]').forEach(btn=>btn.addEventListener('click',()=>{ picked=btn.dataset.pick; renderBrands(); Booking.refresh(); $('book').scrollIntoView({behavior:'smooth'}); }));
+}
+$('qform').addEventListener('submit', e=>{ e.preventDefault(); picked=null; calc(); $('result').scrollIntoView({behavior:'smooth'}); });
+$('qform').addEventListener('change', ()=>{ if(result) calc(); });
+Booking.mount({ el:$('booking'), getQuote: ()=>{
+  if(!result||!picked) return null; const b=result.brands.find(x=>x.id===picked);
+  return { svc:'렌탈', summary:b.name+' '+TYPE_LABEL[result.t]+' '+result.py+'평 × '+result.n+'대 렌탈 '+result.term+'개월 · 월 '+rangeShort(b.monthly[0],b.monthly[1]),
+    items:[{label:TYPE_LABEL[result.t]+' 기본 설치 × '+result.n, r:b.install}], labor:b.install, total:b.total, product:b.product,
+    models:[b.model.name+' × '+result.n], date:result.date, site:$('home').options[$('home').selectedIndex].text+' · 렌탈 '+result.term+'개월'+(result.care?' · 연 '+result.care+'회 청소':'') };
+}});
+$('q-date').value = plusDays(7);
+})();
+</script>
+</body>
+</html>

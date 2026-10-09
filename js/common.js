@@ -78,7 +78,7 @@ function linesHtml(items, total, totalLabel){
 
 /* ---------- 로고 ---------- */
 const LOGO_SVG = '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="2" y="2" width="44" height="44" rx="12" fill="var(--accent)"/><path d="M12 17h18a4 4 0 1 1-3 6.7" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/><path d="M12 25h22a4.5 4.5 0 1 0-3.4-7.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" opacity=".55"/><path d="M12 33h12a3.5 3.5 0 1 1-2.6 5.8" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg>';
-const NAV = [['install.html','설치 견적'],['clean.html','청소 견적'],['gas.html','냉매 충전'],['move.html','이전·설치'],['prices.html','단가표'],['recruit.html','기사 모집']];
+const NAV = [['install.html','설치 견적'],['clean.html','청소 견적'],['gas.html','냉매 충전'],['move.html','이전·설치'],['rental.html','렌탈'],['business.html','기업 문의'],['prices.html','단가표']];
 function mountChrome(){
   const here = location.pathname.split('/').pop() || 'index.html';
   const top = document.querySelector('header.top');

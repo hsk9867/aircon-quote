@@ -14,20 +14,20 @@
 
 <div class="page-head">
   <span class="eyebrow">관리자 미리보기</span>
-  <h1>접수된 예약과 기사 신청</h1>
+  <h1>접수된 예약과 기업 문의</h1>
   <p>이 브라우저에서 접수한 건만 보입니다. 실제 운영에서는 서버 데이터베이스, 알림 발송 기록, 기사 배정 현황으로 대체됩니다.</p>
 </div>
 
 <section>
-  <div class="sec-head"><h2>예약 <span class="tag" id="bk-count">0</span></h2></div>
+  <div class="sec-head"><h2>예약·렌탈 상담 <span class="tag" id="bk-count">0</span></h2></div>
   <div class="admin" id="bk-list"></div>
   <div style="padding-top:12px"><button class="btn sm" type="button" id="bk-clear">예약 목록 비우기</button></div>
 </section>
 
 <section>
-  <div class="sec-head"><h2>기사 등록 신청 <span class="tag" id="tc-count">0</span></h2></div>
+  <div class="sec-head"><h2>기업 전용 문의 <span class="tag" id="tc-count">0</span></h2></div>
   <div class="admin" id="tc-list"></div>
-  <div style="padding-top:12px"><button class="btn sm" type="button" id="tc-clear">신청 목록 비우기</button></div>
+  <div style="padding-top:12px"><button class="btn sm" type="button" id="tc-clear">문의 목록 비우기</button></div>
 </section>
 
 </main>
@@ -47,12 +47,15 @@ function render(){
     '<div class="muted">희망 '+fmtDate(b.customer.date)+' '+esc(b.customer.slot)+' · 기사 정산 <span class="num">'+rangeText(b.payout[0],b.payout[1])+'</span></div>'+
     '<div class="muted small">접수 '+new Date(b.createdAt).toLocaleString('ko-KR')+(b.site?' · '+esc(b.site):'')+(b.customer.memo?' · 메모: '+esc(b.customer.memo):'')+'</div></div>').join('')
     : '<div class="empty">아직 접수된 예약이 없습니다.</div>';
-  const tc=load('ssw_techs'); $('tc-count').textContent=tc.length;
-  $('tc-list').innerHTML = tc.length ? tc.map(t=>'<div class="bk"><div class="h"><span>'+esc(t.name)+' · '+esc(t.area)+'</span><span class="tag">'+esc(t.exp)+'</span></div><div class="muted">'+esc(t.phone)+' · '+esc((t.jobs||[]).join(', ')||'작업 미선택')+' · '+new Date(t.at).toLocaleString('ko-KR')+'</div></div>').join('')
-    : '<div class="empty">아직 신청이 없습니다.</div>';
+  const tc=load('ssw_biz'); $('tc-count').textContent=tc.length;
+  $('tc-list').innerHTML = tc.length ? tc.map(t=>'<div class="bk"><div class="h"><span>'+t.id+' · '+esc(t.company)+' · '+esc(t.kind)+'</span><span class="tag acc">'+esc(t.via)+' · '+esc(t.status)+'</span></div>'+
+    '<div class="muted">'+esc(t.name)+' · '+esc(t.phone)+(t.email?' · '+esc(t.email):'')+' · '+esc(t.addr||'주소 없음')+'</div>'+
+    '<div class="muted">'+esc((t.sites||[]).map(s=>s.space+' '+s.count+' '+s.py).join(', ')||'설치 내용 없음')+' · '+esc((t.svc||[]).join(', '))+'</div>'+
+    '<div class="muted small">접수 '+new Date(t.at).toLocaleString('ko-KR')+(t.date?' · 희망 '+esc(t.date):'')+(t.memo?' · '+esc(t.memo):'')+'</div></div>').join('')
+    : '<div class="empty">아직 문의가 없습니다.</div>';
 }
 $('bk-clear').addEventListener('click',()=>{ save('ssw_bookings',[]); render(); });
-$('tc-clear').addEventListener('click',()=>{ save('ssw_techs',[]); render(); });
+$('tc-clear').addEventListener('click',()=>{ save('ssw_biz',[]); render(); });
 render();
 })();
 </script>

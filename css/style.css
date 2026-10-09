@@ -180,18 +180,19 @@ footer{padding-block:28px;font-size:.8rem;color:var(--muted);display:grid;gap:6p
 footer .links{display:flex;flex-wrap:wrap;gap:4px 14px}
 footer .links a{text-decoration:none;color:var(--muted)} footer .links a:hover{color:var(--fg)}
 
-/* 첫 페이지 */
-.home{min-height:calc(100vh - 40px);display:grid;align-content:center;gap:28px;padding-block:40px}
-.home .brand{display:grid;justify-items:center;gap:14px;text-align:center}
-.home .brand svg{width:88px;height:88px}
-.home .brand .word{font-family:var(--display);font-size:2.4rem;font-weight:700;letter-spacing:-.03em;line-height:1}
-.home .brand .tag-line{color:var(--muted);max-width:30em}
-.menu{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.menu a{display:grid;gap:8px;padding:20px 16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;text-decoration:none;color:var(--fg);box-shadow:var(--shadow);min-height:132px;transition:border-color .15s,transform .15s}
+/* 첫 페이지: 폰 한 화면에 로고 + 2열×3행 카드가 모두 들어오게 */
+.home{min-height:calc(100vh - 32px);min-height:calc(100dvh - 32px);display:grid;grid-template-rows:auto auto auto;align-content:center;gap:18px;padding-block:20px}
+.home .brand{display:grid;justify-items:center;gap:8px;text-align:center}
+.home .brand svg{width:56px;height:56px}
+.home .brand .word{font-family:var(--display);font-size:1.9rem;font-weight:700;letter-spacing:-.03em;line-height:1}
+.home .brand .tag-line{color:var(--muted);max-width:26em;font-size:.86rem;line-height:1.45}
+.menu{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:10px}
+.menu a{display:grid;grid-template-rows:auto auto 1fr;gap:4px;padding:14px 12px 12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;text-decoration:none;color:var(--fg);box-shadow:var(--shadow);min-width:0;transition:border-color .15s,transform .15s}
 .menu a:hover{border-color:var(--accent);transform:translateY(-1px)}
-.menu a svg{width:30px;height:30px;color:var(--accent)}
-.menu a b{font-family:var(--display);font-size:1.08rem}
-.menu a span{font-size:.82rem;color:var(--muted)}
-.home .sub-links{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 18px;font-size:.86rem}
+.menu a svg{width:26px;height:26px;color:var(--accent);margin-bottom:4px}
+.menu a b{font-family:var(--display);font-size:.98rem;line-height:1.25;text-wrap:balance}
+.menu a span{font-size:.76rem;line-height:1.4;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.home .sub-links{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 18px;font-size:.84rem}
 .home .sub-links a{color:var(--muted);text-decoration:none} .home .sub-links a:hover{color:var(--fg)}
-@media (max-width:380px){.menu{grid-template-columns:1fr}.menu a{min-height:0}}
+@media (max-height:700px){.home{gap:12px}.home .brand svg{width:44px;height:44px}.home .brand .tag-line{display:none}.menu a{padding:10px 10px 8px}.menu a span{-webkit-line-clamp:1}}
+@media (min-width:600px){.home .brand svg{width:80px;height:80px}.home .brand .word{font-size:2.4rem}.home .brand .tag-line{font-size:1rem}.menu a{padding:20px 16px}.menu a b{font-size:1.08rem}.menu a span{font-size:.84rem}}

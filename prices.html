@@ -61,7 +61,7 @@ const {RATES, SITE, manWon, add, esc, $} = window.SSW;
 $('promises').innerHTML=SITE.promises.map(p=>'<div><span class="ck">✓</span><div><b>'+esc(p.title)+'</b><span>'+esc(p.desc)+'</span></div></div>').join('');
 $('steps').innerHTML=SITE.steps.map(p=>'<div class="step"><div><b>'+esc(p.title)+'</b><span>'+esc(p.desc)+'</span></div></div>').join('');
 $('faq').innerHTML=SITE.faq.map(f=>'<details><summary>'+esc(f.q)+'</summary><p>'+esc(f.a)+'</p></details>').join('');
-const rt = r => r[0]===r[1] ? manWon(r[0]) : manWon(r[0])+'~'+manWon(r[1]);
+const rt = r => (!r || (!r[0] && !r[1])) ? 'X' : r[0]===r[1] ? manWon(r[0]) : manWon(r[0])+'~'+manWon(r[1]); /* 0원 항목은 X (해당 없음) */
 const row3 = (l,r) => '<tr><td>'+l+'</td><td class="r num">'+rt(r.wall)+'</td><td class="r num">'+rt(r.stand)+'</td><td class="r num">'+rt(r.two)+'</td></tr>';
 const row1 = (l,r,s) => '<tr><td>'+l+'</td><td class="r num">'+(r?rt(r):esc(String(s||'').replace(/^(가정|기준)[^·]*·\s*/,'').replace(/\s*\((가정|기준)\)$/,'')))+'</td></tr>';
 document.querySelector('#t-type tbody').innerHTML = [

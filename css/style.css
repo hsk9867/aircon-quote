@@ -207,6 +207,7 @@ footer .copy em{font-style:normal;font-family:var(--display);letter-spacing:0}
 
 /* ===== 첫 화면 ===== */
 .home-main{display:block}
+.home-sec,.products,.band-dark{scroll-margin-top:62px}
 .hero{display:grid;border-bottom:1px solid var(--line)}
 .hero-txt{padding:clamp(32px,5vw,72px) clamp(20px,4vw,56px);display:grid;align-content:center;gap:22px;order:2}
 .hero-txt .eyebrow{margin-bottom:4px}
@@ -290,16 +291,21 @@ html.splash-on{overflow:hidden}
 .pslide .track{display:flex;width:max-content;animation:pslide 60s linear infinite;will-change:transform}
 .pslide:hover .track,.pslide:focus-within .track{animation-play-state:paused}
 @keyframes pslide{to{transform:translateX(-50%)}}
-.pcard{width:300px;flex-shrink:0;border-right:1px solid var(--line);background:var(--bg);display:grid;grid-template-columns:132px 1fr;align-items:center;text-decoration:none;color:var(--fg);transition:background .2s}
+.pcard{width:170px;flex-shrink:0;border-right:1px solid var(--line);background:#fff;display:block}
 .pcard:hover{background:var(--surface)}
-.pcard .ill{position:relative;aspect-ratio:1/1;align-self:stretch;background:#fff;display:grid;place-items:center;overflow:hidden;border-right:1px solid var(--line-soft)}
+.pcard .ill{position:relative;aspect-ratio:1/1;background:#fff;display:grid;place-items:center;overflow:hidden}
 .pcard .ill svg{width:72%;height:72%;color:var(--fg)}
 .pcard .ill img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.pcard .ill .bl{position:absolute;left:8px;top:8px}
+.pcard .ill .bl{position:absolute;left:8px;top:8px;z-index:2}
 .pcard .ill .bl .blogo{height:18px}
 .pcard .ill .bl .badge-logo{font-size:.7rem!important}
-.pcard .tx{padding:12px 14px;display:grid;gap:3px}
-.pcard .tx .ty{font-family:var(--en);font-weight:800;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.pcard .tx b{font-size:.95rem;font-weight:800;letter-spacing:-.02em}
-.pcard .tx span{font-size:.74rem;color:var(--muted);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-@media (min-width:760px){.pcard{width:340px;grid-template-columns:150px 1fr}.pcard .tx{padding:14px 18px}.pcard .tx b{font-size:1.02rem}}
+@media (min-width:760px){.pcard{width:210px}}
+
+/* 오른쪽 아래 빠른 문의 버튼: 카카오톡 · 전화 · 시공사례 (링크는 관리자 연락처 값, 시공사례는 추후 연결) */
+.quick{position:fixed;right:18px;bottom:76px;z-index:30;display:grid;gap:8px;justify-items:end}
+.quick a{display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 16px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font-weight:800;font-size:.86rem;text-decoration:none;white-space:nowrap;transition:transform .15s}
+.quick a:hover{transform:translateX(-3px)}
+.quick a.kakao{background:#FAE100;border-color:#FAE100;color:#1B1616}
+.quick a.tel{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.quick svg{width:20px;height:20px;flex-shrink:0}
+@media (max-width:600px){.quick{right:12px;bottom:70px;gap:6px}.quick a{width:46px;padding:0;justify-content:center}.quick a span{display:none}.totop{right:12px;bottom:12px}}

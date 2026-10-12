@@ -797,6 +797,13 @@ function mountChrome(){
       '<div class="links"><a href="index.html">홈</a>'+NAV.map(([h,l])=>'<a href="'+h+'">'+l+'</a>').join('')+'<a href="admin.html">관리자</a></div>'+
     '</div>'+
     '<div class="copy">Copyright © <em>'+esc(SITE.brand.name)+'</em>. All rights reserved.</div>';
+  /* 오른쪽 아래 빠른 문의 버튼. 카카오톡·전화는 관리자 연락처 값, 시공사례 링크는 SITE.contact.casesUrl (없으면 #) */
+  const q = document.createElement('div'); q.className='quick'; q.setAttribute('aria-label','빠른 문의');
+  const kakaoHref = c.kakaoChat || '#', telHref = c.phone ? 'tel:'+String(c.phone).replace(/[^0-9+]/g,'') : '#', casesHref = c.casesUrl || '#';
+  q.innerHTML = '<a class="kakao" href="'+esc(kakaoHref)+'"'+(kakaoHref!=='#'?' target="_blank" rel="noopener"':'')+' aria-label="카카오톡 상담"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.8 5.2 4.6 6.6L5.5 21l4.3-2.6c.7.1 1.4.2 2.2.2 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg><span>카카오톡</span></a>'+
+    '<a class="tel" href="'+esc(telHref)+'" aria-label="전화 상담"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg><span>전화</span></a>'+
+    '<a class="cases" href="'+esc(casesHref)+'" aria-label="시공사례 보기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/><circle cx="16" cy="9" r="1.5"/></svg><span>시공사례 보기</span></a>';
+  document.body.appendChild(q);
   /* 맨 위로 버튼 */
   const up = document.createElement('button'); up.type='button'; up.className='totop'; up.setAttribute('aria-label','맨 위로');
   up.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';

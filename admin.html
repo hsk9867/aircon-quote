@@ -130,7 +130,7 @@ async function init(){
   const badge=$('mode-badge'); badge.hidden=false;
   if(mode==='server'){
     badge.textContent='서버 저장';
-    $('mode-desc').textContent='저장을 누르면 이 주소의 모든 페이지에 바로 반영됩니다. 글자, 연락처, 단가, 브랜드 제품, 렌탈 조건을 여기서 바꿀 수 있습니다.';
+    $('mode-desc').textContent='저장을 누르면 이 주소의 모든 페이지에 바로 반영됩니다. 고객 예약·기업 문의는 "접수 내역" 탭에 실시간으로 들어옵니다.';
     $('act-pw').hidden=false; $('act-logout').hidden=false; $('act-download').hidden=true;
     if(!st.hasPassword){ $('gate').hidden=false; $('setup').hidden=false; }
     else if(!st.loggedIn){ $('gate').hidden=false; $('login').hidden=false; }
@@ -149,7 +149,7 @@ async function openServer(){
     openEditor();
   }catch(e){ toast('설정을 불러오지 못했습니다: '+e.message, true); }
 }
-function openEditor(){ $('gate').hidden=true; $('editor').hidden=false; renderTabs(); render(); }
+function openEditor(){ $('gate').hidden=true; $('editor').hidden=false; renderTabs(); render(); startInboxPolling(); }
 
 /* ---------- 로그인/설정 ---------- */
 $('setup').addEventListener('submit', async e=>{ e.preventDefault(); const pw=$('su-pw').value, pw2=$('su-pw2').value, err=$('su-err');
@@ -165,7 +165,7 @@ $('act-pw').addEventListener('click', async ()=>{ const cur=prompt('현재 비�
 
 /* ---------- 탭 ---------- */
 const TABS=[['basic','기본 정보'],['home','첫 화면'],['pages','페이지 문구'],['guide','약속·절차·FAQ'],['rates','단가'],['brands','브랜드·제품'],['rent','렌탈'],['inbox','접수 내역']];
-function renderTabs(){ $('tabs').innerHTML=TABS.map(([k,l])=>'<button type="button" role="tab" data-tab="'+k+'" aria-selected="'+(k===tab)+'">'+l+'</button>').join(''); }
+function renderTabs(){ $('tabs').innerHTML=TABS.map(([k,l])=>'<button type="button" role="tab" data-tab="'+k+'" aria-selected="'+(k===tab)+'">'+l+(k==='inbox'&&lastNewCount?' <span class="badge" style="background:var(--warn);color:#fff">'+lastNewCount+'</span>':'')+'</button>').join(''); }
 $('tabs').addEventListener('click', e=>{ const b=e.target.closest('[data-tab]'); if(!b) return; tab=b.dataset.tab; try{ history.replaceState(null,'','#'+tab); }catch(e){} renderTabs(); render(); window.scrollTo({top:0}); });
 
 /* ---------- 필드 ---------- */
@@ -232,8 +232,41 @@ function render(){
     h+=card('월 부가 항목 (원/월)', '<div class="g3">'+fRange('rent.care.1','연 1회 청소 관리')+fRange('rent.care.2','연 2회 청소 관리')+fRange('rent.warranty','보증·보험')+'</div>'+'<div class="g3">'+fNum('rent.multiDiscount','2대 이상 할인율','0.05 = 5%')+'</div>');
     h+=card('설치 환경별 추가 설치비 (렌탈료에 분할)', '<div class="g3">'+fRange('rent.installExtra.apt','아파트·오피스텔')+fRange('rent.installExtra.house','주택·빌라')+fRange('rent.installExtra.biz','매장·사무실')+'</div>');
   }
-  if(tab==='inbox') h+=renderInbox();
+  if(tab==='inbox') h+= (mode==='server' ? renderInboxServer() : renderInbox());
   P.innerHTML=h;
+}
+const STATUS_BK=['신규','연락 완료','기사 배정','시공 완료','취소']; const STATUS_IQ=['신규','회신 완료','견적 발송','계약','취소'];
+let inbox={bookings:[],inquiries:[],loaded:false,err:''}; let inboxTimer=null; let lastNewCount=null;
+const fmtWhen = s => { try{ return new Date(s).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(e){ return s||''; } };
+const statusSel=(type,id,cur,opts)=>'<select class="st" data-type="'+type+'" data-id="'+esc(id)+'">'+opts.map(o=>'<option'+(o===cur?' selected':'')+'>'+o+'</option>').join('')+'</select>';
+const stTag = s => { if(!s||s==='신규') return 'warn'; if(/완료|계약/.test(s)) return 'ok'; if(/취소/.test(s)) return ''; return 'acc'; };
+async function loadInbox(silent){
+  try{ const r=await api('inbox'); if(!r.ok){ if(r.error==='auth'){ $('editor').hidden=true; $('gate').hidden=false; $('login').hidden=false; } return; }
+    inbox={bookings:r.bookings||[],inquiries:r.inquiries||[],loaded:true,err:''};
+    const newCount=inbox.bookings.filter(b=>(b.status||'신규')==='신규').length+inbox.inquiries.filter(i=>(i.status||'신규')==='신규').length;
+    if(lastNewCount!==null && newCount>lastNewCount && silent) toast('새 접수 '+(newCount-lastNewCount)+'건이 들어왔습니다.');
+    lastNewCount=newCount; renderTabs(); if(tab==='inbox') render();
+  }catch(e){ inbox.err=e.message; if(tab==='inbox') render(); }
+}
+function startInboxPolling(){ if(mode!=='server') return; loadInbox(false); if(!inboxTimer) inboxTimer=setInterval(()=>loadInbox(true), 20000); document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) loadInbox(true); }); }
+function renderInboxServer(){
+  const bk=inbox.bookings, tc=inbox.inquiries;
+  const head = '<div class="kv">'+(inbox.loaded?'서버 접수함 · 20초마다 자동 갱신':'불러오는 중…')+(inbox.err?' · 오류: '+esc(inbox.err):'')+' <button class="btn sm" type="button" data-act="refresh" style="margin-left:8px">지금 새로고침</button></div>';
+  const bkH = bk.length ? bk.map(b=>{ const c=b.customer||{}; return '<div class="bk"><div class="h"><span>'+esc(b.id)+' · '+esc(b.svcLabel||'')+' <span class="muted small">'+fmtWhen(b.receivedAt||b.createdAt)+'</span></span><span class="tag '+stTag(b.status)+'">'+esc(b.status||'신규')+'</span></div>'+
+    '<div>'+esc(b.summary||'')+(b.total?' · <b class="num">'+rangeShort(b.total[0],b.total[1])+'</b>':'')+'</div>'+(b.models&&b.models.length?'<div class="muted">'+esc(b.models.join(', '))+'</div>':'')+
+    '<div><b>'+esc(c.name||'')+'</b> · <a href="tel:'+esc(c.phone||'')+'">'+esc(c.phone||'')+'</a> · '+esc(c.addr||'')+' '+esc(c.addr2||'')+'</div>'+
+    '<div class="muted">희망 '+fmtDate(c.date)+' '+esc(c.slot||'')+(b.payout?' · 기사 정산 <span class="num">'+rangeText(b.payout[0],b.payout[1])+'</span>':'')+'</div>'+
+    (b.site||c.memo?'<div class="muted small">'+esc([b.site,c.memo].filter(Boolean).join(' · '))+'</div>':'')+
+    '<div class="g2" style="margin-top:6px;align-items:center"><div>'+statusSel('booking',b.id,b.status||'신규',STATUS_BK)+'</div><div style="text-align:right"><button class="btn sm" type="button" data-del-rec="booking" data-id="'+esc(b.id)+'">삭제</button></div></div></div>'; }).join('')
+    : '<div class="empty">'+(inbox.loaded?'아직 접수된 예약이 없습니다.':'불러오는 중…')+'</div>';
+  const tcH = tc.length ? tc.map(t=>'<div class="bk"><div class="h"><span>'+esc(t.id)+' · '+esc(t.company||'')+' · '+esc(t.kind||'')+' <span class="muted small">'+fmtWhen(t.receivedAt||t.at)+'</span></span><span class="tag '+stTag(t.status)+'">'+esc(t.status||'신규')+'</span></div>'+
+    '<div><b>'+esc(t.name||'')+'</b> · <a href="tel:'+esc(t.phone||'')+'">'+esc(t.phone||'')+'</a>'+(t.email?' · '+esc(t.email):'')+' · '+esc(t.addr||'주소 없음')+' · '+esc(t.via||'')+'</div>'+
+    '<div class="muted">'+esc((t.sites||[]).map(s=>s.space+' '+s.count+' '+s.py).join(', ')||'설치 내용 없음')+' · '+esc((t.svc||[]).join(', '))+(t.date?' · 희망 '+esc(t.date):'')+'</div>'+
+    (t.memo?'<div class="muted small">'+esc(t.memo)+'</div>':'')+(t.text?'<details><summary class="small">문의서 전문</summary><pre class="small" style="white-space:pre-wrap;margin:6px 0 0">'+esc(t.text)+'</pre></details>':'')+
+    '<div class="g2" style="margin-top:6px;align-items:center"><div>'+statusSel('inquiry',t.id,t.status||'신규',STATUS_IQ)+'</div><div style="text-align:right"><button class="btn sm" type="button" data-del-rec="inquiry" data-id="'+esc(t.id)+'">삭제</button></div></div></div>').join('')
+    : '<div class="empty">'+(inbox.loaded?'아직 문의가 없습니다.':'불러오는 중…')+'</div>';
+  return head+card('예약·렌탈 상담 ('+bk.length+')', '<div class="admin">'+bkH+'</div>', '고객이 예약 신청을 누르면 바로 여기에 들어옵니다. 상태를 바꾸면 서버에 저장됩니다.')+
+    card('기업 전용 문의 ('+tc.length+')', '<div class="admin">'+tcH+'</div>');
 }
 function renderInbox(){
   const bk=load('ssw_bookings'), tc=load('ssw_biz');
@@ -251,6 +284,7 @@ function renderInbox(){
 }
 
 /* ---------- 입력 반영 ---------- */
+$('panel').addEventListener('change', e=>{ const el=e.target; if(!el.classList.contains('st')) return; api('inbox_update',{type:el.dataset.type,id:el.dataset.id,status:el.value}).then(r=>{ if(r.ok){ toast('상태를 "'+el.value+'"(으)로 바꿨습니다.'); loadInbox(false); } else toast('저장 실패: '+r.error,true); }).catch(ex=>toast('저장 실패: '+ex.message,true)); });
 $('panel').addEventListener('input', e=>{ const el=e.target; const p=el.dataset.p; if(!p) return;
   let v; if(el.dataset.b) v=el.checked; else if(el.dataset.n){ v=el.value===''?0:Number(el.value); if(Number.isNaN(v)) return; } else v=el.value;
   setPath(draft,p,v); keepLocal(); });
@@ -258,6 +292,8 @@ $('panel').addEventListener('click', e=>{
   const a=e.target.closest('[data-add],[data-del],[data-act]'); if(!a) return;
   if(a.dataset.add){ const arr=getPath(draft,a.dataset.add); arr.push(JSON.parse(a.dataset.tpl)); keepLocal(); render(); return; }
   if(a.dataset.del){ const ks=a.dataset.del.split('.'); const idx=+ks.pop(); const arr=getPath(draft,ks.join('.')); if(!confirm('이 항목을 삭제할까요?')) return; arr.splice(idx,1); keepLocal(); render(); return; }
+  if(a.dataset.act==='refresh'){ loadInbox(false); return; }
+  if(a.dataset.delRec){ if(!confirm('이 접수를 삭제할까요? 되돌릴 수 없습니다.')) return; api('inbox_update',{type:a.dataset.delRec,id:a.dataset.id,delete:true}).then(r=>{ if(r.ok){ toast('삭제했습니다.'); loadInbox(false); } else toast('삭제 실패: '+r.error,true); }).catch(e=>toast('삭제 실패: '+e.message,true)); return; }
   if(a.dataset.act==='clear-bk'){ if(confirm('예약 목록을 비울까요?')){ save('ssw_bookings',[]); render(); } }
   if(a.dataset.act==='clear-tc'){ if(confirm('문의 목록을 비울까요?')){ save('ssw_biz',[]); render(); } }
 });

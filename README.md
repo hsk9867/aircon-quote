@@ -35,6 +35,11 @@
 - 미리보기: 저장 전 초안을 새 탭에서 봅니다 (그 탭에만 적용, 하단에 주황색 표시줄).
 - 비밀번호를 잊으면 서버의 `admin/auth.php` 를 지우고 다시 설정하거나, `deploy/cafe24.local.ps1` 에 `CAFE24_ADMIN_PASS` 를 적고 `-ResetAdminPassword` 로 배포합니다.
 
+## 접수함 (예약·기업 문의)
+- 고객이 예약 신청을 누르면 `admin/api.php?action=book` 으로 서버에 저장되고(`admin/store/bookings.json`), 기업 문의는 `inquiry` 로 저장됩니다(`inquiries.json`). 두 파일은 `.htaccess` 로 외부 접근이 막혀 있고 관리자 로그인 후 API로만 읽습니다.
+- 관리자 페이지 "접수 내역" 탭이 20초마다 자동 갱신되며 새 접수가 오면 알림이 뜹니다. 상태(신규·연락 완료·기사 배정·시공 완료·취소)와 삭제는 서버에 저장됩니다.
+- 같은 IP에서 1시간에 20건을 넘으면 접수를 막습니다. PHP가 없는 GitHub Pages에서는 서버 접수가 조용히 건너뛰어지고 브라우저 저장만 남습니다.
+
 ## 코드에서 직접 고칠 때
 - 기본 단가: `js/common.js`의 `RATES_DEFAULT`. 관리자 페이지 저장값이 있으면 그 값이 우선합니다.
 - 기본 브랜드 모델과 판매가: `js/common.js`의 `BRANDS_DEFAULT` (모두 예시)

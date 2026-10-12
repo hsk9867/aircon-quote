@@ -22,6 +22,26 @@ $authFile = __DIR__ . '/auth.php';
 $lockFile = __DIR__ . '/.lock.json';
 $jsonFile = $root . '/data/config.json';
 $jsFile   = $root . '/data/config.js';
+$storeDir = __DIR__ . '/store';                 // 접수 저장소 (admin/store/.htaccess 로 외부 접근 차단)
+$bookFile = $storeDir . '/bookings.json';       // 예약·렌탈 상담
+$inqFile  = $storeDir . '/inquiries.json';      // 기업 전용 문의
+
+function readList(string $file): array {
+    if (!is_file($file)) return [];
+    $d = json_decode((string)@file_get_contents($file), true);
+    return is_array($d) ? $d : [];
+}
+function writeList(string $file, array $list): bool {
+    $json = json_encode(array_values($list), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    return $json !== false && writeAtomic($file, $json . "\n");
+}
+/* 외부 접수: 같은 IP에서 1시간에 20건까지 */
+function tooMany(array $list, string $ipHash): bool {
+    $since = time() - 3600; $n = 0;
+    foreach ($list as $r) { if (($r['ipHash'] ?? '') === $ipHash && strtotime($r['receivedAt'] ?? '1970-01-01') >= $since) $n++; }
+    return $n >= 20;
+}
+function cleanStr($v, int $max = 300): string { return mb_substr(trim(preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/u', '', (string)$v)), 0, $max); }
 
 function out(array $a): void { echo json_encode($a, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); exit; }
 function fail(string $err, string $msg = ''): void { out(['ok' => false, 'error' => $err, 'message' => $msg]); }
@@ -110,6 +130,77 @@ switch ($action) {
         $nw = (string)($b['password'] ?? '');
         if (strlen($nw) < 8) fail('short', '8자 이상이어야 합니다.');
         if (!saveAuth($authFile, $nw)) fail('write');
+        out(['ok' => true]);
+
+    /* ---------- 고객 접수 (로그인 불필요) ---------- */
+    case 'book':
+    case 'inquiry':
+        if ($method !== 'POST') fail('bad_request');
+        $isBook = ($action === 'book');
+        $file = $isBook ? $bookFile : $inqFile;
+        $raw = file_get_contents('php://input');
+        if ($raw === false || strlen($raw) > 40 * 1024) fail('too_large');
+        $b = json_decode($raw, true);
+        $rec = is_array($b) ? ($b[$isBook ? 'booking' : 'inquiry'] ?? null) : null;
+        if (!is_array($rec)) fail('bad_record');
+        $ipHash = substr(hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '') . '|ssw'), 0, 16);
+        if (!is_dir($storeDir) && !@mkdir($storeDir, 0755, true)) fail('write', 'admin/store 폴더를 만들 수 없습니다.');
+        if (!is_file($storeDir . '/.htaccess')) @file_put_contents($storeDir . '/.htaccess', "Require all denied\n<IfModule !mod_authz_core.c>\nOrder allow,deny\nDeny from all\n</IfModule>\n");
+        $fp = fopen($file . '.lock', 'c'); if ($fp) flock($fp, LOCK_EX);
+        $list = readList($file);
+        if (tooMany($list, $ipHash)) { if ($fp) { flock($fp, LOCK_UN); fclose($fp); } fail('rate_limited', '접수가 너무 잦습니다. 잠시 후 다시 시도해 주세요.'); }
+        $id = cleanStr($rec['id'] ?? '', 20); if ($id === '') $id = ($isBook ? 'R' : 'B') . strtoupper(base_convert((string)time(), 10, 36));
+        foreach ($list as $r) { if (($r['id'] ?? '') === $id) { $id .= '-' . substr(bin2hex(random_bytes(2)), 0, 3); break; } }
+        $rec['id'] = $id;
+        $rec['receivedAt'] = gmdate('c');
+        $rec['ipHash'] = $ipHash;
+        $rec['status'] = $isBook ? '신규' : '신규';
+        $rec['ua'] = cleanStr($_SERVER['HTTP_USER_AGENT'] ?? '', 120);
+        if ($isBook) {
+            $c = is_array($rec['customer'] ?? null) ? $rec['customer'] : [];
+            foreach (['name','phone','addr','addr2','date','slot','memo'] as $k) $c[$k] = cleanStr($c[$k] ?? '', $k === 'memo' ? 500 : 120);
+            if ($c['name'] === '' || $c['phone'] === '') fail('bad_record', '이름과 연락처가 필요합니다.');
+            $rec['customer'] = $c;
+            foreach (['svcLabel','summary','site'] as $k) $rec[$k] = cleanStr($rec[$k] ?? '', 300);
+        } else {
+            foreach (['company','name','phone','email','kind','state','addr','date','brand','memo','via','text'] as $k) if (isset($rec[$k])) $rec[$k] = cleanStr($rec[$k], $k === 'text' ? 4000 : 300);
+            if (($rec['company'] ?? '') === '' || ($rec['phone'] ?? '') === '') fail('bad_record', '회사와 연락처가 필요합니다.');
+        }
+        array_unshift($list, $rec);
+        if (count($list) > 2000) $list = array_slice($list, 0, 2000);
+        $ok = writeList($file, $list);
+        if ($fp) { flock($fp, LOCK_UN); fclose($fp); }
+        if (!$ok) fail('write', '접수 파일을 쓸 수 없습니다. FTP에서 admin 폴더 권한을 707로 바꿔 주세요.');
+        out(['ok' => true, 'id' => $id, 'receivedAt' => $rec['receivedAt']]);
+
+    /* ---------- 관리자: 접수 목록 ---------- */
+    case 'inbox':
+        if (!$logged) fail('auth');
+        $strip = function (array $l): array { foreach ($l as &$r) { unset($r['ipHash'], $r['ua']); } return $l; };
+        out(['ok' => true, 'bookings' => $strip(readList($bookFile)), 'inquiries' => $strip(readList($inqFile)), 'now' => gmdate('c')]);
+
+    case 'inbox_update':
+        if ($method !== 'POST') fail('bad_request');
+        if (!$logged) fail('auth');
+        $b = body();
+        $type = ($b['type'] ?? '') === 'inquiry' ? 'inquiry' : 'booking';
+        $file = $type === 'booking' ? $bookFile : $inqFile;
+        $id = cleanStr($b['id'] ?? '', 40); if ($id === '') fail('bad_request');
+        $fp = fopen($file . '.lock', 'c'); if ($fp) flock($fp, LOCK_EX);
+        $list = readList($file); $found = false;
+        foreach ($list as $i => $r) {
+            if (($r['id'] ?? '') !== $id) continue;
+            $found = true;
+            if (!empty($b['delete'])) { unset($list[$i]); break; }
+            if (isset($b['status'])) $list[$i]['status'] = cleanStr($b['status'], 40);
+            if (isset($b['note'])) $list[$i]['adminNote'] = cleanStr($b['note'], 500);
+            $list[$i]['updatedAt'] = gmdate('c');
+            break;
+        }
+        $ok = $found ? writeList($file, $list) : false;
+        if ($fp) { flock($fp, LOCK_UN); fclose($fp); }
+        if (!$found) fail('not_found');
+        if (!$ok) fail('write');
         out(['ok' => true]);
 
     case 'load':

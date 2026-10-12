@@ -158,72 +158,92 @@ const BRANDS_DEFAULT = [
   id: "lg",
   name: "LG",
   line: "휘센",
-  note: "2026-10-06 단가표 기준. 시스템은 LG 공급가격표 도매가 (단배관 RNQ·RPUQ, 다배관 MNV·MUV)",
+  note: "벽걸이·스탠드·2in1은 2026-10 LG B2B 공급단가(배관 제외가), 시스템은 LG 공급가격표 도매가 (단배관 RNQ·RPUQ, 다배관 MNV·MUV)",
   models: {
    wall: {
     6: [
      "휘센 벽걸이 6평 SQ06EZ1WBS",
-     429000
-    ],
-    7: [
-     "휘센 벽걸이 7평 SQ07GS7EAS",
-     700000
+     380000,
+     380000
     ],
     9: [
      "휘센 벽걸이 9평 SQ09GJ1WAS",
-     800000
+     760000,
+     760000
     ],
     10: [
-     "휘센 벽걸이 10평 SQ10GJ1WAS",
-     820000
+     "휘센 벽걸이 10평 SQ10GJ1WAS (신모델)",
+     789000,
+     789000
     ],
     11: [
-     "휘센 벽걸이 11평 SQ11GK1WES",
-     1090000
+     "휘센 벽걸이 11평 SQ11GK1WES (1등급)",
+     1047000,
+     1047000
     ],
     13: [
      "휘센 벽걸이 13평 SQ13GK1WAS",
-     1140000
+     1102000,
+     1102000
     ],
     16: [
      "휘센 벽걸이 16평 SQ16GK1WAS",
-     1290000
+     1246000,
+     1246000
     ]
    },
    stand: {
     18: [
-     "휘센 위너 스탠드 18평 FQ18GW1HR1",
-     1350000
+     "휘센 위너 스탠드 18평 FQ18GW1HN1",
+     1324000,
+     1324000
     ],
     23: [
-     "휘센 중대형 스탠드 23평 PW0831R2L",
-     1500000
+     "휘센 상업용 스탠드 23평 PQ0900T2SF (냉방 전용)",
+     1270000,
+     1270000
     ],
     31: [
-     "휘센 중대형 스탠드 31평 PW1101T2L",
-     1950000
+     "휘센 상업용 스탠드 31평 PQ1100T2FR (냉방 전용)",
+     1550000,
+     1550000
     ],
     36: [
-     "휘센 중대형 스탠드 36평 PW1301T2L",
-     2110000
+     "휘센 중대형 스탠드 36평 PW1301T2L (냉난방)",
+     1974000,
+     1974000
     ],
     40: [
-     "휘센 중대형 스탠드 40평 PW1451T9L",
-     2080000
+     "휘센 상업용 스탠드 40평 PQ1450T2FR (냉방 전용)",
+     2016000,
+     2016000
     ],
-    58: [
-     "휘센 대형 58평 PW2300F9SF",
-     4530000
+    63: [
+     "휘센 상업용 스탠드 63평 PQ2300F9SF (삼상·배관 없음)",
+     4180000,
+     4180000
     ],
     80: [
-     "휘센 대형 80평 PW2900F9SF",
-     4960000
+     "휘센 상업용 스탠드 80평 PQ2900F9SF (삼상·배관 없음)",
+     4800000,
+     4800000
+    ],
+    125: [
+     "휘센 상업용 스탠드 125평 PQ4500N9SF (삼상)",
+     8050000,
+     8050000
+    ],
+    160: [
+     "휘센 상업용 스탠드 160평 PQ5800N9SF (삼상)",
+     9040000,
+     9040000
     ]
    },
    two: {
     18: [
-     "휘센 위너 투인원 18평+벽걸이 FQ18GW1HR1",
-     1550000
+     "휘센 위너 투인원 18평+6평 FQ18GW1HN2",
+     1537000,
+     1537000
     ]
    },
    ceil: {
@@ -736,6 +756,13 @@ function applySite(){
   if(SITE.brand.name && SITE.brand.name!=='속시원') document.title=document.title.replace('속시원', SITE.brand.name);
 }
 
+/* 서버 접수: 카페24(PHP)에서는 admin/api.php 가 admin/store 에 저장해 관리자 페이지에 바로 뜸. PHP가 없는 곳(GitHub Pages)에서는 조용히 실패하고 로컬 저장만 남음 */
+function sendToServer(action, data){
+  const ctrl = typeof AbortController!=='undefined' ? new AbortController() : null; if(ctrl) setTimeout(()=>ctrl.abort(), 8000);
+  return fetch('admin/api.php?action='+action, {method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json','X-Requested-With':'SSW'}, body:JSON.stringify(data), signal: ctrl?ctrl.signal:undefined})
+    .then(r=>r.text()).then(t=>{ try{ return JSON.parse(t); }catch(e){ return null; } });
+}
+
 /* ---------- 예약 접수 (모든 견적 페이지 공통) ----------
    Booking.mount({ el: 예약 섹션 요소, getQuote: () => ({svc, summary, items, labor, total, product, models, addr, memo, site}) }) */
 const Booking = {
@@ -773,7 +800,7 @@ const Booking = {
     const name=$('b-name').value.trim(), phone=$('b-phone').value.trim(), addr=$('b-addr').value.trim(), date=$('b-date').value;
     if(!name) problems.push('이름');
     if(!/^0\d{1,2}-?\d{3,4}-?\d{4}$/.test(phone)) problems.push('연락처 형식');
-    if(addr.split(/\s+/).length<3) problems.push('방문 주소 (시·구·동까지)');
+    if(addr.replace(/\s+/g,'').length<4) problems.push('방문 주소');
     if(!date) problems.push('희망 일자');
     if(!$('b-consent').checked) problems.push('개인정보 제3자 제공 동의');
     if(problems.length){ err.hidden=false; err.textContent='확인이 필요합니다: '+problems.join(', '); return; }
@@ -787,13 +814,14 @@ const Booking = {
       status:'알림 발송'
     };
     const list=load('ssw_bookings'); list.unshift(b); save('ssw_bookings',list);
-    this.showDone(b);
+    const btn=document.querySelector('#book-form button[type=submit]'); if(btn){ btn.disabled=true; btn.textContent='접수 중…'; }
+    sendToServer('book', {booking:b}).then(r=>{ if(r&&r.ok){ b.server=true; b.id=r.id||b.id; } }).catch(()=>{}).finally(()=>{ this.showDone(b); });
   },
   showDone(b){
     $('book-form').hidden=true; const d=$('book-done'); d.hidden=false;
     const row=(k,v)=>'<div class="row"><span>'+k+'</span><span>'+v+'</span></div>';
     d.innerHTML=
-      '<div class="notice">예약이 접수되었습니다. 접수번호 '+b.id+' · 배정되면 '+esc(b.customer.phone)+'로 안내드립니다.</div>'+
+      '<div class="notice">예약이 접수되었습니다. 접수번호 '+esc(b.id)+' · '+(b.server?'담당자가 확인 후 ':'배정되면 ')+esc(b.customer.phone)+'로 안내드립니다.</div>'+
       '<div><span class="eyebrow">기사에게 발송되는 알림 미리보기</span><p class="small muted">실제 서비스에서는 카카오 알림톡 또는 문자로 발송됩니다. 상세 주소와 연락처는 수락 후에만 공개됩니다.</p></div>'+
       '<div class="alarm"><div class="hd"><span>[속시원] 새 예약 '+b.id+'</span><span class="tag acc" id="alarm-status">'+esc(b.status)+'</span></div><div class="bd">'+
         row('방문 지역',esc(regionOnly(b.customer.addr)))+
@@ -815,7 +843,7 @@ const Booking = {
   }
 };
 
-window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, linesHtml, Booking, LOGO_SVG};
+window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, sendToServer, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, linesHtml, Booking, LOGO_SVG};
 document.addEventListener('DOMContentLoaded', mountChrome);
 /* 시작 화면은 각 페이지 <head>의 스크립트와 css(html.splash-on)가 처리. 화면을 누르면 바로 닫습니다 */
 document.addEventListener('click', ()=>document.documentElement.classList.remove('splash-on'), {once:true});

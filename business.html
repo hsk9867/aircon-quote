@@ -180,7 +180,9 @@ function validate(){
 }
 function record(f, via){
   const rec=Object.assign({id:'B'+Date.now().toString(36).toUpperCase().slice(-6), at:new Date().toISOString(), via, status:'회신 대기', text}, f);
-  const list=load('ssw_biz'); list.unshift(rec); save('ssw_biz',list); return rec;
+  const list=load('ssw_biz'); list.unshift(rec); save('ssw_biz',list);
+  try{ window.SSW.sendToServer('inquiry', {inquiry:rec}).catch(()=>{}); }catch(e){}
+  return rec;
 }
 async function copyText(){
   try{ await navigator.clipboard.writeText(text); return true; }

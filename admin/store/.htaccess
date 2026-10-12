@@ -1,0 +1,6 @@
+# 접수 파일(예약·기업 문의)은 PHP로만 읽습니다. 외부에서 직접 열 수 없게 막습니다.
+Require all denied
+<IfModule !mod_authz_core.c>
+Order allow,deny
+Deny from all
+</IfModule>

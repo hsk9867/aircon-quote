@@ -43,7 +43,7 @@ function Upload($localPath, $rel) {
 # 올릴 파일: 페이지, css, js, 이미지, 관리자 API. data\config.js 는 서버에 없을 때만 (관리자 페이지에서 저장한 설정을 지우지 않기 위해)
 $files = @(Get-ChildItem -Path $root -Filter *.html -File | ForEach-Object { $_.Name })
 $files += Get-ChildItem -Path (Join-Path $root 'css'), (Join-Path $root 'js') -File | ForEach-Object { $_.FullName.Substring($root.Length + 1).Replace('\', '/') }
-$files += Get-ChildItem -Path (Join-Path $root 'img') -File | ForEach-Object { 'img/' + $_.Name }
+$files += Get-ChildItem -Path (Join-Path $root 'img') -File -Recurse | Where-Object { $_.Extension -ne '.txt' } | ForEach-Object { $_.FullName.Substring($root.Length + 1).Replace('\', '/') }  # img 하위 폴더(products 등)까지
 $files += 'admin/api.php', 'admin/.htaccess', 'admin/store/.htaccess'
 
 Write-Host "카페24 업로드: $base  ($($files.Count)개 파일)"

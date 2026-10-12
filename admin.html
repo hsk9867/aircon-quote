@@ -20,6 +20,10 @@
 .f{display:grid;gap:5px}
 .f>label{font-size:.82rem;font-weight:600;color:var(--muted)}
 .f input,.f textarea,.f select{font-size:.92rem}
+/* 입력 칸이 잘 보이도록 테두리를 두껍고 진하게 */
+.panel input[type=text],.panel input[type=number],.panel input[type=tel],.panel textarea,.panel select,table.edit input{border:2px solid #7FA9D1;background:#fff}
+.panel input:focus-visible,.panel textarea:focus-visible,.panel select:focus-visible,table.edit input:focus-visible{border-color:var(--accent);outline:2px solid var(--accent-soft)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .panel input[type=text],:root:not([data-theme="light"]) .panel input[type=number],:root:not([data-theme="light"]) .panel input[type=tel],:root:not([data-theme="light"]) .panel textarea,:root:not([data-theme="light"]) .panel select,:root:not([data-theme="light"]) table.edit input{background:var(--surface);border-color:#4E7FB0}}
 .f textarea{min-height:64px}
 .rg{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center}
 .rg span{color:var(--muted)}

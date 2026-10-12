@@ -292,7 +292,7 @@ html.splash-on{overflow:hidden}
 @keyframes pslide{to{transform:translateX(-50%)}}
 .pcard{width:300px;flex-shrink:0;border-right:1px solid var(--line);background:var(--bg);display:grid;grid-template-columns:132px 1fr;align-items:center;text-decoration:none;color:var(--fg);transition:background .2s}
 .pcard:hover{background:var(--surface)}
-.pcard .ill{position:relative;aspect-ratio:1/1;align-self:stretch;background:var(--surface-2);display:grid;place-items:center;overflow:hidden;border-right:1px solid var(--line-soft)}
+.pcard .ill{position:relative;aspect-ratio:1/1;align-self:stretch;background:#fff;display:grid;place-items:center;overflow:hidden;border-right:1px solid var(--line-soft)}
 .pcard .ill svg{width:72%;height:72%;color:var(--fg)}
 .pcard .ill img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .pcard .ill .bl{position:absolute;left:8px;top:8px}

@@ -11,7 +11,7 @@
 <meta name="description" content="속시원 · 에어컨 설치, 청소, 냉매 충전, 이전 설치 무료 견적. 조건만 고르면 금액이 바로 나옵니다.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800;900&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261014e">
+<link rel="stylesheet" href="css/style.css?v=20261014f">
 </head>
 <body>
 <header class="top"></header>
@@ -120,7 +120,7 @@
 </main>
 <footer></footer>
 <script src="data/config.js?v=20261014a"></script>
-<script src="js/common.js?v=20261014c"></script>
+<script src="js/common.js?v=20261014f"></script>
 <script>
 (function(){
   const S=window.SSW, SITE=S.SITE, e=S.esc, c=SITE.contact;
@@ -130,7 +130,10 @@
   document.getElementById('contact').innerHTML='상담 전화 <b class="num">'+e(c.phone)+'</b> · 카카오톡 채널 <b>'+e(c.kakaoId)+'</b>'+(c.note?' ('+e(c.note)+')':'');
   document.getElementById('contact-link').addEventListener('click', ()=>{ document.getElementById('contact').hidden=false; });
 
-  /* 브랜드별 제품 슬라이드. 그림은 기종별 일러스트이고, img/products/{브랜드id}-{기종}.jpg 파일이 있으면 그 사진이 대신 보입니다 */
+  /* 브랜드별 제품 슬라이드. img/products/ 에 사진이 있는 브랜드·기종만 카드로 만듭니다 (PHOTOS 목록에 파일명을 적어 주세요) */
+  const PHOTOS = {'samsung-wall':'samsung-wall.jpg','samsung-ceil1':'samsung-ceil1.jpg','samsung-ceil4':'samsung-ceil4.jpg','samsung-stand':'samsung-stand.jpg',
+    'lg-wall':'lg-wall.webp','lg-ceil1':'lg-ceil1.webp','lg-ceil4':'lg-ceil4.webp','lg-stand':'lg-stand.webp',
+    'carrier-wall':'carrier-wall.jpg','carrier-ceil4':'carrier-ceil4.jpg'};
   const ILL = {
     wall: '<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="14" y="26" width="92" height="34" rx="8" fill="var(--surface)"/><path d="M22 50h76"/><path d="M26 42h8M88 36h10"/><path d="M34 72c10 10 26 10 36 0M40 84c8 8 20 8 28 0M46 96c4 4 12 4 16 0" opacity=".55"/></svg>',
     ceil1: '<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 26h108"/><rect x="18" y="26" width="84" height="26" rx="4" fill="var(--surface)"/><path d="M26 44h68"/><path d="M30 36h6M84 34h8"/><path d="M38 66c10 8 34 8 44 0M44 80c8 6 24 6 32 0M50 94c4 3 16 3 20 0" opacity=".55"/></svg>',
@@ -148,8 +151,9 @@
   const find = (list, re) => { for(const o of list){ const n=names(o).find(x=>re.test(x)); if(n) return n; } return ''; };
   const cards = [];
   (S.BRANDS||[]).forEach(b=>{ TYPES.forEach(t=>{
+    const photo = PHOTOS[b.id+'-'+t.key]; if(!photo) return;   /* 사진 없는 브랜드·기종은 카드 없음 */
     const model = t.pick(b);
-    cards.push('<a class="pcard" href="'+t.href+'"><div class="ill">'+ILL[t.key]+'<span class="bl">'+S.brandLogo(b)+'</span><img src="img/products/'+e(b.id)+'-'+t.key+'.jpg" alt="" loading="lazy" onerror="this.remove()"></div>'+
+    cards.push('<a class="pcard" href="'+t.href+'"><div class="ill">'+ILL[t.key]+'<span class="bl">'+S.brandLogo(b)+'</span><img src="img/products/'+e(photo)+'" alt="'+e(b.name)+' '+t.ko+'" loading="lazy" onerror="this.closest(\'.pcard\').remove()"></div>'+
       '<div class="tx"><span class="ty">'+t.en+'</span><b>'+e(b.name)+' '+t.ko+'</b><span>'+(model?e(model):'모델은 상담 시 안내')+'</span></div></a>');
   }); });
   const track = document.getElementById('pslide-track');

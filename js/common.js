@@ -785,7 +785,7 @@ function mountChrome(){
     strip.innerHTML = '<div class="track">'+mq.repeat(4)+mq.repeat(4)+'</div>';
     top.insertAdjacentElement('beforebegin', strip);
     top.innerHTML = '<div class="in"><a class="logo" href="index.html"><img src="img/logo-word.png" alt="'+esc(SITE.brand.name)+'" width="862" height="302" decoding="async"></a>'+
-      '<nav class="nav" aria-label="바로가기">'+NAV.map(([h,l])=>'<a href="'+h+'"'+(h===here?' aria-current="page"':'')+'>'+l+'</a>').join('')+'</nav></div>';
+      '<nav class="nav" aria-label="바로가기">'+NAV.filter(([h])=>h!=='prices.html').map(([h,l])=>'<a href="'+h+'"'+(h===here?' aria-current="page"':'')+'>'+l+'</a>').join('')+'</nav></div>';
   }
   const foot = document.querySelector('footer');
   const c = SITE.contact;

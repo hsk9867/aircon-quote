@@ -201,8 +201,10 @@ footer .links a{text-decoration:none;color:var(--muted)} footer .links a:hover{c
 .home .brand .word{font-family:var(--display);font-size:1.9rem;font-weight:700;letter-spacing:-.03em;line-height:1}
 .home .brand .tag-line{color:var(--muted);max-width:26em;font-size:.86rem;line-height:1.45}
 .menu{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:10px}
-.menu a{display:grid;grid-template-rows:auto auto 1fr;gap:4px;padding:14px 12px 12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;text-decoration:none;color:var(--fg);box-shadow:var(--shadow);min-width:0;transition:border-color .15s,transform .15s}
+.menu a{display:grid;grid-template-rows:auto auto 1fr;gap:4px;padding:14px 12px 12px;background:var(--surface);border:2.5px solid #7FA9D1;border-radius:14px;text-decoration:none;color:var(--fg);box-shadow:var(--shadow);min-width:0;transition:border-color .15s,transform .15s}
 .menu a:hover{border-color:var(--accent);transform:translateY(-1px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .menu a{border-color:#4E7FB0}}
+:root[data-theme="dark"] .menu a{border-color:#4E7FB0}
 .menu a svg{width:26px;height:26px;color:var(--accent);margin-bottom:4px}
 .menu a b{font-family:var(--display);font-size:.98rem;line-height:1.25;text-wrap:balance}
 .menu a span{font-size:.76rem;line-height:1.4;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}

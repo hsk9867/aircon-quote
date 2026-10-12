@@ -222,14 +222,12 @@ footer .copy em{font-style:normal;font-family:var(--display);letter-spacing:0}
 .hero-txt .eyebrow{margin-bottom:4px}
 .hero h1{font-size:clamp(2.1rem,5.2vw,3.9rem);font-weight:800;letter-spacing:-.035em;line-height:1.12}
 .hero .lead{font-size:clamp(.95rem,1.4vw,1.1rem);line-height:1.7;max-width:30em;color:var(--fg)}
-.hero-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.hero-cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.hero-cta .btn{font-size:1.15rem;padding:18px 32px;gap:12px}
+.hero-cta .btn svg{width:22px;height:22px}
+@media (min-width:860px){.hero-cta .btn{font-size:1.3rem;padding:22px 40px}}
 .hero-img{order:1;position:relative;overflow:hidden;aspect-ratio:4/3;border-bottom:1px solid var(--line)}
 .hero-img img{width:100%;height:100%;object-fit:cover;display:block}
-.spin{width:112px;height:112px;position:relative;margin-top:18px;color:var(--fg)}
-.spin svg.ring{width:100%;height:100%;animation:spin 16s linear infinite}
-.spin svg.ring text{font-family:var(--en);font-weight:800;font-size:11.5px;letter-spacing:.18em;fill:currentColor;text-transform:uppercase}
-.spin .c{position:absolute;inset:0;display:grid;place-items:center} .spin .c svg{width:30px;height:30px}
-@keyframes spin{to{transform:rotate(360deg)}}
 @media (min-width:860px){
   .hero{grid-template-columns:1fr 1fr;min-height:calc(100vh - 104px)}
   .hero-txt{order:1;border-right:1px solid var(--line)}

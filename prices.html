@@ -72,7 +72,7 @@ document.querySelector('#t-type tbody').innerHTML = [
 ].map(([l,r])=>row3(l,r)).join('');
 const C=RATES.ceil;
 document.querySelector('#t-sys tbody').innerHTML = [
-  ['천장형 실내기 설치 (1대)',C.indoor,''],['천장 점검구·타공 + 드레인 배관 (1대)',add(C.hatch,C.drain),'가정'],['시스템 실외기 1대 설치 (실내기 공용)',C.outdoor,'가정'],
+  ['천장형 실내기 설치 (1대)',C.indoor,''],['천장 점검구·타공 + 드레인 배관 (1대)',add(C.hatch,C.drain),'가정'],['시스템 실외기 1대 설치 (실내기 공용)',(C.outdoor&&C.outdoor[1])?C.outdoor:null,'실외기 가격에 포함'],
   ['천장형 분해 청소 (1대)',C.clean,'가정'],['거주 중 천장 작업 보양 (1대)',C.protect,'가정'],['천장·벽 부분 도배 (1대)',C.paper,'가정'],['냉매 추가 충전 (긴 배관 분)',C.gas,'가정']
 ].map(([l,r,s])=>row1(l,r,s)).join('');
 document.querySelector('#t-common tbody').innerHTML = [

@@ -194,6 +194,7 @@ switch ($action) {
             if (!empty($b['delete'])) { unset($list[$i]); break; }
             if (isset($b['status'])) $list[$i]['status'] = cleanStr($b['status'], 40);
             if (isset($b['note'])) $list[$i]['adminNote'] = cleanStr($b['note'], 500);
+            if (isset($b['tech'])) { $list[$i]['tech'] = cleanStr($b['tech'], 60); $list[$i]['notifiedAt'] = gmdate('c'); }
             $list[$i]['updatedAt'] = gmdate('c');
             break;
         }
@@ -202,6 +203,30 @@ switch ($action) {
         if (!$found) fail('not_found');
         if (!$ok) fail('write');
         out(['ok' => true]);
+
+    /* ---------- 관리자: 제휴 기사 목록 ---------- */
+    case 'techs':
+        if (!$logged) fail('auth');
+        out(['ok' => true, 'techs' => readList($storeDir . '/techs.json')]);
+
+    case 'techs_save':
+        if ($method !== 'POST') fail('bad_request');
+        if (!$logged) fail('auth');
+        $in = body()['techs'] ?? null;
+        if (!is_array($in)) fail('bad_request');
+        $clean = [];
+        foreach (array_slice($in, 0, 200) as $t) {
+            if (!is_array($t)) continue;
+            $row = [];
+            foreach (['id','name','phone','area','skills','memo'] as $k) $row[$k] = cleanStr($t[$k] ?? '', $k === 'memo' ? 300 : 80);
+            if ($row['name'] === '' && $row['phone'] === '') continue;
+            if ($row['id'] === '') $row['id'] = 'T' . substr(bin2hex(random_bytes(3)), 0, 6);
+            $row['active'] = !empty($t['active']) || !isset($t['active']);
+            $clean[] = $row;
+        }
+        if (!is_dir($storeDir) && !@mkdir($storeDir, 0755, true)) fail('write');
+        if (!writeList($storeDir . '/techs.json', $clean)) fail('write', 'admin/store 에 쓸 수 없습니다.');
+        out(['ok' => true, 'techs' => $clean]);
 
     case 'load':
         if (!$logged) fail('auth');

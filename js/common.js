@@ -821,25 +821,17 @@ const Booking = {
     $('book-form').hidden=true; const d=$('book-done'); d.hidden=false;
     const row=(k,v)=>'<div class="row"><span>'+k+'</span><span>'+v+'</span></div>';
     d.innerHTML=
-      '<div class="notice">예약이 접수되었습니다. 접수번호 '+esc(b.id)+' · '+(b.server?'담당자가 확인 후 ':'배정되면 ')+esc(b.customer.phone)+'로 안내드립니다.</div>'+
-      '<div><span class="eyebrow">기사에게 발송되는 알림 미리보기</span><p class="small muted">실제 서비스에서는 카카오 알림톡 또는 문자로 발송됩니다. 상세 주소와 연락처는 수락 후에만 공개됩니다.</p></div>'+
-      '<div class="alarm"><div class="hd"><span>[속시원] 새 예약 '+b.id+'</span><span class="tag acc" id="alarm-status">'+esc(b.status)+'</span></div><div class="bd">'+
-        row('방문 지역',esc(regionOnly(b.customer.addr)))+
+      '<div class="notice">예약이 접수되었습니다. 접수번호 '+esc(b.id)+' · 담당자가 확인한 뒤 '+esc(b.customer.phone)+'로 연락드립니다.</div>'+
+      '<div class="alarm"><div class="hd"><span>접수 내용</span><span class="tag acc">접수 완료</span></div><div class="bd">'+
         row('작업',esc(b.svcLabel)+' · '+esc(b.summary))+
-        (b.models.length?row('제품',esc(b.models.join(', '))+' (회사 창고 수령)'):'')+
+        (b.models.length?row('제품',esc(b.models.join(', '))):'')+
+        row('방문 주소',esc(b.customer.addr)+' '+esc(b.customer.addr2))+
         row('희망 일자',fmtDate(b.customer.date)+' '+esc(b.customer.slot))+
-        row('작업 내용',b.items.map(i=>esc(i.label)).join(', '))+
-        row('현장 정보',esc([b.site,b.customer.memo].filter(Boolean).join(' · ')||'고객 메모 없음'))+
-        row('정산 금액','<b class="num">'+rangeText(b.payout[0],b.payout[1])+'</b> <span class="muted small">(시공비에서 수수료 5% 차감)</span>')+
-        row('고객 연락처','<span class="muted">수락 후 공개</span>')+row('상세 주소','<span class="muted">수락 후 공개</span>')+
-      '</div><div class="ft"><button class="btn primary sm" type="button" data-act="accept">수락</button><button class="btn sm" type="button" data-act="decline">거절</button><span class="small muted" style="align-self:center">2시간 안에 응답이 없으면 다음 기사에게 전달</span></div></div>'+
+        row('예상 금액','<b class="num">'+rangeText(b.total[0],b.total[1])+'</b>')+
+        (b.customer.memo?row('요청 사항',esc(b.customer.memo)):'')+
+      '</div></div>'+
+      '<p class="small muted">견적에 없던 항목은 현장에서 사유와 금액을 먼저 안내하고 동의 후에만 진행합니다.</p>'+
       '<a class="btn block" href="index.html">처음으로</a>';
-    d.querySelector('[data-act=accept]').addEventListener('click',()=>Booking.setStatus(b.id,'기사 수락 · 고객 배정 안내 발송'));
-    d.querySelector('[data-act=decline]').addEventListener('click',()=>Booking.setStatus(b.id,'거절 · 다음 기사에게 전달'));
-  },
-  setStatus(id,status){
-    const list=load('ssw_bookings'); const b=list.find(x=>x.id===id); if(b){ b.status=status; save('ssw_bookings',list); }
-    const el=$('alarm-status'); if(el){ el.textContent=status; el.className='tag '+(status.startsWith('거절')?'warn':'ok'); }
   }
 };
 

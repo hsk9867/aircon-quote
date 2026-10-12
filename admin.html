@@ -43,6 +43,11 @@ table.edit input[type=text]{min-width:120px}
 .toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);z-index:60;background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.86rem;font-weight:600;box-shadow:var(--shadow);max-width:90vw}
 .toast.bad{background:var(--warn);color:#fff}
 .gate{max-width:420px}
+.send-dlg{border:1px solid var(--line);border-radius:14px;padding:0;width:min(560px,94vw);background:var(--surface);color:var(--fg)}
+.send-dlg::backdrop{background:rgba(15,42,68,.45)}
+.send-dlg .sd-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
+.send-dlg .panel{padding:14px 16px;gap:10px}
+.send-dlg textarea{font-size:.88rem}
 .kv{font-size:.82rem;color:var(--muted)}
 .badge{font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink)}
 .badge.local{background:var(--warn-soft);color:var(--warn)}
@@ -96,6 +101,7 @@ table.edit input[type=text]{min-width:120px}
 </section>
 
 <p class="toast" id="toast" hidden></p>
+<dialog id="send-dlg" class="send-dlg"><div class="sd-head"><b>기사에게 보내기</b><button class="x" type="button" id="send-close" aria-label="닫기">✕</button></div><div id="send-body" class="panel"></div></dialog>
 
 </main>
 <footer></footer>
@@ -149,7 +155,17 @@ async function openServer(){
     openEditor();
   }catch(e){ toast('설정을 불러오지 못했습니다: '+e.message, true); }
 }
-function openEditor(){ $('gate').hidden=true; $('editor').hidden=false; renderTabs(); render(); startInboxPolling(); }
+function openEditor(){ $('gate').hidden=true; $('editor').hidden=false; renderTabs(); render(); startInboxPolling(); loadTechs(); }
+/* 보내기 창 */
+document.addEventListener('click', async e=>{
+  const t=e.target.closest('[data-send]'); if(!t||!sendCtx) return;
+  const tech=techs.find(x=>x.id===$('send-tech').value)||techs[0]; const text=$('send-text').value;
+  if(t.dataset.send==='kakao'){ if(navigator.share){ try{ await navigator.share({text}); await markSent(tech); $('send-dlg').close(); }catch(err){} } else { try{ await navigator.clipboard.writeText(text); }catch(err){} toast('문구를 복사했습니다. 카카오톡 PC 대화창에 붙여 넣으세요.'); await markSent(tech); } return; }
+  if(t.dataset.send==='copy'){ try{ await navigator.clipboard.writeText(text); toast('복사했습니다.'); }catch(err){ toast('복사 실패. 문구를 드래그해서 복사하세요.',true); } return; }
+  if(t.dataset.send==='mark'){ await markSent(tech); $('send-dlg').close(); return; }
+});
+document.addEventListener('change', e=>{ if(e.target.id==='send-tech'&&sendCtx){ sendCtx.techId=e.target.value; renderSend(); } });
+document.addEventListener('click', e=>{ if(e.target.id==='send-close'){ $('send-dlg').close(); } });
 
 /* ---------- 로그인/설정 ---------- */
 $('setup').addEventListener('submit', async e=>{ e.preventDefault(); const pw=$('su-pw').value, pw2=$('su-pw2').value, err=$('su-err');
@@ -164,7 +180,7 @@ $('act-pw').addEventListener('click', async ()=>{ const cur=prompt('현재 비�
   try{ const r=await api('password',{current:cur,password:nw}); toast(r.ok?'비밀번호를 바꿨습니다.':(r.error==='wrong'?'현재 비밀번호가 틀립니다.':'실패: '+r.error), !r.ok); }catch(e){ toast('실패: '+e.message,true); } });
 
 /* ---------- 탭 ---------- */
-const TABS=[['basic','기본 정보'],['home','첫 화면'],['pages','페이지 문구'],['guide','약속·절차·FAQ'],['rates','단가'],['brands','브랜드·제품'],['rent','렌탈'],['inbox','접수 내역']];
+const TABS=[['basic','기본 정보'],['home','첫 화면'],['pages','페이지 문구'],['guide','약속·절차·FAQ'],['rates','단가'],['brands','브랜드·제품'],['rent','렌탈'],['techs','제휴 기사'],['inbox','접수 내역']];
 function renderTabs(){ $('tabs').innerHTML=TABS.map(([k,l])=>'<button type="button" role="tab" data-tab="'+k+'" aria-selected="'+(k===tab)+'">'+l+(k==='inbox'&&lastNewCount?' <span class="badge" style="background:var(--warn);color:#fff">'+lastNewCount+'</span>':'')+'</button>').join(''); }
 $('tabs').addEventListener('click', e=>{ const b=e.target.closest('[data-tab]'); if(!b) return; tab=b.dataset.tab; try{ history.replaceState(null,'','#'+tab); }catch(e){} renderTabs(); render(); window.scrollTo({top:0}); });
 
@@ -232,10 +248,52 @@ function render(){
     h+=card('월 부가 항목 (원/월)', '<div class="g3">'+fRange('rent.care.1','연 1회 청소 관리')+fRange('rent.care.2','연 2회 청소 관리')+fRange('rent.warranty','보증·보험')+'</div>'+'<div class="g3">'+fNum('rent.multiDiscount','2대 이상 할인율','0.05 = 5%')+'</div>');
     h+=card('설치 환경별 추가 설치비 (렌탈료에 분할)', '<div class="g3">'+fRange('rent.installExtra.apt','아파트·오피스텔')+fRange('rent.installExtra.house','주택·빌라')+fRange('rent.installExtra.biz','매장·사무실')+'</div>');
   }
+  if(tab==='techs') h+=renderTechs();
   if(tab==='inbox') h+= (mode==='server' ? renderInboxServer() : renderInbox());
   P.innerHTML=h;
 }
-const STATUS_BK=['신규','연락 완료','기사 배정','시공 완료','취소']; const STATUS_IQ=['신규','회신 완료','견적 발송','계약','취소'];
+/* ---------- 제휴 기사 ---------- */
+let techs=[]; let techsLoaded=false;
+async function loadTechs(){ if(mode==='server'){ try{ const r=await api('techs'); if(r.ok){ techs=r.techs||[]; } }catch(e){} } else { try{ techs=JSON.parse(localStorage.getItem('ssw_techs')||'[]'); }catch(e){ techs=[]; } } techsLoaded=true; if(tab==='techs') render(); }
+async function saveTechs(){ techs=techs.filter(t=>(t.name||t.phone)); if(mode==='server'){ try{ const r=await api('techs_save',{techs}); if(r.ok){ techs=r.techs; toast('기사 목록을 저장했습니다.'); } else toast('저장 실패: '+r.error,true); }catch(e){ toast('저장 실패: '+e.message,true); } } else { try{ localStorage.setItem('ssw_techs',JSON.stringify(techs)); toast('이 브라우저에 저장했습니다.'); }catch(e){} } render(); }
+function renderTechs(){
+  const rows = techs.map((t,i)=>'<div class="item"><div class="ih"><span>'+(i+1)+'. '+esc(t.name||'이름 없음')+'</span><span><label class="chip" style="padding:4px 10px;font-size:.8rem"><input type="checkbox" data-tp="'+i+'.active"'+(t.active!==false?' checked':'')+'>활동 중</label> <button class="x" type="button" data-tech-del="'+i+'" title="삭제">✕</button></span></div>'+
+    '<div class="g3"><div class="f"><label>이름</label><input type="text" data-tp="'+i+'.name" value="'+esc(t.name||'')+'"></div><div class="f"><label>휴대폰</label><input type="tel" data-tp="'+i+'.phone" value="'+esc(t.phone||'')+'" placeholder="010-0000-0000"></div><div class="f"><label>담당 지역</label><input type="text" data-tp="'+i+'.area" value="'+esc(t.area||'')+'" placeholder="세종, 청주 서원구"></div></div>'+
+    '<div class="g2"><div class="f"><label>담당 작업</label><input type="text" data-tp="'+i+'.skills" value="'+esc(t.skills||'')+'" placeholder="설치, 시스템, 청소, 이전"></div><div class="f"><label>메모</label><input type="text" data-tp="'+i+'.memo" value="'+esc(t.memo||'')+'" placeholder="보험 가입, 사다리차 보유 등"></div></div></div>').join('');
+  return card('제휴 기사 목록 ('+techs.length+'명)', (techsLoaded?(rows||'<div class="empty">등록된 기사가 없습니다. 아래에서 추가하세요.</div>'):'<div class="empty">불러오는 중…</div>')+
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"><button class="btn sm" type="button" data-act="tech-add">+ 기사 추가</button><button class="btn primary sm" type="button" data-act="tech-save">기사 목록 저장</button></div>',
+    '접수 내역에서 "기사에게 보내기"를 누르면 이 목록에서 골라 알림 문구를 카카오톡·문자로 보냅니다. 고객 연락처와 상세 주소는 문구에 들어가지 않습니다.');
+}
+/* ---------- 기사 알림 문구 ---------- */
+function techMessage(b, tech){
+  const c=b.customer||{}; const brand=(window.SSW.SITE&&window.SSW.SITE.brand&&window.SSW.SITE.brand.name)||'속시원';
+  const lines=['['+brand+'] 새 예약 '+(b.id||''), '방문 지역: '+(window.SSW.regionOnly(c.addr||'')||'-'), '작업: '+(b.svcLabel||'')+' · '+(b.summary||'')];
+  if(b.models&&b.models.length) lines.push('제품: '+b.models.join(', ')+' (회사 창고 수령)');
+  lines.push('희망 일자: '+fmtDate(c.date)+' '+(c.slot||''));
+  if(b.items&&b.items.length) lines.push('작업 내용: '+b.items.map(i=>i.label).join(', '));
+  if(b.site||c.memo) lines.push('현장 정보: '+[b.site,c.memo].filter(Boolean).join(' · '));
+  if(b.payout) lines.push('정산 금액: '+rangeText(b.payout[0],b.payout[1])+' (시공비에서 수수료 차감)');
+  lines.push('', (tech&&tech.name?tech.name+' 기사님, ':'')+'가능하시면 "수락"이라고 답장 주세요. 수락 후 고객 연락처와 상세 주소를 보내 드립니다.');
+  return lines.join('\n');
+}
+let sendCtx=null;
+function openSend(b){
+  if(!techs.length){ toast('먼저 제휴 기사 탭에서 기사를 등록해 주세요.', true); return; }
+  sendCtx={b, techId:(techs.find(t=>t.active!==false)||techs[0]).id};
+  renderSend();
+  const dlg=$('send-dlg'); if(typeof dlg.showModal==='function'){ if(!dlg.open) dlg.showModal(); } else dlg.setAttribute('open','');
+}
+function renderSend(){
+  const {b}=sendCtx; const tech=techs.find(t=>t.id===sendCtx.techId)||techs[0]; sendCtx.techId=tech.id;
+  $('send-body').innerHTML=
+    '<div class="f"><label>받을 기사</label><select id="send-tech">'+techs.map(t=>'<option value="'+esc(t.id)+'"'+(t.id===tech.id?' selected':'')+(t.active===false?' disabled':'')+'>'+esc(t.name||'이름 없음')+' · '+esc(t.phone||'번호 없음')+(t.area?' · '+esc(t.area):'')+(t.active===false?' (휴무)':'')+'</option>').join('')+'</select></div>'+
+    '<div class="f"><label>보낼 문구 <span class="hint">필요하면 고쳐서 보내세요</span></label><textarea id="send-text" style="min-height:220px">'+esc(techMessage(b,tech))+'</textarea></div>'+
+    '<div class="g2"><button class="btn primary" type="button" data-send="kakao">카카오톡으로 보내기</button><a class="btn" id="send-sms" href="sms:'+esc((tech.phone||'').replace(/[^0-9+]/g,''))+'?body='+encodeURIComponent(techMessage(b,tech))+'">문자로 보내기</a></div>'+
+    '<div class="g2"><button class="btn sm" type="button" data-send="copy">문구만 복사</button><button class="btn sm" type="button" data-send="mark">보냈다고 기록만</button></div>'+
+    '<p class="kv">휴대폰에서는 "카카오톡으로 보내기"가 공유 창을 열어 받을 사람을 고릅니다. PC에서는 문구가 복사되니 카카오톡 PC 대화창에 붙여 넣으세요. 보내고 나면 접수 상태가 "기사 알림"으로 바뀝니다.</p>';
+}
+async function markSent(tech){ const {b}=sendCtx; try{ const r=await api('inbox_update',{type:'booking',id:b.id,status:'기사 알림',tech:(tech.name||'')+(tech.phone?' '+tech.phone:'')}); if(r.ok){ toast(tech.name+' 기사에게 보낸 것으로 기록했습니다.'); loadInbox(false); } }catch(e){} }
+const STATUS_BK=['신규','기사 알림','연락 완료','기사 배정','시공 완료','취소']; const STATUS_IQ=['신규','회신 완료','견적 발송','계약','취소'];
 let inbox={bookings:[],inquiries:[],loaded:false,err:''}; let inboxTimer=null; let lastNewCount=null;
 const fmtWhen = s => { try{ return new Date(s).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(e){ return s||''; } };
 const statusSel=(type,id,cur,opts)=>'<select class="st" data-type="'+type+'" data-id="'+esc(id)+'">'+opts.map(o=>'<option'+(o===cur?' selected':'')+'>'+o+'</option>').join('')+'</select>';
@@ -257,7 +315,7 @@ function renderInboxServer(){
     '<div><b>'+esc(c.name||'')+'</b> · <a href="tel:'+esc(c.phone||'')+'">'+esc(c.phone||'')+'</a> · '+esc(c.addr||'')+' '+esc(c.addr2||'')+'</div>'+
     '<div class="muted">희망 '+fmtDate(c.date)+' '+esc(c.slot||'')+(b.payout?' · 기사 정산 <span class="num">'+rangeText(b.payout[0],b.payout[1])+'</span>':'')+'</div>'+
     (b.site||c.memo?'<div class="muted small">'+esc([b.site,c.memo].filter(Boolean).join(' · '))+'</div>':'')+
-    '<div class="g2" style="margin-top:6px;align-items:center"><div>'+statusSel('booking',b.id,b.status||'신규',STATUS_BK)+'</div><div style="text-align:right"><button class="btn sm" type="button" data-del-rec="booking" data-id="'+esc(b.id)+'">삭제</button></div></div></div>'; }).join('')
+    (b.tech?'<div class="small" style="color:var(--accent-ink)">기사 알림: '+esc(b.tech)+(b.notifiedAt?' · '+fmtWhen(b.notifiedAt):'')+'</div>':'')+'<div class="g2" style="margin-top:6px;align-items:center"><div>'+statusSel('booking',b.id,b.status||'신규',STATUS_BK)+'</div><div style="text-align:right;display:flex;gap:6px;justify-content:flex-end"><button class="btn primary sm" type="button" data-send-rec="'+esc(b.id)+'">기사에게 보내기</button><button class="btn sm" type="button" data-del-rec="booking" data-id="'+esc(b.id)+'">삭제</button></div></div></div>'; }).join('')
     : '<div class="empty">'+(inbox.loaded?'아직 접수된 예약이 없습니다.':'불러오는 중…')+'</div>';
   const tcH = tc.length ? tc.map(t=>'<div class="bk"><div class="h"><span>'+esc(t.id)+' · '+esc(t.company||'')+' · '+esc(t.kind||'')+' <span class="muted small">'+fmtWhen(t.receivedAt||t.at)+'</span></span><span class="tag '+stTag(t.status)+'">'+esc(t.status||'신규')+'</span></div>'+
     '<div><b>'+esc(t.name||'')+'</b> · <a href="tel:'+esc(t.phone||'')+'">'+esc(t.phone||'')+'</a>'+(t.email?' · '+esc(t.email):'')+' · '+esc(t.addr||'주소 없음')+' · '+esc(t.via||'')+'</div>'+
@@ -285,7 +343,7 @@ function renderInbox(){
 
 /* ---------- 입력 반영 ---------- */
 $('panel').addEventListener('change', e=>{ const el=e.target; if(!el.classList.contains('st')) return; api('inbox_update',{type:el.dataset.type,id:el.dataset.id,status:el.value}).then(r=>{ if(r.ok){ toast('상태를 "'+el.value+'"(으)로 바꿨습니다.'); loadInbox(false); } else toast('저장 실패: '+r.error,true); }).catch(ex=>toast('저장 실패: '+ex.message,true)); });
-$('panel').addEventListener('input', e=>{ const el=e.target; const p=el.dataset.p; if(!p) return;
+$('panel').addEventListener('input', e=>{ const el=e.target; if(el.dataset.tp){ const [i,k]=el.dataset.tp.split('.'); if(techs[+i]) techs[+i][k]= el.type==='checkbox'?el.checked:el.value; return; } const p=el.dataset.p; if(!p) return;
   let v; if(el.dataset.b) v=el.checked; else if(el.dataset.n){ v=el.value===''?0:Number(el.value); if(Number.isNaN(v)) return; } else v=el.value;
   setPath(draft,p,v); keepLocal(); });
 $('panel').addEventListener('click', e=>{
@@ -293,6 +351,10 @@ $('panel').addEventListener('click', e=>{
   if(a.dataset.add){ const arr=getPath(draft,a.dataset.add); arr.push(JSON.parse(a.dataset.tpl)); keepLocal(); render(); return; }
   if(a.dataset.del){ const ks=a.dataset.del.split('.'); const idx=+ks.pop(); const arr=getPath(draft,ks.join('.')); if(!confirm('이 항목을 삭제할까요?')) return; arr.splice(idx,1); keepLocal(); render(); return; }
   if(a.dataset.act==='refresh'){ loadInbox(false); return; }
+  if(a.dataset.act==='tech-add'){ techs.push({id:'T'+Date.now().toString(36).slice(-6),name:'',phone:'',area:'',skills:'',memo:'',active:true}); render(); return; }
+  if(a.dataset.act==='tech-save'){ saveTechs(); return; }
+  if(a.dataset.techDel!==undefined){ if(!confirm('이 기사를 목록에서 뺄까요?')) return; techs.splice(+a.dataset.techDel,1); render(); return; }
+  if(a.dataset.sendRec){ const b=inbox.bookings.find(x=>x.id===a.dataset.sendRec); if(b) openSend(b); return; }
   if(a.dataset.delRec){ if(!confirm('이 접수를 삭제할까요? 되돌릴 수 없습니다.')) return; api('inbox_update',{type:a.dataset.delRec,id:a.dataset.id,delete:true}).then(r=>{ if(r.ok){ toast('삭제했습니다.'); loadInbox(false); } else toast('삭제 실패: '+r.error,true); }).catch(e=>toast('삭제 실패: '+e.message,true)); return; }
   if(a.dataset.act==='clear-bk'){ if(confirm('예약 목록을 비울까요?')){ save('ssw_bookings',[]); render(); } }
   if(a.dataset.act==='clear-tc'){ if(confirm('문의 목록을 비울까요?')){ save('ssw_biz',[]); render(); } }

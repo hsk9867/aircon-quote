@@ -64,24 +64,23 @@ $('faq').innerHTML=SITE.faq.map(f=>'<details><summary>'+esc(f.q)+'</summary><p>'
 const rt = r => (!r || (!r[0] && !r[1])) ? 'X' : r[0]===r[1] ? manWon(r[0]) : manWon(r[0])+'~'+manWon(r[1]); /* 0원 항목은 X (해당 없음) */
 const row3 = (l,r) => '<tr><td>'+l+'</td><td class="r num">'+rt(r.wall)+'</td><td class="r num">'+rt(r.stand)+'</td><td class="r num">'+rt(r.two)+'</td></tr>';
 const row1 = (l,r,s) => '<tr><td>'+l+'</td><td class="r num">'+(r?rt(r):esc(String(s||'').replace(/^(가정|기준)[^·]*·\s*/,'').replace(/\s*\((가정|기준)\)$/,'')))+'</td></tr>';
+const L = k => (SITE.priceLabels && SITE.priceLabels[k]) || k;
 document.querySelector('#t-type tbody').innerHTML = [
-  ['신규 설치 기본 (배관 별도)',RATES.base],['이전 설치 기본 (배관 별도)',RATES.moveBase],['기존 에어컨 철거',RATES.remove],
-  ['배관 (1m당)',RATES.pipePerM],['매립 배관 교체·연결',RATES.pipeReplace],['실외기 앵글',RATES.angle],
-  ['분해 청소 (1대)',RATES.clean],['송풍팬 완전 분해',RATES.fan],['냉매 충전 (수리·충전 방문)',RATES.gasFill],['냉매 보충 (설치 시 긴 배관 분)',RATES.gas],
-  ['부분 도배 마감',RATES.paper],['거주 중 가구 이동·보양',RATES.protect]
-].map(([l,r])=>row3(l,r)).join('');
+  ['base',RATES.base],['moveBase',RATES.moveBase],['remove',RATES.remove],['pipePerM',RATES.pipePerM],['pipeReplace',RATES.pipeReplace],['angle',RATES.angle],
+  ['clean',RATES.clean],['fan',RATES.fan],['gasFill',RATES.gasFill],['gas',RATES.gas],['paper',RATES.paper],['protect',RATES.protect]
+].map(([k,r])=>row3(L(k),r)).join('');
 const C=RATES.ceil;
 document.querySelector('#t-sys tbody').innerHTML = [
-  ['천장형 실내기 설치 (1대)',C.indoor,''],['천장 점검구·타공 + 드레인 배관 (1대)',add(C.hatch,C.drain),'가정'],['시스템 실외기 1대 설치 (실내기 공용)',(C.outdoor&&C.outdoor[1])?C.outdoor:null,'실내기 가격에 포함'],
-  ['천장형 분해 청소 (1대)',C.clean,'가정'],['거주 중 천장 작업 보양 (1대)',C.protect,'가정'],['천장·벽 부분 도배 (1대)',C.paper,'가정'],['냉매 추가 충전 (긴 배관 분)',C.gas,'가정']
-].map(([l,r,s])=>row1(l,r,s)).join('');
+  ['ceilIndoor',C.indoor,''],['ceilHatch',add(C.hatch,C.drain),''],['ceilOutdoor',(C.outdoor&&C.outdoor[1])?C.outdoor:null,'실내기 가격에 포함'],
+  ['ceilClean',C.clean,''],['ceilProtect',C.protect,''],['ceilPaper',C.paper,''],['ceilGas',C.gas,'']
+].map(([k,r,s])=>row1(L(k),r,s)).join('');
 document.querySelector('#t-common tbody').innerHTML = [
-  ['타공 (1곳)',RATES.hole,'가정'],['전용 전기 작업',null,'가정 · 기본 '+rt(RATES.elecBase)+' + 대당 '+rt(RATES.elecPer)],['사다리차·스카이차 (4시간)',RATES.ladder,'기준 · 에어아이'],
-  ['실외기 세척 (1대)',RATES.outdoorClean,'가정'],['수리·충전 출장 점검비',RATES.visit,'가정'],['누설 점검·용접',[0,80000],'가정 · 필요 시'],['구형 모델 부품 수급 가산',RATES.oldPart,'가정'],
-  ['인접 지역 출장 가산',RATES.regionOut,'가정'],['운반 (같은 시·군 / 다른 시·도)',null,'가정 · '+rt(RATES.distCity)+' / '+rt(RATES.distFar)],['층수 가산 (3~5층 / 6층 이상)',null,'가정 · '+rt(RATES.floorMid)+' / '+rt(RATES.floorHigh)],
-  ['동시 설치 할인',null,'2대째부터 기본 설치비 10% (가정)'],['청소 다량 할인',null,'3대부터 10% (가정)'],['주택 배관 연장',null,'외벽·지상 경로 '+RATES.housePipe[0]+'~'+RATES.housePipe[1]+'m 가산 (가정)'],['성수기 계수 (6~8월)',null,'시공비 × '+RATES.seasonFactor+' (가정)'],
-  ['냉매 종류 계수',null,'R410A ×1 · R32 ×1.1~1.2 · R22 ×1.3~1.6 · 모름 ×1~1.2 (가정)']
-].map(([l,r,s])=>row1(l,r,s)).join('');
+  ['hole',RATES.hole,''],['elec',null,'기본 '+rt(RATES.elecBase)+' + 대당 '+rt(RATES.elecPer)],['ladder',RATES.ladder,''],
+  ['outdoorClean',RATES.outdoorClean,''],['visit',RATES.visit,''],['leakCheck',RATES.leakCheck||[0,80000],'필요 시'],['oldPart',RATES.oldPart,''],
+  ['regionOut',RATES.regionOut,''],['dist',null,rt(RATES.distCity)+' / '+rt(RATES.distFar)],['floor',null,rt(RATES.floorMid)+' / '+rt(RATES.floorHigh)],
+  ['multiDiscount',null,'2대째부터 기본 설치비 '+Math.round(RATES.multiDiscount*100)+'%'],['cleanDiscount',null,'3대부터 10%'],['housePipe',null,'외벽·지상 경로 '+RATES.housePipe[0]+'~'+RATES.housePipe[1]+'m 가산'],['seasonFactor',null,'시공비 × '+RATES.seasonFactor],
+  ['gasFactor',null,'R410A ×1 · R32 ×1.1~1.2 · R22 ×1.3~1.6 · 모름 ×1~1.2']
+].map(([k,r,s])=>row1(L(k),r,s)).join('');
 })();
 </script>
 </body>

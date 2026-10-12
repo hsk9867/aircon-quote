@@ -167,7 +167,15 @@ function openEditor(){ $('gate').hidden=true; $('editor').hidden=false; renderTa
 document.addEventListener('click', async e=>{
   const t=e.target.closest('[data-send]'); if(!t||!sendCtx) return;
   const sel=pickedTechs(); const text=$('send-text').value;
-  if(t.dataset.send==='kakao'){ if(!sel.length){ toast('보낼 기사를 선택해 주세요.',true); return; } if(navigator.share){ try{ await navigator.share({text}); await markSent(sel); $('send-dlg').close(); }catch(err){} } else { try{ await navigator.clipboard.writeText(text); }catch(err){} toast('문구를 복사했습니다. 카카오톡 PC 대화창에 붙여 넣으세요.'); await markSent(sel); } return; }
+  if(t.dataset.send==='kakao'){ if(!sel.length){ toast('보낼 기사를 선택해 주세요.',true); return; }
+    if(navigator.share && window.isSecureContext){ try{ await navigator.share({text}); await markSent(sel); $('send-dlg').close(); }catch(err){} return; }
+    /* http 주소나 PC: 공유 창이 없음 → 문구 복사 후 카카오톡 열기 */
+    let copied=false; try{ await navigator.clipboard.writeText(text); copied=true; }catch(err){ const ta=$('send-text'); ta.focus(); ta.select(); try{ copied=document.execCommand('copy'); }catch(e2){} }
+    const mobile=/Android|iPhone|iPad/i.test(navigator.userAgent);
+    toast(copied?('문구를 복사했습니다. '+(mobile?'카카오톡이 열리면 기사와의 대화방에 붙여 넣으세요.':'카카오톡 PC 대화창에 붙여 넣으세요.')):'복사가 막혔습니다. 문구를 길게 눌러 복사해 주세요.', !copied);
+    await markSent(sel);
+    if(mobile){ setTimeout(()=>{ location.href='kakaotalk://launch'; }, 600); }
+    return; }
   if(t.dataset.send==='copy'){ try{ await navigator.clipboard.writeText(text); toast('복사했습니다.'); }catch(err){ toast('복사 실패. 문구를 드래그해서 복사하세요.',true); } return; }
   if(t.dataset.send==='mark'){ if(!sel.length){ toast('보낼 기사를 선택해 주세요.',true); return; } await markSent(sel); $('send-dlg').close(); return; }
 });
@@ -305,7 +313,8 @@ function renderSend(){
     '<div class="g2"><button class="btn primary" type="button" data-send="kakao"'+(sel.length?'':' disabled')+'>카카오톡으로 보내기'+(sel.length>1?' ('+sel.length+'명)':'')+'</button>'+
       '<a class="btn'+(sel.length?'':' disabled')+'" id="send-sms" href="'+(sel.length?('sms:'+sel.map(t=>(t.phone||'').replace(/[^0-9+]/g,'')).filter(Boolean).join(',')+'?body='+encodeURIComponent(techMessage(b, sel.length===1?first:null))):'#')+'">문자로 보내기'+(sel.length>1?' ('+sel.length+'명)':'')+'</a></div>'+
     '<div class="g2"><button class="btn sm" type="button" data-send="copy">문구만 복사</button><button class="btn sm" type="button" data-send="mark"'+(sel.length?'':' disabled')+'>보냈다고 기록만</button></div>'+
-    '<p class="kv">휴대폰: 카카오톡 버튼을 누르면 공유 창에서 카카오톡과 받는 사람을 고릅니다. PC: 문구가 복사되니 카카오톡 PC 대화창에 붙여 넣으세요. 보내고 나면 상태가 "기사 알림"으로 바뀌고 기사 이름이 기록됩니다.</p>';
+    (window.isSecureContext?'':'<p class="kv" style="color:var(--warn)">지금 주소가 http라서 휴대폰 공유 창이 열리지 않습니다. 카카오톡 버튼은 문구를 복사한 뒤 카카오톡 앱을 열어 주니, 기사와의 대화방에 붙여 넣으세요. 보안 인증서(SSL)를 켜면 공유 창에서 바로 보낼 수 있습니다.</p>')+
+    '<p class="kv">보내고 나면 상태가 "기사 알림"으로 바뀌고 기사 이름이 기록됩니다. 문자 버튼은 바로 문자 앱이 열립니다.</p>';
 }
 async function markSent(sel){ const {b}=sendCtx; const names=sel.map(t=>(t.name||'')+(t.phone?' '+t.phone:'')).join(', '); try{ const r=await api('inbox_update',{type:'booking',id:b.id,status:'기사 알림',tech:names}); if(r.ok){ toast(sel.map(t=>t.name).join(', ')+' 기사에게 보낸 것으로 기록했습니다.'); loadInbox(false); } }catch(e){} }
 const STATUS_BK=['신규','기사 알림','연락 완료','기사 배정','시공 완료','취소']; const STATUS_IQ=['신규','회신 완료','견적 발송','계약','취소'];

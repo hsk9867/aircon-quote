@@ -158,7 +158,7 @@ const BRANDS_DEFAULT = [
   id: "lg",
   name: "LG",
   line: "휘센",
-  note: "2026-10-06 단가표 기준. 시스템(천장형)은 LG 공급가격표의 주거용 멀티 도매가로 계산",
+  note: "2026-10-06 단가표 기준. 시스템은 LG 공급가격표 도매가 (단배관 RNQ·RPUQ, 다배관 MNV·MUV)",
   models: {
    wall: {
     6: [
@@ -228,47 +228,47 @@ const BRANDS_DEFAULT = [
    },
    ceil: {
     3: [
-     "시스템 1WAY 3평 RNQ0120K2WP",
+     "주거용 멀티 1WAY 3평 RNQ0120K2WP (단배관)",
      322740,
      322740
     ],
     4: [
-     "시스템 1WAY 4평 RNQ0160K2WP",
+     "주거용 멀티 1WAY 4평 RNQ0160K2WP (단배관)",
      326700,
      326700
     ],
     5: [
-     "시스템 1WAY 5평 RNQ0200C2WP",
+     "주거용 멀티 1WAY 5평 RNQ0200C2WP (단배관)",
      332640,
      332640
     ],
     6: [
-     "시스템 1WAY 6평 RNQ0230C2WP",
+     "주거용 멀티 1WAY 6평 RNQ0230C2WP (단배관)",
      339900,
      339900
     ],
     8: [
-     "시스템 1WAY 8평 RNQ0320C2WP",
+     "주거용 멀티 1WAY 8평 RNQ0320C2WP (단배관)",
      347820,
      347820
     ],
     10: [
-     "시스템 1WAY 10평 RNQ0400C2WP",
+     "주거용 멀티 1WAY 10평 RNQ0400C2WP (단배관)",
      355080,
      355080
     ],
     13: [
-     "시스템 1WAY 13평 RNQ0520C2WP",
+     "주거용 멀티 1WAY 13평 RNQ0520C2WP (단배관)",
      436920,
      436920
     ],
     15: [
-     "시스템 1WAY 15평 RNQ0600C2WP",
+     "주거용 멀티 1WAY 15평 RNQ0600C2WP (단배관)",
      508200,
      508200
     ],
     18: [
-     "시스템 1WAY 18평 RNQ0720C2WP",
+     "주거용 멀티 1WAY 18평 RNQ0720C2WP (단배관)",
      522060,
      522060
     ]
@@ -281,51 +281,118 @@ const BRANDS_DEFAULT = [
     {
      hp: 2.5,
      kw: 7.3,
-     name: "주거용 멀티 실외기 2.5마력 RPUQ025SA2R",
+     name: "주거용 멀티 실외기 2.5마력 RPUQ025SA2R (단배관)",
      price: 792000,
      cost: 792000
     },
     {
      hp: 3,
      kw: 8,
-     name: "주거용 멀티 실외기 3마력 RPUQ030SA2R",
+     name: "주거용 멀티 실외기 3마력 RPUQ030SA2R (단배관)",
      price: 917400,
      cost: 917400
     },
     {
      hp: 4,
      kw: 11.2,
-     name: "주거용 멀티 실외기 4마력 RPUQ040SB2R",
+     name: "주거용 멀티 실외기 4마력 RPUQ040SB2R (단배관)",
      price: 1069200,
      cost: 1069200
     },
     {
      hp: 5,
      kw: 14.5,
-     name: "주거용 멀티 실외기 5마력 RPUQ050SG2R",
+     name: "주거용 멀티 실외기 5마력 RPUQ050SG2R (단배관)",
      price: 1478400,
      cost: 1478400
     },
     {
      hp: 6,
      kw: 16,
-     name: "주거용 멀티 실외기 6마력 RPUQ060SG2R",
+     name: "주거용 멀티 실외기 6마력 RPUQ060SG2R (단배관)",
      price: 1762200,
      cost: 1762200
     },
     {
      hp: 8,
      kw: 22.4,
-     name: "주거용 멀티 실외기 8마력 RPUQ080S2S9R",
+     name: "주거용 멀티 실외기 8마력 RPUQ080S2S9R (단배관)",
      price: 2178000,
      cost: 2178000
     },
     {
      hp: 10,
      kw: 28,
-     name: "주거용 멀티 실외기 10마력 RPUQ100S2S9R",
+     name: "주거용 멀티 실외기 10마력 RPUQ100S2S9R (단배관)",
      price: 2996400,
      cost: 2996400
+    }
+   ],
+   ceilMulti: {
+    5: [
+     "올인원 1WAY 5평 MNV0201C2S (다배관)",
+     292842,
+     292842
+    ],
+    6: [
+     "올인원 1WAY 6평 MNV0231C2S (다배관)",
+     299860,
+     299860
+    ],
+    8: [
+     "올인원 1WAY 8평 MNV0321C2S (다배관)",
+     306240,
+     306240
+    ],
+    10: [
+     "올인원 1WAY 10평 MNV0401C2S (다배관)",
+     313258,
+     313258
+    ],
+    13: [
+     "올인원 1WAY 13평 MNV0521C2S (다배관)",
+     386628,
+     386628
+    ],
+    15: [
+     "올인원 1WAY 15평 MNV0601C2S (다배관)",
+     426822,
+     426822
+    ],
+    18: [
+     "올인원 1WAY 18평 MNV0721C2S (다배관)",
+     440220,
+     440220
+    ]
+   },
+   outdoorsMulti: [
+    {
+     hp: 2.5,
+     kw: 7.3,
+     name: "올인원 실외기 2.5마력 MUV0721A23V (다배관)",
+     price: 778360,
+     cost: 778360
+    },
+    {
+     hp: 3,
+     kw: 8,
+     name: "올인원 실외기 3마력 MUV0901A24V (다배관)",
+     price: 957000,
+     cost: 957000
+    },
+    {
+     hp: 4,
+     kw: 11.2,
+     name: "올인원 실외기 4마력 MUV1101B25V (다배관)",
+     price: 1116500,
+     cost: 1116500
+    },
+    {
+     hp: 5,
+     kw: 14.5,
+     name: "올인원 실외기 5마력 MUV1451S25V (다배관)",
+     price: 1658800,
+     cost: 1658800
     }
    ]
   }
@@ -598,8 +665,8 @@ const SITE   = deepMerge(SITE_DEFAULT, isObj(CFG.site)?CFG.site:{});
 
 /* 시스템 에어컨 실외기 선택: 실내기 냉방 용량 합(평수 × 0.4kW)에 맞는 가장 작은 멀티 실외기. 조합률 130%까지 허용 */
 const kwOfPy = py => Math.round(py*0.4*10)/10;
-function pickOutdoor(brand, pys){
-  const list = brand.models.outdoors;
+function pickOutdoor(brand, pys, key){
+  const list = brand.models[key||'outdoors'];
   if(!Array.isArray(list) || !list.length) return brand.models.outdoor ? {name:brand.models.outdoor[0], price:brand.models.outdoor[1], kw:0} : null;
   const need = pys.reduce((a,p)=>a+kwOfPy(p),0);
   const sorted = list.slice().sort((a,b)=>a.kw-b.kw);

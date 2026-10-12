@@ -8,7 +8,7 @@
 <script>try{if(!sessionStorage.getItem('ssw_splash')){sessionStorage.setItem('ssw_splash','1');if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){document.documentElement.classList.add('splash-on');setTimeout(function(){document.documentElement.classList.remove('splash-on')},2400)}}}catch(e){}</script>
 <link rel="preload" as="image" href="img/logo.jpg">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261012j">
+<link rel="stylesheet" href="css/style.css?v=20261012k">
 </head>
 <body>
 <header class="top"></header>
@@ -91,8 +91,8 @@
 
 </main>
 <footer></footer>
-<script src="data/config.js?v=20261012j"></script>
-<script src="js/common.js?v=20261012j"></script>
+<script src="data/config.js?v=20261012k"></script>
+<script src="js/common.js?v=20261012k"></script>
 <script>
 (function(){
 'use strict';
@@ -100,8 +100,8 @@ const {TYPE_LABEL, RATES, BRANDS, $, won, manWon, rangeText, rangeShort, mul, ad
 
 const PY = [5,6,7,8,9,10,11,13,15,16,17,18,19,23,30,40];
 const ROOMS = ['거실','안방','작은방','아이방','서재','주방·식당','사무실'];
-const DEFAULT_ROOM = ['거실','안방','작은방','아이방'];
-const DEFAULT_PY = [17,7,6,6];
+const DEFAULT_ROOM = ['거실','안방','아이방','작은방'];
+const DEFAULT_PY = [18,6,5,5]; /* 기본 구성: 거실 18평, 안방 6평, 아이방 5평, 작은방 5평 */
 const OPT_LABEL={paper:'부분 도배',gas:'냉매 보충',elec:'전기 작업',remove:'기존 철거',angle:'실외기 앵글',ladder:'사다리차'};
 const typeOf = py => py<=15 ? 'wall' : 'stand'; /* 15평 이하 벽걸이, 16평 이상 스탠드 */
 const isSystem = units => units.length>=3; /* 3대부터 시스템 에어컨: 천장형 실내기 + 실외기 1대 */
@@ -113,7 +113,7 @@ function renderUnits(){
     const py = prev[i]?prev[i].py:DEFAULT_PY[i]; const room = prev[i]?prev[i].room:DEFAULT_ROOM[i];
     return '<div class="unit"><span class="i">'+(i+1)+'</span>'+
       '<select aria-label="'+(i+1)+'번 설치 공간" data-u="room">'+ROOMS.map(r=>'<option'+(r===room?' selected':'')+'>'+r+'</option>').join('')+'</select>'+
-      '<select aria-label="'+(i+1)+'번 평수" data-u="py">'+PY.map(p=>'<option value="'+p+'"'+(p===py?' selected':'')+'>'+p+'평</option>').join('')+'</select>'+
+      '<select aria-label="'+(i+1)+'번 평수" data-u="py">'+PY.map(p=>'<option value="'+p+'"'+(p===py?' selected':'')+'>'+p+'평'+(p===DEFAULT_PY[i]?' (기본)':'')+'</option>').join('')+'</select>'+
       '<span class="kind"></span></div>';
   }).join('');
   updateKinds();

@@ -778,17 +778,32 @@ const NAV = [['install.html','설치 견적'],['shop.html','상가·사무실'],
 function mountChrome(){
   const here = location.pathname.split('/').pop() || 'index.html';
   const top = document.querySelector('header.top');
-  /* 첫 화면(body.home-page)은 로고 글씨 이미지만, 나머지 페이지는 마크 + 상호 */
-  const logoInner = document.body.classList.contains('home-page')
-    ? '<img class="wordmark" src="img/logo-word.png" alt="'+esc(SITE.brand.name)+'" width="862" height="302" decoding="async">'
-    : '<img src="img/logo-mark.png" alt="" width="40" height="40" decoding="async"><span><span class="word">'+esc(SITE.brand.name)+'</span></span>';
-  if(top) top.innerHTML = '<div class="in"><a class="logo" href="index.html">'+logoInner+'</a>'+
-    '<nav class="nav" aria-label="바로가기">'+NAV.map(([h,l])=>'<a href="'+h+'"'+(h===here?' aria-current="page"':'')+'>'+l+'</a>').join('')+'</nav></div>';
+  /* 상단: 흐르는 띠(상호 · 한 줄 소개) + 로고 글씨 이미지 + 바로가기 */
+  if(top){
+    const mq = '<span>'+esc(SITE.brand.name)+' <em>·</em> Free air-conditioner quote</span><span>에어컨 설치 <em>·</em> 청소 <em>·</em> 냉매 충전 <em>·</em> 이전 설치</span>';
+    const strip = document.createElement('div'); strip.className='marquee'; strip.setAttribute('aria-hidden','true');
+    strip.innerHTML = '<div class="track">'+mq.repeat(4)+mq.repeat(4)+'</div>';
+    top.insertAdjacentElement('beforebegin', strip);
+    top.innerHTML = '<div class="in"><a class="logo" href="index.html"><img src="img/logo-word.png" alt="'+esc(SITE.brand.name)+'" width="862" height="302" decoding="async"></a>'+
+      '<nav class="nav" aria-label="바로가기">'+NAV.map(([h,l])=>'<a href="'+h+'"'+(h===here?' aria-current="page"':'')+'>'+l+'</a>').join('')+'</nav></div>';
+  }
   const foot = document.querySelector('footer');
+  const c = SITE.contact;
   if(foot && !foot.innerHTML.trim()) foot.innerHTML =
-    '<div class="links"><a href="index.html">홈</a>'+NAV.map(([h,l])=>'<a href="'+h+'">'+l+'</a>').join('')+'<a href="admin.html">관리자</a></div>'+
-    '<div><b>'+esc(SITE.brand.name)+'</b> · '+(bizLine()||'상호, 대표, 사업자등록번호, 통신판매업 신고번호, 주소는 확정 후 표기')+'</div>'+
-    (SITE.biz.footerNote?'<div>'+esc(SITE.biz.footerNote)+'</div>':'');
+    '<div class="f-brand"><em>'+esc(SITE.brand.name)+'</em> · Free air-conditioner quote</div>'+
+    '<div class="f-grid">'+
+      '<div class="f-biz">'+(bizLine()||'상호, 대표, 사업자등록번호, 통신판매업 신고번호, 주소는 확정 후 표기')+(SITE.biz.footerNote?'<br>'+esc(SITE.biz.footerNote):'')+'</div>'+
+      '<div class="f-contact"><b>고객센터 <span class="num">'+esc(c.phone||'')+'</span></b>카카오톡 채널 <span class="k">'+esc(c.kakaoId||'')+'</span>'+(c.bizEmail?'<br>기업 문의 <span class="k">'+esc(c.bizEmail)+'</span>':'')+'</div>'+
+      '<div class="links"><a href="index.html">홈</a>'+NAV.map(([h,l])=>'<a href="'+h+'">'+l+'</a>').join('')+'<a href="admin.html">관리자</a></div>'+
+    '</div>'+
+    '<div class="copy">Copyright © <em>'+esc(SITE.brand.name)+'</em>. All rights reserved.</div>';
+  /* 맨 위로 버튼 */
+  const up = document.createElement('button'); up.type='button'; up.className='totop'; up.setAttribute('aria-label','맨 위로');
+  up.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+  up.addEventListener('click', ()=>window.scrollTo({top:0, behavior:'smooth'}));
+  document.body.appendChild(up);
+  const onScroll = ()=>up.classList.toggle('show', window.scrollY > 400);
+  window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
   applySite();
   if(PREVIEW){ const b=document.createElement('div'); b.className='preview-bar'; b.innerHTML='<span>관리자 미리보기 모드 · 저장 전 초안이 이 탭에만 보입니다</span><a href="admin.html?preview=0">관리자로</a><a href="index.html?preview=0">종료</a>'; document.body.appendChild(b); }
 }

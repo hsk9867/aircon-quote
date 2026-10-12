@@ -48,6 +48,13 @@ table.edit input[type=text]{min-width:120px}
 .send-dlg .sd-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}
 .send-dlg .panel{padding:14px 16px;gap:10px}
 .send-dlg textarea{font-size:.88rem}
+.tech-list{display:grid;gap:6px;max-height:40vh;overflow:auto}
+.tech-opt{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);cursor:pointer}
+.tech-opt input{accent-color:var(--accent);width:18px;height:18px;margin:0;flex-shrink:0}
+.tech-opt .tn{display:grid;gap:2px;min-width:0}
+.tech-opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.tech-opt.off{opacity:.55}
+.btn.disabled{opacity:.5;pointer-events:auto}
 .kv{font-size:.82rem;color:var(--muted)}
 .badge{font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink)}
 .badge.local{background:var(--warn-soft);color:var(--warn)}
@@ -159,12 +166,13 @@ function openEditor(){ $('gate').hidden=true; $('editor').hidden=false; renderTa
 /* 보내기 창 */
 document.addEventListener('click', async e=>{
   const t=e.target.closest('[data-send]'); if(!t||!sendCtx) return;
-  const tech=techs.find(x=>x.id===$('send-tech').value)||techs[0]; const text=$('send-text').value;
-  if(t.dataset.send==='kakao'){ if(navigator.share){ try{ await navigator.share({text}); await markSent(tech); $('send-dlg').close(); }catch(err){} } else { try{ await navigator.clipboard.writeText(text); }catch(err){} toast('문구를 복사했습니다. 카카오톡 PC 대화창에 붙여 넣으세요.'); await markSent(tech); } return; }
+  const sel=pickedTechs(); const text=$('send-text').value;
+  if(t.dataset.send==='kakao'){ if(!sel.length){ toast('보낼 기사를 선택해 주세요.',true); return; } if(navigator.share){ try{ await navigator.share({text}); await markSent(sel); $('send-dlg').close(); }catch(err){} } else { try{ await navigator.clipboard.writeText(text); }catch(err){} toast('문구를 복사했습니다. 카카오톡 PC 대화창에 붙여 넣으세요.'); await markSent(sel); } return; }
   if(t.dataset.send==='copy'){ try{ await navigator.clipboard.writeText(text); toast('복사했습니다.'); }catch(err){ toast('복사 실패. 문구를 드래그해서 복사하세요.',true); } return; }
-  if(t.dataset.send==='mark'){ await markSent(tech); $('send-dlg').close(); return; }
+  if(t.dataset.send==='mark'){ if(!sel.length){ toast('보낼 기사를 선택해 주세요.',true); return; } await markSent(sel); $('send-dlg').close(); return; }
 });
-document.addEventListener('change', e=>{ if(e.target.id==='send-tech'&&sendCtx){ sendCtx.techId=e.target.value; renderSend(); } });
+document.addEventListener('change', e=>{ if(e.target.dataset&&e.target.dataset.pick&&sendCtx){ if(e.target.checked) sendCtx.picked.add(e.target.dataset.pick); else sendCtx.picked.delete(e.target.dataset.pick); renderSend(); } });
+document.addEventListener('click', e=>{ if(e.target.id==='send-sms' && e.target.classList.contains('disabled')){ e.preventDefault(); toast('보낼 기사를 선택해 주세요.',true); } else if(e.target.id==='send-sms' && sendCtx){ const sel=pickedTechs(); if(sel.length) setTimeout(()=>markSent(sel), 800); } });
 document.addEventListener('click', e=>{ if(e.target.id==='send-close'){ $('send-dlg').close(); } });
 
 /* ---------- 로그인/설정 ---------- */
@@ -278,21 +286,28 @@ function techMessage(b, tech){
 }
 let sendCtx=null;
 function openSend(b){
-  if(!techs.length){ toast('먼저 제휴 기사 탭에서 기사를 등록해 주세요.', true); return; }
-  sendCtx={b, techId:(techs.find(t=>t.active!==false)||techs[0]).id};
+  const active=techs.filter(t=>t.active!==false);
+  if(!techs.length){ toast('먼저 제휴 기사 탭에서 기사를 등록해 주세요.', true); tab='techs'; renderTabs(); render(); return; }
+  sendCtx={b, picked:new Set(active.length===1?[active[0].id]:[])};
   renderSend();
   const dlg=$('send-dlg'); if(typeof dlg.showModal==='function'){ if(!dlg.open) dlg.showModal(); } else dlg.setAttribute('open','');
 }
+function pickedTechs(){ return techs.filter(t=>sendCtx && sendCtx.picked.has(t.id)); }
 function renderSend(){
-  const {b}=sendCtx; const tech=techs.find(t=>t.id===sendCtx.techId)||techs[0]; sendCtx.techId=tech.id;
+  const {b}=sendCtx; const sel=pickedTechs(); const first=sel[0]||null;
+  const c=b.customer||{};
   $('send-body').innerHTML=
-    '<div class="f"><label>받을 기사</label><select id="send-tech">'+techs.map(t=>'<option value="'+esc(t.id)+'"'+(t.id===tech.id?' selected':'')+(t.active===false?' disabled':'')+'>'+esc(t.name||'이름 없음')+' · '+esc(t.phone||'번호 없음')+(t.area?' · '+esc(t.area):'')+(t.active===false?' (휴무)':'')+'</option>').join('')+'</select></div>'+
-    '<div class="f"><label>보낼 문구 <span class="hint">필요하면 고쳐서 보내세요</span></label><textarea id="send-text" style="min-height:220px">'+esc(techMessage(b,tech))+'</textarea></div>'+
-    '<div class="g2"><button class="btn primary" type="button" data-send="kakao">카카오톡으로 보내기</button><a class="btn" id="send-sms" href="sms:'+esc((tech.phone||'').replace(/[^0-9+]/g,''))+'?body='+encodeURIComponent(techMessage(b,tech))+'">문자로 보내기</a></div>'+
-    '<div class="g2"><button class="btn sm" type="button" data-send="copy">문구만 복사</button><button class="btn sm" type="button" data-send="mark">보냈다고 기록만</button></div>'+
-    '<p class="kv">휴대폰에서는 "카카오톡으로 보내기"가 공유 창을 열어 받을 사람을 고릅니다. PC에서는 문구가 복사되니 카카오톡 PC 대화창에 붙여 넣으세요. 보내고 나면 접수 상태가 "기사 알림"으로 바뀝니다.</p>';
+    '<div class="kv">'+esc(b.id)+' · '+esc(b.svcLabel||'')+' · '+esc(window.SSW.regionOnly(c.addr||''))+' · '+fmtDate(c.date)+'</div>'+
+    '<div class="f"><label>보낼 기사 선택 <span class="hint">여러 명 선택 가능 · 먼저 수락한 기사에게 배정</span></label><div class="tech-list">'+
+      techs.map(t=>'<label class="tech-opt'+(t.active===false?' off':'')+'"><input type="checkbox" data-pick="'+esc(t.id)+'"'+(sendCtx.picked.has(t.id)?' checked':'')+(t.active===false?' disabled':'')+'><span class="tn"><b>'+esc(t.name||'이름 없음')+'</b>'+(t.active===false?' <span class="tag">휴무</span>':'')+'<span class="muted small">'+esc(t.phone||'번호 없음')+(t.area?' · '+esc(t.area):'')+(t.skills?' · '+esc(t.skills):'')+'</span></span></label>').join('')+
+    '</div></div>'+
+    '<div class="f"><label>보낼 문구 <span class="hint">필요하면 고쳐서 보내세요</span></label><textarea id="send-text" style="min-height:200px">'+esc(techMessage(b, sel.length===1?first:null))+'</textarea></div>'+
+    '<div class="g2"><button class="btn primary" type="button" data-send="kakao"'+(sel.length?'':' disabled')+'>카카오톡으로 보내기'+(sel.length>1?' ('+sel.length+'명)':'')+'</button>'+
+      '<a class="btn'+(sel.length?'':' disabled')+'" id="send-sms" href="'+(sel.length?('sms:'+sel.map(t=>(t.phone||'').replace(/[^0-9+]/g,'')).filter(Boolean).join(',')+'?body='+encodeURIComponent(techMessage(b, sel.length===1?first:null))):'#')+'">문자로 보내기'+(sel.length>1?' ('+sel.length+'명)':'')+'</a></div>'+
+    '<div class="g2"><button class="btn sm" type="button" data-send="copy">문구만 복사</button><button class="btn sm" type="button" data-send="mark"'+(sel.length?'':' disabled')+'>보냈다고 기록만</button></div>'+
+    '<p class="kv">휴대폰: 카카오톡 버튼을 누르면 공유 창에서 카카오톡과 받는 사람을 고릅니다. PC: 문구가 복사되니 카카오톡 PC 대화창에 붙여 넣으세요. 보내고 나면 상태가 "기사 알림"으로 바뀌고 기사 이름이 기록됩니다.</p>';
 }
-async function markSent(tech){ const {b}=sendCtx; try{ const r=await api('inbox_update',{type:'booking',id:b.id,status:'기사 알림',tech:(tech.name||'')+(tech.phone?' '+tech.phone:'')}); if(r.ok){ toast(tech.name+' 기사에게 보낸 것으로 기록했습니다.'); loadInbox(false); } }catch(e){} }
+async function markSent(sel){ const {b}=sendCtx; const names=sel.map(t=>(t.name||'')+(t.phone?' '+t.phone:'')).join(', '); try{ const r=await api('inbox_update',{type:'booking',id:b.id,status:'기사 알림',tech:names}); if(r.ok){ toast(sel.map(t=>t.name).join(', ')+' 기사에게 보낸 것으로 기록했습니다.'); loadInbox(false); } }catch(e){} }
 const STATUS_BK=['신규','기사 알림','연락 완료','기사 배정','시공 완료','취소']; const STATUS_IQ=['신규','회신 완료','견적 발송','계약','취소'];
 let inbox={bookings:[],inquiries:[],loaded:false,err:''}; let inboxTimer=null; let lastNewCount=null;
 const fmtWhen = s => { try{ return new Date(s).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(e){ return s||''; } };
@@ -347,7 +362,7 @@ $('panel').addEventListener('input', e=>{ const el=e.target; if(el.dataset.tp){ 
   let v; if(el.dataset.b) v=el.checked; else if(el.dataset.n){ v=el.value===''?0:Number(el.value); if(Number.isNaN(v)) return; } else v=el.value;
   setPath(draft,p,v); keepLocal(); });
 $('panel').addEventListener('click', e=>{
-  const a=e.target.closest('[data-add],[data-del],[data-act]'); if(!a) return;
+  const a=e.target.closest('[data-add],[data-del],[data-act],[data-send-rec],[data-tech-del],[data-del-rec]'); if(!a) return;
   if(a.dataset.add){ const arr=getPath(draft,a.dataset.add); arr.push(JSON.parse(a.dataset.tpl)); keepLocal(); render(); return; }
   if(a.dataset.del){ const ks=a.dataset.del.split('.'); const idx=+ks.pop(); const arr=getPath(draft,ks.join('.')); if(!confirm('이 항목을 삭제할까요?')) return; arr.splice(idx,1); keepLocal(); render(); return; }
   if(a.dataset.act==='refresh'){ loadInbox(false); return; }

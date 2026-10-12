@@ -10,16 +10,6 @@
   --radius:0; --shadow:none;
   color-scheme:light;
 }
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#151312; --surface:#1C1A18; --surface-2:#26231F;
-    --fg:#F2EEE2; --muted:#A8A197; --line:#F2EEE2; --line-soft:#3A3631;
-    --accent:#F2EEE2; --accent-ink:#F2EEE2; --accent-soft:#26231F;
-    --warn:#E59A6A; --warn-soft:#3B2719; --ok:#7DCB9B; --ok-soft:#163324;
-    color-scheme:dark;
-  }
-  :root:not([data-theme="light"]) .logo img{filter:brightness(1.7)}
-}
 :root[data-theme="dark"]{
   --bg:#151312; --surface:#1C1A18; --surface-2:#26231F;
   --fg:#F2EEE2; --muted:#A8A197; --line:#F2EEE2; --line-soft:#3A3631;
@@ -300,16 +290,16 @@ html.splash-on{overflow:hidden}
 .pslide .track{display:flex;width:max-content;animation:pslide 60s linear infinite;will-change:transform}
 .pslide:hover .track,.pslide:focus-within .track{animation-play-state:paused}
 @keyframes pslide{to{transform:translateX(-50%)}}
-.pcard{width:230px;flex-shrink:0;border-right:1px solid var(--line);background:var(--bg);display:grid;grid-template-rows:auto auto;text-decoration:none;color:var(--fg);transition:background .2s}
+.pcard{width:300px;flex-shrink:0;border-right:1px solid var(--line);background:var(--bg);display:grid;grid-template-columns:132px 1fr;align-items:center;text-decoration:none;color:var(--fg);transition:background .2s}
 .pcard:hover{background:var(--surface)}
-.pcard .ill{position:relative;aspect-ratio:1/1;background:var(--surface-2);display:grid;place-items:center;overflow:hidden;border-bottom:1px solid var(--line-soft)}
+.pcard .ill{position:relative;aspect-ratio:1/1;align-self:stretch;background:var(--surface-2);display:grid;place-items:center;overflow:hidden;border-right:1px solid var(--line-soft)}
 .pcard .ill svg{width:72%;height:72%;color:var(--fg)}
 .pcard .ill img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.pcard .ill .bl{position:absolute;left:12px;top:12px}
-.pcard .ill .bl .blogo{height:22px}
+.pcard .ill .bl{position:absolute;left:8px;top:8px}
+.pcard .ill .bl .blogo{height:18px}
 .pcard .ill .bl .badge-logo{font-size:.7rem!important}
-.pcard .tx{padding:14px 16px 16px;display:grid;gap:4px}
+.pcard .tx{padding:12px 14px;display:grid;gap:3px}
 .pcard .tx .ty{font-family:var(--en);font-weight:800;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.pcard .tx b{font-size:1rem;font-weight:800;letter-spacing:-.02em}
-.pcard .tx span{font-size:.78rem;color:var(--muted);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-@media (min-width:760px){.pcard{width:280px}.pcard .tx{padding:18px 20px 20px}.pcard .tx b{font-size:1.1rem}}
+.pcard .tx b{font-size:.95rem;font-weight:800;letter-spacing:-.02em}
+.pcard .tx span{font-size:.74rem;color:var(--muted);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+@media (min-width:760px){.pcard{width:340px;grid-template-columns:150px 1fr}.pcard .tx{padding:14px 18px}.pcard .tx b{font-size:1.02rem}}

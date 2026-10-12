@@ -4,9 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>관리자 · 속시원</title>
+<link rel="icon" type="image/png" href="img/favicon.png">
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261012">
+<link rel="stylesheet" href="css/style.css?v=20261012b">
 <style>
 .abar{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:14px;position:sticky;top:58px;z-index:10;background:var(--bg)}
 .abar::-webkit-scrollbar{display:none}
@@ -98,8 +99,8 @@ table.edit input[type=text]{min-width:120px}
 
 </main>
 <footer></footer>
-<script src="data/config.js?v=20261012"></script>
-<script src="js/common.js?v=20261012"></script>
+<script src="data/config.js?v=20261012b"></script>
+<script src="js/common.js?v=20261012b"></script>
 <script>
 (function(){
 'use strict';
@@ -177,7 +178,7 @@ const card=(title,inner,desc,extra)=>'<div class="acard"><div class="ah"><h3>'+e
 const del=p=>'<button class="x" type="button" data-del="'+p+'" title="삭제">✕</button>';
 const addBtn=(p,tpl,label)=>'<button class="btn sm" type="button" data-add="'+p+'" data-tpl=\''+esc(JSON.stringify(tpl))+'\'>+ '+esc(label)+'</button>';
 
-const RL={ base:'신규 설치 기본 (배관 5m)', moveBase:'이전 설치 기본 (배관 5m)', remove:'기존 에어컨 철거', pipePerM:'배관 연장 1m당', pipeReplace:'매립 배관 교체·연결', angle:'실외기 앵글', gas:'냉매 보충 (설치 시)', gasFill:'냉매 충전 (수리 방문)', clean:'분해 청소 1대', fan:'송풍팬 완전 분해', paper:'부분 도배 마감', protect:'거주 중 가구 이동·보양' };
+const RL={ base:'신규 설치 기본 (배관 별도)', moveBase:'이전 설치 기본 (배관 별도)', remove:'기존 에어컨 철거', pipePerM:'배관 1m당', pipeReplace:'매립 배관 교체·연결', angle:'실외기 앵글', gas:'냉매 보충 (설치 시)', gasFill:'냉매 충전 (수리 방문)', clean:'분해 청소 1대', fan:'송풍팬 완전 분해', paper:'부분 도배 마감', protect:'거주 중 가구 이동·보양' };
 const RC={ ladder:'사다리차·스카이차 (4시간)', hole:'타공 1곳', elecBase:'전용 전기 작업 기본', elecPer:'전용 전기 작업 대당', outdoorClean:'실외기 세척 1대', visit:'수리·충전 출장 점검비', regionOut:'인접 지역 출장 가산', floorMid:'3~5층 작업 가산', floorHigh:'6층 이상 작업 가산', distCity:'운반 (같은 시·군)', distFar:'운반 (다른 시·도)', highMount:'고소 작업 (3m 이상)', leakCheck:'누설 점검·용접', oldPart:'구형 모델 부품 가산' };
 const RCEIL={ indoor:'천장형 실내기 설치 1대', outdoor:'시스템 실외기 1대 설치', hatch:'천장 점검구·타공', drain:'드레인 배관', protect:'거주 중 천장 작업 보양', paper:'천장·벽 부분 도배', remove:'천장형 철거', gas:'냉매 추가 충전', clean:'천장형 분해 청소 1대', fan:'천장형 송풍팬 분해' };
 const GASF={unknown:'냉매 종류 모름', r410:'R410A', r32:'R32', r22:'R22'};
@@ -206,10 +207,10 @@ function render(){
     h+=card('자주 묻는 질문', draft.site.faq.map((p,i)=>'<div class="item"><div class="ih"><span>질문 '+(i+1)+'</span>'+del('site.faq.'+i)+'</div>'+fText('site.faq.'+i+'.q','질문')+fText('site.faq.'+i+'.a','답변','',true)+'</div>').join('')+addBtn('site.faq',{q:'',a:''},'질문 추가'));
   }
   if(tab==='rates'){
-    h+=card('기종별 단가', '<div class="tbl-wrap"><table class="edit"><thead><tr><th>항목</th><th>벽걸이 (원)</th><th>스탠드</th><th>2in1</th><th>근거 메모</th></tr></thead><tbody>'+
-      Object.keys(RL).map(k=>'<tr><td>'+esc(RL[k])+'</td>'+TYPES.map(t=>'<td>'+rg('rates.'+k+'.'+t)+'</td>').join('')+'<td><input type="text" data-p="rates.'+k+'.src" value="'+esc(draft.rates[k].src||'')+'"></td></tr>').join('')+'</tbody></table></div>',
-      '최소~최대 범위로 적습니다. 같은 값을 넣으면 고정가로 표시됩니다. 금액은 원 단위, 부가세 별도 기준.');
-    h+=card('시스템 에어컨 (3대 이상)', '<div class="g2">'+Object.keys(RCEIL).map(k=>fRange('rates.ceil.'+k, RCEIL[k])).join('')+'</div>'+fText('rates.ceil.src','근거 메모'));
+    h+=card('기종별 단가', '<div class="tbl-wrap"><table class="edit"><thead><tr><th>항목</th><th>벽걸이 (원)</th><th>스탠드</th><th>2in1</th></tr></thead><tbody>'+
+      Object.keys(RL).map(k=>'<tr><td>'+esc(RL[k])+'</td>'+TYPES.map(t=>'<td>'+rg('rates.'+k+'.'+t)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>',
+      '최소~최대 범위로 적습니다. 같은 값을 넣으면 고정가로 표시됩니다. 금액은 원 단위, 부가세 별도 기준. 기본 설치에 배관은 들어가지 않고 1m당 단가로 따로 계산합니다.');
+    h+=card('시스템 에어컨 (3대 이상)', '<div class="g2">'+Object.keys(RCEIL).map(k=>fRange('rates.ceil.'+k, RCEIL[k])).join('')+'</div>');
     h+=card('공통 항목', '<div class="g2">'+Object.keys(RC).map(k=>fRange('rates.'+k, RC[k])).join('')+'</div>');
     h+=card('계수·할인', '<div class="g3">'+fNum('rates.multiDiscount','동시 설치 할인율','0.1 = 10%')+fNum('rates.seasonFactor','성수기 계수 (6~8월)','1.1 = 10% 가산')+fNum('rates.commission','기사 중개 수수료율','0.05 = 5%')+'</div>'+
       '<div class="g2">'+fRange('rates.housePipe','주택 추가 배관 (m)','외벽·지상 경로 가산 길이')+fRange('rates.dirt.1','청소 오염 가산 · 5~9년')+fRange('rates.dirt.2','청소 오염 가산 · 10년 이상')+Object.keys(GASF).map(k=>fRange('rates.gasFactor.'+k,'냉매 계수 · '+GASF[k])).join('')+'</div>');
@@ -219,7 +220,7 @@ function render(){
       const pre='brands.'+i;
       const tbl=(t,label)=>{ const m=b.models[t]||{}; const keys=Object.keys(m).sort((a,c)=>a-c); if(!keys.length) return ''; return '<div class="tbl-wrap"><table class="edit"><thead><tr><th>'+label+'</th><th>모델명</th><th>판매가 (원)</th></tr></thead><tbody>'+keys.map(k=>'<tr><td>'+k+'평</td><td><input type="text" data-p="'+pre+'.models.'+t+'.'+k+'.0" value="'+esc(m[k][0])+'"></td><td><input type="number" step="1000" data-n="1" data-p="'+pre+'.models.'+t+'.'+k+'.1" value="'+m[k][1]+'"></td></tr>').join('')+'</tbody></table></div>'; };
       h+=card(b.name||'브랜드 '+(i+1), '<div class="g3">'+fText(pre+'.name','브랜드 이름')+fText(pre+'.line','라인업')+fText(pre+'.note','한 줄 특징')+'</div>'+
-        tbl('wall','벽걸이')+tbl('stand','스탠드')+tbl('ceil','천장형 (시스템)')+
+        tbl('wall','벽걸이')+tbl('stand','스탠드')+tbl('two','2in1 (투인원)')+tbl('ceil','천장형 (시스템)')+
         '<div class="g2">'+fText(pre+'.models.outdoor.0','시스템 실외기 모델명')+fNum(pre+'.models.outdoor.1','시스템 실외기 가격 (원)')+'</div>',
         '', draft.brands.length>1?del(pre):'');
     });

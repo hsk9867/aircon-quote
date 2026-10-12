@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>이전·설치 견적 · 속시원</title>
+<link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261012">
+<link rel="stylesheet" href="css/style.css?v=20261012b">
 </head>
 <body>
 <header class="top"></header>
@@ -14,7 +15,7 @@
 <div class="page-head">
   <span class="eyebrow" data-t="pages.move.eyebrow">이전/설치 견적 · 철거 + 운반 + 재설치</span>
   <h1 data-t="pages.move.title">이사할 때 떼고, 새집에 다시 답니다</h1>
-  <p data-t="pages.move.desc">기종, 대수, 이동 거리, 도착지 조건을 고르면 철거비·운반비·재설치비가 항목별로 나옵니다. 배관 5m, 기존 위치 철거가 기본에 포함됩니다.</p>
+  <p data-t="pages.move.desc">기종, 대수, 이동 거리, 도착지 조건을 고르면 철거비·운반비·재설치비가 항목별로 나옵니다. 기존 위치 철거가 기본에 포함되고, 배관은 길이만큼 1m 단위로 계산합니다.</p>
 </div>
 
 <section id="quote">
@@ -39,8 +40,8 @@
       </div>
     </div>
     <div class="fs">
-      <div class="lbl">추가 배관 <b class="num" id="pipe-v">0m</b> <span class="hint">(기본 5m 포함)</span></div>
-      <input type="range" id="pipe" min="0" max="15" step="1" value="0" aria-label="추가 배관 길이">
+      <div class="lbl">배관 길이 <b class="num" id="pipe-v">5m</b> <span class="hint">1m 단위 계산</span></div>
+      <input type="range" id="pipe" min="1" max="20" step="1" value="5" aria-label="배관 길이">
     </div>
     <div class="fs">
       <div class="lbl"><span class="n">3</span>현장 조건</div>
@@ -79,8 +80,8 @@
 
 </main>
 <footer></footer>
-<script src="data/config.js?v=20261012"></script>
-<script src="js/common.js?v=20261012"></script>
+<script src="data/config.js?v=20261012b"></script>
+<script src="js/common.js?v=20261012b"></script>
 <script>
 (function(){
 'use strict';
@@ -89,7 +90,7 @@ let result=null;
 $('pipe').addEventListener('input', ()=>{ $('pipe-v').textContent=$('pipe').value+'m'; });
 function calc(){
   const t=radio('type'), n=+$('count').value, date=$('q-date').value, house=$('home').value==='house'; const items=[];
-  items.push({label:TYPE_LABEL[t]+' 이전 설치 기본 (배관 5m 포함)'+(n>1?' × '+n+'대':''), r:mul(RATES.moveBase[t],n)});
+  items.push({label:TYPE_LABEL[t]+' 이전 설치 기본 (배관 별도)'+(n>1?' × '+n+'대':''), r:mul(RATES.moveBase[t],n)});
   if($('remove').checked) items.push({label:'기존 위치 철거'+(n>1?' × '+n+'대':''), r:mul(RATES.remove[t],n)});
   const d=$('dist').value;
   if(d==='city') items.push({label:'운반 (같은 시·군)', r:RATES.distCity});
@@ -98,7 +99,7 @@ function calc(){
   if(f==='mid') items.push({label:'도착지 3~5층 작업 가산', r:RATES.floorMid});
   if(f==='high') items.push({label:'도착지 고층 작업 가산', r:RATES.floorHigh});
   const pipe=+$('pipe').value;
-  if(pipe>0) items.push({label:'배관 연장 '+pipe+'m', r:mul(RATES.pipePerM[t],pipe)});
+  items.push({label:'배관 '+pipe+'m × '+n+'대 (1m당)', r:mul(RATES.pipePerM[t],pipe*n)});
   if(house){ items.push({label:'주택 외벽·지상 경로 배관 '+RATES.housePipe[0]+'~'+RATES.housePipe[1]+'m', r:[RATES.pipePerM[t][0]*RATES.housePipe[0], RATES.pipePerM[t][1]*RATES.housePipe[1]]}); items.push({label:'타공 '+n+'곳', r:mul(RATES.hole,n)}); }
   if($('buried').checked) items.push({label:'매립 배관 교체·연결', r:RATES.pipeReplace[t]});
   if($('angle').checked) items.push({label:'실외기 앵글 재설치', r:RATES.angle[t]});

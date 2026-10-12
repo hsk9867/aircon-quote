@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>단가표 · 속시원</title>
+<link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261012">
+<link rel="stylesheet" href="css/style.css?v=20261012b">
 </head>
 <body>
 <header class="top"></header>
@@ -19,18 +20,17 @@
 
 <section>
   <div class="sec-head"><h2>기종별 단가</h2></div>
-  <div class="tbl-wrap"><table id="t-type"><thead><tr><th>항목</th><th class="r">벽걸이</th><th class="r">스탠드</th><th class="r">2in1</th><th>근거</th></tr></thead><tbody></tbody></table></div>
+  <div class="tbl-wrap"><table id="t-type"><thead><tr><th>항목</th><th class="r">벽걸이</th><th class="r">스탠드</th><th class="r">2in1</th></tr></thead><tbody></tbody></table></div>
 </section>
 
 <section>
   <div class="sec-head"><h2>시스템 에어컨 (3대 이상)</h2><p class="small muted">천장형 실내기를 실외기 1대에 묶는 구성입니다.</p></div>
-  <div class="tbl-wrap"><table id="t-sys"><thead><tr><th>항목</th><th class="r">금액</th><th>근거</th></tr></thead><tbody></tbody></table></div>
+  <div class="tbl-wrap"><table id="t-sys"><thead><tr><th>항목</th><th class="r">금액</th></tr></thead><tbody></tbody></table></div>
 </section>
 
 <section>
   <div class="sec-head"><h2>공통 항목</h2></div>
-  <div class="tbl-wrap"><table id="t-common"><thead><tr><th>항목</th><th class="r">금액</th><th>근거</th></tr></thead><tbody></tbody></table></div>
-  <p class="src" style="margin-top:8px">기준 단가 출처: 에어아이(air-i.kr) 공개 단가표, 당근 동네 업체 게시가, 딜사이트 보도(설치비 15~20만 원), 2026년 10월 확인. 부가세 별도 참고가.</p>
+  <div class="tbl-wrap"><table id="t-common"><thead><tr><th>항목</th><th class="r">금액</th></tr></thead><tbody></tbody></table></div>
 </section>
 
 <section>
@@ -50,8 +50,8 @@
 
 </main>
 <footer></footer>
-<script src="data/config.js?v=20261012"></script>
-<script src="js/common.js?v=20261012"></script>
+<script src="data/config.js?v=20261012b"></script>
+<script src="js/common.js?v=20261012b"></script>
 <script>
 (function(){
 'use strict';
@@ -60,17 +60,17 @@ $('promises').innerHTML=SITE.promises.map(p=>'<div><span class="ck">✓</span><d
 $('steps').innerHTML=SITE.steps.map(p=>'<div class="step"><div><b>'+esc(p.title)+'</b><span>'+esc(p.desc)+'</span></div></div>').join('');
 $('faq').innerHTML=SITE.faq.map(f=>'<details><summary>'+esc(f.q)+'</summary><p>'+esc(f.a)+'</p></details>').join('');
 const rt = r => r[0]===r[1] ? manWon(r[0]) : manWon(r[0])+'~'+manWon(r[1]);
-const row3 = (l,r) => '<tr><td>'+l+'</td><td class="r num">'+rt(r.wall)+'</td><td class="r num">'+rt(r.stand)+'</td><td class="r num">'+rt(r.two)+'</td><td class="src">'+r.src+'</td></tr>';
-const row1 = (l,r,s) => '<tr><td>'+l+'</td><td class="r num">'+(r?rt(r):'')+'</td><td class="src">'+s+'</td></tr>';
+const row3 = (l,r) => '<tr><td>'+l+'</td><td class="r num">'+rt(r.wall)+'</td><td class="r num">'+rt(r.stand)+'</td><td class="r num">'+rt(r.two)+'</td></tr>';
+const row1 = (l,r,s) => '<tr><td>'+l+'</td><td class="r num">'+(r?rt(r):esc(String(s||'').replace(/^(가정|기준)[^·]*·\s*/,'').replace(/\s*\((가정|기준)\)$/,'')))+'</td></tr>';
 document.querySelector('#t-type tbody').innerHTML = [
-  ['신규 설치 기본 (배관 5m 포함)',RATES.base],['이전 설치 기본 (배관 5m 포함)',RATES.moveBase],['기존 에어컨 철거',RATES.remove],
-  ['배관 연장 (1m당)',RATES.pipePerM],['매립 배관 교체·연결',RATES.pipeReplace],['실외기 앵글',RATES.angle],
+  ['신규 설치 기본 (배관 별도)',RATES.base],['이전 설치 기본 (배관 별도)',RATES.moveBase],['기존 에어컨 철거',RATES.remove],
+  ['배관 (1m당)',RATES.pipePerM],['매립 배관 교체·연결',RATES.pipeReplace],['실외기 앵글',RATES.angle],
   ['분해 청소 (1대)',RATES.clean],['송풍팬 완전 분해',RATES.fan],['냉매 충전 (수리·충전 방문)',RATES.gasFill],['냉매 보충 (설치 시 긴 배관 분)',RATES.gas],
   ['부분 도배 마감',RATES.paper],['거주 중 가구 이동·보양',RATES.protect]
 ].map(([l,r])=>row3(l,r)).join('');
 const C=RATES.ceil;
 document.querySelector('#t-sys tbody').innerHTML = [
-  ['천장형 실내기 설치 (1대)',C.indoor,C.src],['천장 점검구·타공 + 드레인 배관 (1대)',add(C.hatch,C.drain),'가정'],['시스템 실외기 1대 설치 (실내기 공용)',C.outdoor,'가정'],
+  ['천장형 실내기 설치 (1대)',C.indoor,''],['천장 점검구·타공 + 드레인 배관 (1대)',add(C.hatch,C.drain),'가정'],['시스템 실외기 1대 설치 (실내기 공용)',C.outdoor,'가정'],
   ['천장형 분해 청소 (1대)',C.clean,'가정'],['거주 중 천장 작업 보양 (1대)',C.protect,'가정'],['천장·벽 부분 도배 (1대)',C.paper,'가정'],['냉매 추가 충전 (긴 배관 분)',C.gas,'가정']
 ].map(([l,r,s])=>row1(l,r,s)).join('');
 document.querySelector('#t-common tbody').innerHTML = [

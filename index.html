@@ -6,61 +6,63 @@
 <title>속시원</title>
 <meta name="description" content="속시원 · 에어컨 설치, 청소, 냉매 충전, 이전 설치 무료 견적. 조건만 고르면 금액이 바로 나옵니다.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261009b">
+<link rel="stylesheet" href="css/style.css?v=20261012">
 </head>
 <body>
 <main class="wrap">
   <div class="home">
     <div class="brand">
       <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="2" y="2" width="44" height="44" rx="12" fill="var(--accent)"/><path d="M12 17h18a4 4 0 1 1-3 6.7" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/><path d="M12 25h22a4.5 4.5 0 1 0-3.4-7.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" opacity=".55"/><path d="M12 33h12a3.5 3.5 0 1 1-2.6 5.8" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg>
-      <h1 class="word">속시원</h1>
-      <p class="tag-line">에어컨 가격, 현장에서 바뀌지 않게. 조건만 고르면 금액이 바로 나오는 무료 견적입니다.</p>
+      <h1 class="word" data-t="brand.name">속시원</h1>
+      <p class="tag-line" data-t="brand.tagline">에어컨 가격, 현장에서 바뀌지 않게. 조건만 고르면 금액이 바로 나오는 무료 견적입니다.</p>
     </div>
 
     <nav class="menu" aria-label="견적 종류">
-      <a href="install.html">
+      <a href="install.html" data-menu="install">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="9" rx="2"/><path d="M7 14v3M17 14v3M9 10h6"/><path d="M8 20l1.5-2M16 20l-1.5-2"/></svg>
-        <b>설치 견적 내기</b>
-        <span>제품 구매와 신규 설치를 한 번에. 브랜드별 총액 비교</span>
+        <b data-t="home.menu.install.title">설치 견적 내기</b>
+        <span data-t="home.menu.install.desc">제품 구매와 신규 설치를 한 번에. 브랜드별 총액 비교</span>
       </a>
-      <a href="clean.html">
+      <a href="clean.html" data-menu="clean">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2.5"/><path d="M5 19l-1.5 1.5M19 19l1.5 1.5"/></svg>
-        <b>청소 견적 내기</b>
-        <span>분해 세척, 실외기 세척. 기종·대수별 금액</span>
+        <b data-t="home.menu.clean.title">청소 견적 내기</b>
+        <span data-t="home.menu.clean.desc">분해 세척, 실외기 세척. 기종·대수별 금액</span>
       </a>
-      <a href="gas.html">
+      <a href="gas.html" data-menu="gas">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3h4v3h-4zM8 6h8v13a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2z"/><path d="M8 13h8"/><path d="M12 13v6"/></svg>
-        <b>냉매 충전 견적</b>
-        <span>안 시원할 때. 냉매 종류·기종별 충전 비용</span>
+        <b data-t="home.menu.gas.title">냉매 충전 견적</b>
+        <span data-t="home.menu.gas.desc">안 시원할 때. 냉매 종류·기종별 충전 비용</span>
       </a>
-      <a href="move.html">
+      <a href="move.html" data-menu="move">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h8v8H3zM11 11h5l3 3v2h-8"/><circle cx="6.5" cy="18" r="1.5"/><circle cx="16.5" cy="18" r="1.5"/><path d="M19 4l2 2-2 2M21 6h-5"/></svg>
-        <b>이전/설치 견적 내기</b>
-        <span>이사할 때 철거하고 새집에 설치. 거리·층수 반영</span>
+        <b data-t="home.menu.move.title">이전/설치 견적 내기</b>
+        <span data-t="home.menu.move.desc">이사할 때 철거하고 새집에 설치. 거리·층수 반영</span>
       </a>
-      <a href="rental.html">
+      <a href="rental.html" data-menu="rental">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/><path d="M9 14h2v3H9zM13 13h2v4h-2z"/></svg>
-        <b>에어컨 렌탈</b>
-        <span>설치비 0원, 월 렌탈료만. 약정 후 소유권 이전</span>
+        <b data-t="home.menu.rental.title">에어컨 렌탈</b>
+        <span data-t="home.menu.rental.desc">설치비 0원, 월 렌탈료만. 약정 후 소유권 이전</span>
       </a>
-      <a href="business.html">
+      <a href="business.html" data-menu="business">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v16M15 9h3a1 1 0 0 1 1 1v11"/><path d="M8 8h2M8 12h2M8 16h2M11 8h1M11 12h1M11 16h1"/></svg>
-        <b>기업 전용 문의</b>
-        <span>사무실·매장·임대 건물 다량 견적. 카톡·메일로 접수</span>
+        <b data-t="home.menu.business.title">기업 전용 문의</b>
+        <span data-t="home.menu.business.desc">사무실·매장·임대 건물 다량 견적. 카톡·메일로 접수</span>
       </a>
     </nav>
 
     <div class="sub-links">
-      <a href="prices.html">단가표 전체 보기</a>
-      <a href="#contact" id="contact-link">전화·카카오톡 상담</a>
+      <a href="prices.html" data-t="home.links.prices">단가표 전체 보기</a>
+      <a href="#contact" id="contact-link" data-t="home.links.contact">전화·카카오톡 상담</a>
     </div>
-    <p class="small muted" id="contact" style="text-align:center" hidden>상담 전화 <b class="num">010-0000-0000</b> · 카카오톡 채널 <b>@속시원</b> (운영 전이라 예시입니다)</p>
+    <p class="small muted" id="contact" style="text-align:center" hidden></p>
   </div>
 </main>
 <footer></footer>
-<script src="js/common.js?v=20261009b"></script>
+<script src="data/config.js?v=20261012"></script>
+<script src="js/common.js?v=20261012"></script>
 <script>
-document.getElementById('contact-link').addEventListener('click', e=>{ e.preventDefault(); document.getElementById('contact').hidden=false; });
+(function(){ const c=window.SSW.SITE.contact, e=window.SSW.esc; document.getElementById('contact').innerHTML='상담 전화 <b class="num">'+e(c.phone)+'</b> · 카카오톡 채널 <b>'+e(c.kakaoId)+'</b>'+(c.note?' ('+e(c.note)+')':'');
+document.getElementById('contact-link').addEventListener('click', ev=>{ ev.preventDefault(); document.getElementById('contact').hidden=false; }); })();
 </script>
 </body>
 </html>

@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>에어컨 렌탈 · 속시원</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261009b">
+<link rel="stylesheet" href="css/style.css?v=20261012">
 </head>
 <body>
 <header class="top"></header>
 <main class="wrap">
 
 <div class="page-head">
-  <span class="eyebrow">에어컨 렌탈 · 설치비 0원, 월 렌탈료만</span>
-  <h1>목돈 없이 설치하고, 관리는 속시원이 맡습니다</h1>
-  <p>기종과 평수, 약정 기간, 관리 서비스를 고르면 브랜드별 월 렌탈료가 바로 나옵니다. 설치비와 설치 하자 보증이 렌탈료에 포함되고, 약정이 끝나면 제품은 고객 소유가 됩니다.</p>
+  <span class="eyebrow" data-t="pages.rental.eyebrow">에어컨 렌탈 · 설치비 0원, 월 렌탈료만</span>
+  <h1 data-t="pages.rental.title">목돈 없이 설치하고, 관리는 속시원이 맡습니다</h1>
+  <p data-t="pages.rental.desc">기종과 평수, 약정 기간, 관리 서비스를 고르면 브랜드별 월 렌탈료가 바로 나옵니다. 설치비와 설치 하자 보증이 렌탈료에 포함되고, 약정이 끝나면 제품은 고객 소유가 됩니다.</p>
 </div>
 
 <section id="quote">
@@ -75,14 +75,14 @@
 
 </main>
 <footer></footer>
-<script src="js/common.js?v=20261009b"></script>
+<script src="data/config.js?v=20261012"></script>
+<script src="js/common.js?v=20261012"></script>
 <script>
 (function(){
 'use strict';
 const {TYPE_LABEL, RATES, BRANDS, $, won, rangeText, rangeShort, mul, add, radio, esc, plusDays, linesHtml, Booking} = window.SSW;
 /* 렌탈 계산 가정: 월 렌탈료 = 제품가 × 렌탈 계수 ÷ 약정 개월 + 설치비 분할 + 관리 서비스 + 보증·보험 */
-const RENT = { factor:{36:[1.18,1.26],48:[1.24,1.34],60:[1.30,1.42]}, care:{0:[0,0],1:[5500,7000],2:[10500,13500]}, warranty:[2500,3500], multiDiscount:0.05,
-  installExtra:{apt:[0,0], house:[20000,60000], biz:[20000,80000]} };
+const RENT = window.SSW.RENT; /* 관리자 페이지에서 수정 */
 const PY = {wall:[6,7,9], stand:[11,13,15,17,19,23]};
 function fillPy(){ const t=radio('type'); $('py').innerHTML=PY[t].map(p=>'<option value="'+p+'">'+p+'평</option>').join(''); if(t==='stand') $('py').value='17'; }
 document.querySelectorAll('input[name=type]').forEach(r=>r.addEventListener('change', fillPy)); fillPy();

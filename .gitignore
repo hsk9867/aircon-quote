@@ -1,2 +1,4 @@
 deploy/cafe24.local.ps1
 dist/
+admin/auth.php
+admin/.lock.json

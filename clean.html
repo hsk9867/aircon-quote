@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>청소 견적 · 속시원</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261009b">
+<link rel="stylesheet" href="css/style.css?v=20261012">
 </head>
 <body>
 <header class="top"></header>
 <main class="wrap">
 
 <div class="page-head">
-  <span class="eyebrow">청소 견적 · 분해 세척</span>
-  <h1>기종과 대수를 고르면 청소 금액이 바로 나옵니다</h1>
-  <p>냄새·곰팡이, 여름 전 정기 세척. 실내기 완전 분해 세척 기준이고 실외기 세척과 송풍팬 분해는 옵션으로 더합니다. 3대부터 10% 할인입니다.</p>
+  <span class="eyebrow" data-t="pages.clean.eyebrow">청소 견적 · 분해 세척</span>
+  <h1 data-t="pages.clean.title">기종과 대수를 고르면 청소 금액이 바로 나옵니다</h1>
+  <p data-t="pages.clean.desc">냄새·곰팡이, 여름 전 정기 세척. 실내기 완전 분해 세척 기준이고 실외기 세척과 송풍팬 분해는 옵션으로 더합니다. 3대부터 10% 할인입니다.</p>
 </div>
 
 <section id="quote">
@@ -71,12 +71,13 @@
 
 </main>
 <footer></footer>
-<script src="js/common.js?v=20261009b"></script>
+<script src="data/config.js?v=20261012"></script>
+<script src="js/common.js?v=20261012"></script>
 <script>
 (function(){
 'use strict';
 const {TYPE_LABEL, RATES, $, mul, add, radio, isPeak, plusDays, applySeason, linesHtml, rangeShort, Booking} = window.SSW;
-const CLEAN_CEIL=[120000,150000], FAN_CEIL=[40000,60000]; /* 천장형 청소 (가정) */
+const CLEAN_CEIL=RATES.ceil.clean, FAN_CEIL=RATES.ceil.fan; /* 천장형 청소 (가정) */
 let result=null;
 function calc(){
   const t=radio('type'), n=+$('count').value, date=$('q-date').value; const items=[];

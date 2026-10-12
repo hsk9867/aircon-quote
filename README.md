@@ -13,7 +13,9 @@
 | `rental.html` | 에어컨 렌탈. 기종·평수, 약정 기간(36/48/60개월), 관리 서비스 → 브랜드별 월 렌탈료, 상담 신청 |
 | `business.html` | 기업 전용 문의. 회사·현장·공간별 설치 내용을 적으면 문의서가 만들어지고 카카오톡 공유 또는 메일(mailto)로 발송 |
 | `prices.html` | 단가표 전체 공개, 약속, 진행 절차, FAQ |
-| `admin.html` | 관리자 미리보기 (이 브라우저에서 접수한 예약·렌탈 상담·기업 문의) |
+| `admin.html` | 관리자 전용. 문구·연락처·사업자 정보·단가·브랜드 제품·렌탈 조건을 수정하고 저장 (카페24에서는 서버 저장, 그 외에는 config.js 내려받기), 접수 내역 |
+| `admin/api.php` | 관리자 저장 API (PHP). 비밀번호 로그인, `data/config.json`·`data/config.js` 기록 |
+| `data/config.js` | 관리자 페이지가 저장한 설정. 모든 페이지가 `js/common.js` 보다 먼저 읽어 기본값 위에 덮어씀 |
 | `css/style.css` | 공통 스타일 |
 | `js/common.js` | 단가(`RATES`), 브랜드 모델·가격(`BRANDS`), 상단·하단 바, 예약 접수와 기사 알림 미리보기 |
 
@@ -24,11 +26,19 @@
 - 기사 정산 금액 = 시공비 − 중개 수수료 5%
 - 렌탈: 월 렌탈료 = 제품가 × 렌탈 계수(36개월 1.18~1.26, 48개월 1.24~1.34, 60개월 1.30~1.42) ÷ 개월 + 설치비 분할 + 보증·보험 + 관리 서비스 (모두 가정값, `rental.html`의 `RENT`)
 
-## 수정 위치
-- 단가: `js/common.js`의 `RATES`. 단가표의 "가정" 항목은 지역 기사 인터뷰 후 확정해야 합니다.
-- 브랜드 모델과 판매가: `js/common.js`의 `BRANDS` (모두 예시)
-- 상담 전화, 카카오톡 채널, 사업자 정보: `index.html`, `js/common.js`의 푸터
-- 기업 문의 수신처: `business.html`의 `KAKAO_CHANNEL`(카카오톡 채널 채팅 주소), `MAIL_TO`
+## 관리자 페이지 (admin.html)
+사이트 주소 뒤에 `/admin.html` 을 붙여 엽니다. 검색 엔진에는 노출되지 않지만 주소를 아는 사람은 열 수 있으므로 비밀번호를 꼭 설정합니다.
+- 카페24(PHP 있음): 처음 열 때 관리자 비밀번호를 정하고, 이후 로그인해서 수정 → 저장. 저장 즉시 `data/config.js` 가 바뀌어 모든 페이지에 반영됩니다.
+- GitHub Pages 등 PHP 없는 곳: 로컬 모드. 수정 내용은 브라우저에만 남고 "config.js 내려받기"로 받은 파일을 `data/config.js` 에 넣고 `deploycafe24.ps1 -IncludeConfig` 로 올리거나 GitHub에 커밋합니다.
+- 탭: 기본 정보(브랜드 이름, 한 줄 소개, 상담 전화, 카카오톡 채널, 기업 문의 메일, 사업자 정보) · 첫 화면(버튼 이름·설명·표시 여부) · 페이지 문구(각 페이지 제목·설명) · 약속·절차·FAQ · 단가(RATES 전체) · 브랜드·제품(모델명·가격, 브랜드 추가/삭제) · 렌탈(계수·관리비) · 접수 내역
+- 미리보기: 저장 전 초안을 새 탭에서 봅니다 (그 탭에만 적용, 하단에 주황색 표시줄).
+- 비밀번호를 잊으면 서버의 `admin/auth.php` 를 지우고 다시 설정하거나, `deploy/cafe24.local.ps1` 에 `CAFE24_ADMIN_PASS` 를 적고 `-ResetAdminPassword` 로 배포합니다.
+
+## 코드에서 직접 고칠 때
+- 기본 단가: `js/common.js`의 `RATES_DEFAULT`. 관리자 페이지 저장값이 있으면 그 값이 우선합니다.
+- 기본 브랜드 모델과 판매가: `js/common.js`의 `BRANDS_DEFAULT` (모두 예시)
+- 기본 문구·연락처: `js/common.js`의 `SITE_DEFAULT`. 페이지의 `data-t="경로"` 요소가 이 값으로 채워집니다.
+- 렌탈 기본 계수: `js/common.js`의 `RENT_DEFAULT`
 
 ## 참고
 - 외부 의존성은 Google Fonts뿐이라 어디에 올려도 동작합니다.
@@ -36,7 +46,7 @@
 
 ## 공개 주소
 - GitHub Pages (개발 확인용): https://hsk9867.github.io/aircon-quote/
-- 실제 서비스: https://soksi-won.com (카페24 웹호스팅, 도메인 연결 후)
+- 실제 서비스: https://soksiwon-air.com (카페24 웹호스팅, 도메인 연결 후)
 
 ## 카페24 호스팅에 올리기
 서버 코드가 없는 정적 사이트라 카페24 웹호스팅 가장 낮은 요금제(절약형·10G 광아우토반)로 충분합니다.
@@ -44,12 +54,12 @@
 1. hosting.cafe24.com → 웹호스팅 신청. 아이디가 FTP 아이디이자 기본 주소(`아이디.cafe24.com`)가 됩니다.
 2. 나의서비스관리 → 호스팅 관리에서 FTP 비밀번호 확인·설정.
 3. 업로드 방법 둘 중 하나
-   - 스크립트: `deploy/cafe24.local.example.ps1`을 복사해 `deploy/cafe24.local.ps1`로 저장하고 아이디·비밀번호를 적은 뒤
+   - 스크립트: `deploy/cafe24.local.example.ps1`을 복사해 `deploy/cafe24.local.ps1`로 저장하고 아이디·비밀번호(원하면 관리자 비밀번호 `CAFE24_ADMIN_PASS`)를 적은 뒤
      ```
      powershell -ExecutionPolicy Bypass -File deploy\cafe24.ps1
      ```
-     html, css, js를 서버의 `www` 폴더에 올립니다. 파일을 고친 뒤 다시 실행하면 덮어씁니다.
+     html, css, js, 관리자 API를 서버의 `www` 폴더에 올립니다. 파일을 고친 뒤 다시 실행하면 덮어쓰고, 관리자 페이지에서 저장한 `data/config.js` 는 건드리지 않습니다.
    - 수동: `dist/sokshiwon-cafe24.zip`(또는 html·css·js 전체)을 카페24 웹FTP나 FileZilla로 `www` 폴더에 그대로 올립니다.
-4. 도메인 soksi-won.com 연결: 나의서비스관리 → 호스팅 관리 → 도메인 연결에서 `soksi-won.com`과 `www.soksi-won.com`을 추가합니다. 도메인을 카페24 밖에서 샀다면 그 업체에서 네임서버를 카페24 것(ns1.cafe24.com, ns2.cafe24.com)으로 바꿉니다. 연결 뒤 같은 메뉴의 보안서버(SSL)에서 무료 SSL을 신청해야 https로 열립니다.
+4. 도메인 soksiwon-air.com 연결: 나의서비스관리 → 호스팅 관리 → 도메인 연결에서 `soksiwon-air.com`과 `www.soksiwon-air.com`을 추가합니다. 도메인을 카페24 밖에서 샀다면 그 업체에서 네임서버를 카페24 것(ns1.cafe24.com, ns2.cafe24.com)으로 바꿉니다. 연결 뒤 같은 메뉴의 보안서버(SSL)에서 무료 SSL을 신청해야 https로 열립니다.
 
 `deploy/cafe24.local.ps1`과 `dist/`는 `.gitignore`에 있어 GitHub에 올라가지 않습니다. 비밀번호는 절대 커밋하지 마세요.

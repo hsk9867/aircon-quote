@@ -4,59 +4,281 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>관리자 · 속시원</title>
-<meta name="robots" content="noindex">
+<meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261009b">
+<link rel="stylesheet" href="css/style.css?v=20261012">
+<style>
+.abar{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;margin-bottom:14px;position:sticky;top:58px;z-index:10;background:var(--bg)}
+.abar::-webkit-scrollbar{display:none}
+.abar button{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:inherit;font-size:.85rem;font-weight:600;padding:8px 12px;border-radius:999px;white-space:nowrap;cursor:pointer}
+.abar button[aria-selected=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.panel{display:grid;gap:14px}
+.acard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:12px}
+.acard .ah{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.acard .ah p{font-size:.82rem;color:var(--muted);flex-basis:100%}
+.f{display:grid;gap:5px}
+.f>label{font-size:.82rem;font-weight:600;color:var(--muted)}
+.f input,.f textarea,.f select{font-size:.92rem}
+.f textarea{min-height:64px}
+.rg{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center}
+.rg span{color:var(--muted)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px} .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media (max-width:460px){.g2,.g3{grid-template-columns:1fr}}
+table.edit{min-width:0;width:100%}
+table.edit td,table.edit th{padding:6px 6px;vertical-align:middle}
+table.edit td:first-child,table.edit th:first-child{min-width:0;white-space:nowrap;font-weight:600;font-size:.84rem}
+table.edit input{padding:7px 8px;font-size:.86rem;min-width:88px}
+table.edit .rg{grid-template-columns:1fr auto 1fr;min-width:160px}
+table.edit input[type=text]{min-width:120px}
+.item{display:grid;gap:8px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2)}
+.item .ih{display:flex;justify-content:space-between;align-items:center;font-size:.82rem;color:var(--muted);font-weight:600}
+.item input,.item textarea{background:var(--surface)}
+.x{appearance:none;border:0;background:transparent;color:var(--muted);font-size:1.05rem;cursor:pointer;padding:0 6px;line-height:1}
+.x:hover{color:var(--warn)}
+.actions{position:sticky;bottom:0;z-index:12;margin-top:18px;background:var(--bg);padding:10px 0 calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.actions .sp{flex:1}
+.more{display:none;width:100%;gap:8px;flex-wrap:wrap;padding-top:8px;border-top:1px dashed var(--line)}
+.more.open{display:flex}
+.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);z-index:60;background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.86rem;font-weight:600;box-shadow:var(--shadow);max-width:90vw}
+.toast.bad{background:var(--warn);color:#fff}
+.gate{max-width:420px}
+.kv{font-size:.82rem;color:var(--muted)}
+.badge{font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink)}
+.badge.local{background:var(--warn-soft);color:var(--warn)}
+</style>
 </head>
 <body>
 <header class="top"></header>
 <main class="wrap">
 
 <div class="page-head">
-  <span class="eyebrow">관리자 미리보기</span>
-  <h1>접수된 예약과 기업 문의</h1>
-  <p>이 브라우저에서 접수한 건만 보입니다. 실제 운영에서는 서버 데이터베이스, 알림 발송 기록, 기사 배정 현황으로 대체됩니다.</p>
+  <span class="eyebrow">관리자 전용</span>
+  <h1>속시원 사이트 관리 <span class="badge" id="mode-badge" hidden></span></h1>
+  <p id="mode-desc">확인 중입니다…</p>
 </div>
 
-<section>
-  <div class="sec-head"><h2>예약·렌탈 상담 <span class="tag" id="bk-count">0</span></h2></div>
-  <div class="admin" id="bk-list"></div>
-  <div style="padding-top:12px"><button class="btn sm" type="button" id="bk-clear">예약 목록 비우기</button></div>
+<section id="gate" hidden>
+  <form class="form gate" id="setup" hidden novalidate>
+    <div><span class="eyebrow">처음 설정</span><h2>관리자 비밀번호를 정해 주세요</h2><p class="small muted">이 서버에 아직 관리자 비밀번호가 없습니다. 8자 이상으로 정하면 바로 로그인됩니다.</p></div>
+    <div class="fs"><label class="lbl" for="su-pw">비밀번호</label><input type="password" id="su-pw" autocomplete="new-password"></div>
+    <div class="fs"><label class="lbl" for="su-pw2">비밀번호 확인</label><input type="password" id="su-pw2" autocomplete="new-password"></div>
+    <p class="err" id="su-err" hidden></p>
+    <button class="btn primary block" type="submit">비밀번호 설정하고 시작</button>
+  </form>
+  <form class="form gate" id="login" hidden novalidate>
+    <div><span class="eyebrow">관리자 로그인</span><h2>비밀번호를 입력해 주세요</h2></div>
+    <div class="fs"><label class="lbl" for="li-pw">비밀번호</label><input type="password" id="li-pw" autocomplete="current-password"></div>
+    <p class="err" id="li-err" hidden></p>
+    <button class="btn primary block" type="submit">로그인</button>
+    <p class="small muted">비밀번호를 잊었다면 서버의 <code>admin/auth.php</code> 파일을 지우고 다시 설정하거나, 배포 스크립트에 새 비밀번호를 넣어 다시 올리면 됩니다.</p>
+  </form>
 </section>
 
-<section>
-  <div class="sec-head"><h2>기업 전용 문의 <span class="tag" id="tc-count">0</span></h2></div>
-  <div class="admin" id="tc-list"></div>
-  <div style="padding-top:12px"><button class="btn sm" type="button" id="tc-clear">문의 목록 비우기</button></div>
+<section id="editor" hidden>
+  <div class="abar" id="tabs" role="tablist"></div>
+  <div class="panel" id="panel"></div>
+  <div class="actions">
+    <button class="btn sm" type="button" id="act-preview">미리보기</button>
+    <button class="btn sm" type="button" id="act-reset">이 탭 기본값</button>
+    <span class="sp"></span>
+    <button class="btn sm" type="button" id="act-more">더보기</button>
+    <button class="btn primary" type="button" id="act-save">저장</button>
+    <div class="more" id="more">
+      <button class="btn sm" type="button" id="act-export">설정 내보내기 (JSON)</button>
+      <label class="btn sm">설정 가져오기<input type="file" id="act-import" accept=".json,.js" hidden></label>
+      <button class="btn sm" type="button" id="act-download">config.js 내려받기</button>
+      <button class="btn sm" type="button" id="act-reset-all">전체 기본값으로</button>
+      <button class="btn sm" type="button" id="act-pw" hidden>비밀번호 변경</button>
+      <button class="btn sm" type="button" id="act-logout" hidden>로그아웃</button>
+    </div>
+  </div>
 </section>
+
+<p class="toast" id="toast" hidden></p>
 
 </main>
 <footer></footer>
-<script src="js/common.js?v=20261009b"></script>
+<script src="data/config.js?v=20261012"></script>
+<script src="js/common.js?v=20261012"></script>
 <script>
 (function(){
 'use strict';
-const {$, load, save, esc, rangeShort, rangeText, fmtDate} = window.SSW;
+const S=window.SSW; const {$, esc, load, save, rangeShort, rangeText, fmtDate, deepMerge, getPath, DEFAULTS, TYPE_LABEL}=S;
+const clone=o=>JSON.parse(JSON.stringify(o));
+const isObj=v=>!!v&&typeof v==='object'&&!Array.isArray(v);
+function setPath(o,p,v){ const ks=p.split('.'); let a=o; for(let i=0;i<ks.length-1;i++){ if(a[ks[i]]==null) a[ks[i]]=/^\d+$/.test(ks[i+1])?[]:{}; a=a[ks[i]]; } a[ks[ks.length-1]]=v; }
+let mode='local', st={}, draft=null, tab='basic';
+try{ const h=location.hash.slice(1); if(/^(basic|home|pages|guide|rates|brands|rent|inbox)$/.test(h)) tab=h; }catch(e){}
+
+/* ---------- 서버 API ---------- */
+async function api(action,data){
+  const opt={method:data?'POST':'GET', credentials:'same-origin', headers:{'X-Requested-With':'SSW'}};
+  if(data){ opt.headers['Content-Type']='application/json'; opt.body=JSON.stringify(data); }
+  const r=await fetch('admin/api.php?action='+action+'&_='+Date.now(), opt);
+  const t=await r.text(); return JSON.parse(t);
+}
+function toast(msg,bad){ const t=$('toast'); t.textContent=msg; t.className='toast'+(bad?' bad':''); t.hidden=false; clearTimeout(toast.h); toast.h=setTimeout(()=>{t.hidden=true;},3500); }
+function fromConfig(cfg){ cfg=isObj(cfg)?cfg:{}; return {
+  site:deepMerge(DEFAULTS.site, isObj(cfg.site)?cfg.site:{}), rates:deepMerge(DEFAULTS.rates, isObj(cfg.rates)?cfg.rates:{}),
+  brands:(Array.isArray(cfg.brands)&&cfg.brands.length)?clone(cfg.brands):clone(DEFAULTS.brands), rent:deepMerge(DEFAULTS.rent, isObj(cfg.rent)?cfg.rent:{}) }; }
+function toConfig(){ return {site:draft.site, rates:draft.rates, brands:draft.brands, rent:draft.rent, savedAt:new Date().toISOString()}; }
+function keepLocal(){ if(mode==='local'){ try{ localStorage.setItem('ssw_cfg_draft', JSON.stringify(toConfig())); }catch(e){} } }
+
+async function init(){
+  try{ st=await api('status'); if(st&&st.server) mode='server'; }catch(e){ mode='local'; }
+  const badge=$('mode-badge'); badge.hidden=false;
+  if(mode==='server'){
+    badge.textContent='서버 저장';
+    $('mode-desc').textContent='저장을 누르면 이 주소의 모든 페이지에 바로 반영됩니다. 글자, 연락처, 단가, 브랜드 제품, 렌탈 조건을 여기서 바꿀 수 있습니다.';
+    $('act-pw').hidden=false; $('act-logout').hidden=false; $('act-download').hidden=true;
+    if(!st.hasPassword){ $('gate').hidden=false; $('setup').hidden=false; }
+    else if(!st.loggedIn){ $('gate').hidden=false; $('login').hidden=false; }
+    else await openServer();
+  }else{
+    badge.textContent='로컬 모드'; badge.className='badge local';
+    $('mode-desc').textContent='이 주소에는 저장 서버(PHP)가 없어 수정 내용이 이 브라우저에만 보관됩니다. 다 고친 뒤 "config.js 내려받기"로 받은 파일을 프로젝트의 data/config.js 에 넣고 배포하면 반영됩니다. 카페24 주소(soksiwon-air.com/admin.html)에서는 바로 저장됩니다.';
+    let d=null; try{ d=JSON.parse(localStorage.getItem('ssw_cfg_draft')||'null'); }catch(e){}
+    draft = d ? fromConfig(d) : fromConfig(S.CFG);
+    openEditor();
+  }
+}
+async function openServer(){
+  try{ const r=await api('load'); if(!r.ok){ if(r.error==='auth'){ $('gate').hidden=false; $('login').hidden=false; return; } throw new Error(r.error); }
+    draft=fromConfig(r.config); if(r.writable===false) toast('data 폴더에 쓰기 권한이 없어 저장이 실패할 수 있습니다. FTP에서 data 폴더 권한을 707로 바꿔 주세요.', true);
+    openEditor();
+  }catch(e){ toast('설정을 불러오지 못했습니다: '+e.message, true); }
+}
+function openEditor(){ $('gate').hidden=true; $('editor').hidden=false; renderTabs(); render(); }
+
+/* ---------- 로그인/설정 ---------- */
+$('setup').addEventListener('submit', async e=>{ e.preventDefault(); const pw=$('su-pw').value, pw2=$('su-pw2').value, err=$('su-err');
+  if(pw.length<8){ err.hidden=false; err.textContent='8자 이상으로 정해 주세요.'; return; } if(pw!==pw2){ err.hidden=false; err.textContent='두 비밀번호가 다릅니다.'; return; }
+  try{ const r=await api('setup',{password:pw}); if(!r.ok) throw new Error(r.error==='already_set'?'이미 비밀번호가 있습니다. 로그인해 주세요.':r.error); $('setup').hidden=true; await openServer(); }
+  catch(ex){ err.hidden=false; err.textContent=ex.message; } });
+$('login').addEventListener('submit', async e=>{ e.preventDefault(); const err=$('li-err');
+  try{ const r=await api('login',{password:$('li-pw').value}); if(!r.ok){ err.hidden=false; err.textContent= r.error==='locked'?'틀린 횟수가 많아 15분간 잠겼습니다.':'비밀번호가 맞지 않습니다.'; return; } $('login').hidden=true; $('li-pw').value=''; await openServer(); }
+  catch(ex){ err.hidden=false; err.textContent='서버 응답이 없습니다: '+ex.message; } });
+$('act-logout').addEventListener('click', async ()=>{ try{ await api('logout',{}); }catch(e){} location.reload(); });
+$('act-pw').addEventListener('click', async ()=>{ const cur=prompt('현재 비밀번호'); if(cur==null) return; const nw=prompt('새 비밀번호 (8자 이상)'); if(nw==null) return;
+  try{ const r=await api('password',{current:cur,password:nw}); toast(r.ok?'비밀번호를 바꿨습니다.':(r.error==='wrong'?'현재 비밀번호가 틀립니다.':'실패: '+r.error), !r.ok); }catch(e){ toast('실패: '+e.message,true); } });
+
+/* ---------- 탭 ---------- */
+const TABS=[['basic','기본 정보'],['home','첫 화면'],['pages','페이지 문구'],['guide','약속·절차·FAQ'],['rates','단가'],['brands','브랜드·제품'],['rent','렌탈'],['inbox','접수 내역']];
+function renderTabs(){ $('tabs').innerHTML=TABS.map(([k,l])=>'<button type="button" role="tab" data-tab="'+k+'" aria-selected="'+(k===tab)+'">'+l+'</button>').join(''); }
+$('tabs').addEventListener('click', e=>{ const b=e.target.closest('[data-tab]'); if(!b) return; tab=b.dataset.tab; try{ history.replaceState(null,'','#'+tab); }catch(e){} renderTabs(); render(); window.scrollTo({top:0}); });
+
+/* ---------- 필드 ---------- */
+const fText=(p,label,hint,ta)=>{ const v=getPath(draft,p); return '<div class="f"><label>'+esc(label)+(hint?' <span class="hint">'+esc(hint)+'</span>':'')+'</label>'+(ta?'<textarea data-p="'+p+'">'+esc(v==null?'':v)+'</textarea>':'<input type="text" data-p="'+p+'" value="'+esc(v==null?'':v)+'">')+'</div>'; };
+const fNum=(p,label,hint)=>'<div class="f"><label>'+esc(label)+(hint?' <span class="hint">'+esc(hint)+'</span>':'')+'</label><input type="number" step="any" inputmode="decimal" data-p="'+p+'" data-n="1" value="'+esc(getPath(draft,p))+'"></div>';
+const rg=p=>{ const v=getPath(draft,p)||[0,0]; return '<div class="rg"><input type="number" step="any" inputmode="numeric" data-p="'+p+'.0" data-n="1" value="'+v[0]+'"><span>~</span><input type="number" step="any" inputmode="numeric" data-p="'+p+'.1" data-n="1" value="'+v[1]+'"></div>'; };
+const fRange=(p,label,hint)=>'<div class="f"><label>'+esc(label)+(hint?' <span class="hint">'+esc(hint)+'</span>':'')+'</label>'+rg(p)+'</div>';
+const fBool=(p,label)=>'<label class="chip"><input type="checkbox" data-p="'+p+'" data-b="1"'+(getPath(draft,p)!==false?' checked':'')+'>'+esc(label)+'</label>';
+const card=(title,inner,desc,extra)=>'<div class="acard"><div class="ah"><h3>'+esc(title)+'</h3>'+(extra||'')+(desc?'<p>'+esc(desc)+'</p>':'')+'</div>'+inner+'</div>';
+const del=p=>'<button class="x" type="button" data-del="'+p+'" title="삭제">✕</button>';
+const addBtn=(p,tpl,label)=>'<button class="btn sm" type="button" data-add="'+p+'" data-tpl=\''+esc(JSON.stringify(tpl))+'\'>+ '+esc(label)+'</button>';
+
+const RL={ base:'신규 설치 기본 (배관 5m)', moveBase:'이전 설치 기본 (배관 5m)', remove:'기존 에어컨 철거', pipePerM:'배관 연장 1m당', pipeReplace:'매립 배관 교체·연결', angle:'실외기 앵글', gas:'냉매 보충 (설치 시)', gasFill:'냉매 충전 (수리 방문)', clean:'분해 청소 1대', fan:'송풍팬 완전 분해', paper:'부분 도배 마감', protect:'거주 중 가구 이동·보양' };
+const RC={ ladder:'사다리차·스카이차 (4시간)', hole:'타공 1곳', elecBase:'전용 전기 작업 기본', elecPer:'전용 전기 작업 대당', outdoorClean:'실외기 세척 1대', visit:'수리·충전 출장 점검비', regionOut:'인접 지역 출장 가산', floorMid:'3~5층 작업 가산', floorHigh:'6층 이상 작업 가산', distCity:'운반 (같은 시·군)', distFar:'운반 (다른 시·도)', highMount:'고소 작업 (3m 이상)', leakCheck:'누설 점검·용접', oldPart:'구형 모델 부품 가산' };
+const RCEIL={ indoor:'천장형 실내기 설치 1대', outdoor:'시스템 실외기 1대 설치', hatch:'천장 점검구·타공', drain:'드레인 배관', protect:'거주 중 천장 작업 보양', paper:'천장·벽 부분 도배', remove:'천장형 철거', gas:'냉매 추가 충전', clean:'천장형 분해 청소 1대', fan:'천장형 송풍팬 분해' };
+const GASF={unknown:'냉매 종류 모름', r410:'R410A', r32:'R32', r22:'R22'};
+const PAGES={install:'설치 견적',clean:'청소 견적',gas:'냉매 충전',move:'이전·설치',rental:'렌탈',business:'기업 문의',prices:'단가표'};
+const TYPES=['wall','stand','two'];
+
 function render(){
-  const bk=load('ssw_bookings'); $('bk-count').textContent=bk.length;
-  $('bk-list').innerHTML = bk.length ? bk.map(b=>
-    '<div class="bk"><div class="h"><span>'+b.id+' · '+esc(b.svcLabel)+'</span><span class="tag '+(b.status.startsWith('기사 수락')?'ok':b.status.startsWith('거절')?'warn':'acc')+'">'+esc(b.status)+'</span></div>'+
-    '<div>'+esc(b.summary)+' · <b class="num">'+rangeShort(b.total[0],b.total[1])+'</b></div>'+
-    (b.models&&b.models.length?'<div class="muted">'+esc(b.models.join(', '))+'</div>':'')+
+  const P=$('panel'); let h='';
+  if(tab==='basic'){
+    h+=card('브랜드', fText('site.brand.name','이름','상단 바, 첫 화면, 하단에 쓰입니다')+fText('site.brand.tagline','첫 화면 한 줄 소개','',true));
+    h+=card('상담 연락처', '<div class="g2">'+fText('site.contact.phone','상담 전화')+fText('site.contact.kakaoId','카카오톡 채널 이름','예: @속시원')+'</div>'+fText('site.contact.kakaoChat','카카오톡 채널 채팅 주소','기업 문의 "카카오톡으로 보내기"가 여는 주소. 채널 관리자센터 > 채널 URL')+fText('site.contact.bizEmail','기업 문의 수신 메일')+fText('site.contact.note','연락처 옆 안내 문구','비워 두면 표시되지 않습니다'), '첫 화면의 "전화·카카오톡 상담"과 기업 문의 발송에 쓰입니다.');
+    h+=card('사업자 정보 (하단 표기)', '<div class="g2">'+fText('site.biz.company','상호')+fText('site.biz.ceo','대표자')+fText('site.biz.regNo','사업자등록번호')+fText('site.biz.mailOrderNo','통신판매업 신고번호')+'</div>'+fText('site.biz.address','사업장 주소')+fText('site.biz.footerNote','하단 안내 문구','',true), '비워 두면 "확정 후 표기" 안내가 나옵니다. 통신판매업 신고 후 상호·대표·사업자번호·주소 표기는 의무입니다.');
+  }
+  if(tab==='home'){
+    for(const k of Object.keys(draft.site.home.menu)){
+      h+=card((DEFAULTS.site.home.menu[k]||{}).title||k, fText('site.home.menu.'+k+'.title','버튼 이름')+fText('site.home.menu.'+k+'.desc','설명 (두 줄까지)'), '', fBool('site.home.menu.'+k+'.show','첫 화면에 표시'));
+    }
+    h+=card('하단 링크', '<div class="g2">'+fText('site.home.links.prices','단가표 링크 문구')+fText('site.home.links.contact','상담 링크 문구')+'</div>');
+  }
+  if(tab==='pages'){
+    for(const k of Object.keys(PAGES)) h+=card(PAGES[k]+' 페이지', fText('site.pages.'+k+'.eyebrow','작은 머리글')+fText('site.pages.'+k+'.title','제목')+fText('site.pages.'+k+'.desc','설명','',true));
+  }
+  if(tab==='guide'){
+    h+=card('약속 (단가표 페이지)', draft.site.promises.map((p,i)=>'<div class="item"><div class="ih"><span>약속 '+(i+1)+'</span>'+del('site.promises.'+i)+'</div>'+fText('site.promises.'+i+'.title','제목')+fText('site.promises.'+i+'.desc','설명')+'</div>').join('')+addBtn('site.promises',{title:'',desc:''},'약속 추가'));
+    h+=card('진행 절차', draft.site.steps.map((p,i)=>'<div class="item"><div class="ih"><span>'+(i+1)+'단계</span>'+del('site.steps.'+i)+'</div>'+fText('site.steps.'+i+'.title','제목')+fText('site.steps.'+i+'.desc','설명')+'</div>').join('')+addBtn('site.steps',{title:'',desc:''},'단계 추가'));
+    h+=card('자주 묻는 질문', draft.site.faq.map((p,i)=>'<div class="item"><div class="ih"><span>질문 '+(i+1)+'</span>'+del('site.faq.'+i)+'</div>'+fText('site.faq.'+i+'.q','질문')+fText('site.faq.'+i+'.a','답변','',true)+'</div>').join('')+addBtn('site.faq',{q:'',a:''},'질문 추가'));
+  }
+  if(tab==='rates'){
+    h+=card('기종별 단가', '<div class="tbl-wrap"><table class="edit"><thead><tr><th>항목</th><th>벽걸이 (원)</th><th>스탠드</th><th>2in1</th><th>근거 메모</th></tr></thead><tbody>'+
+      Object.keys(RL).map(k=>'<tr><td>'+esc(RL[k])+'</td>'+TYPES.map(t=>'<td>'+rg('rates.'+k+'.'+t)+'</td>').join('')+'<td><input type="text" data-p="rates.'+k+'.src" value="'+esc(draft.rates[k].src||'')+'"></td></tr>').join('')+'</tbody></table></div>',
+      '최소~최대 범위로 적습니다. 같은 값을 넣으면 고정가로 표시됩니다. 금액은 원 단위, 부가세 별도 기준.');
+    h+=card('시스템 에어컨 (3대 이상)', '<div class="g2">'+Object.keys(RCEIL).map(k=>fRange('rates.ceil.'+k, RCEIL[k])).join('')+'</div>'+fText('rates.ceil.src','근거 메모'));
+    h+=card('공통 항목', '<div class="g2">'+Object.keys(RC).map(k=>fRange('rates.'+k, RC[k])).join('')+'</div>');
+    h+=card('계수·할인', '<div class="g3">'+fNum('rates.multiDiscount','동시 설치 할인율','0.1 = 10%')+fNum('rates.seasonFactor','성수기 계수 (6~8월)','1.1 = 10% 가산')+fNum('rates.commission','기사 중개 수수료율','0.05 = 5%')+'</div>'+
+      '<div class="g2">'+fRange('rates.housePipe','주택 추가 배관 (m)','외벽·지상 경로 가산 길이')+fRange('rates.dirt.1','청소 오염 가산 · 5~9년')+fRange('rates.dirt.2','청소 오염 가산 · 10년 이상')+Object.keys(GASF).map(k=>fRange('rates.gasFactor.'+k,'냉매 계수 · '+GASF[k])).join('')+'</div>');
+  }
+  if(tab==='brands'){
+    draft.brands.forEach((b,i)=>{
+      const pre='brands.'+i;
+      const tbl=(t,label)=>{ const m=b.models[t]||{}; const keys=Object.keys(m).sort((a,c)=>a-c); if(!keys.length) return ''; return '<div class="tbl-wrap"><table class="edit"><thead><tr><th>'+label+'</th><th>모델명</th><th>판매가 (원)</th></tr></thead><tbody>'+keys.map(k=>'<tr><td>'+k+'평</td><td><input type="text" data-p="'+pre+'.models.'+t+'.'+k+'.0" value="'+esc(m[k][0])+'"></td><td><input type="number" step="1000" data-n="1" data-p="'+pre+'.models.'+t+'.'+k+'.1" value="'+m[k][1]+'"></td></tr>').join('')+'</tbody></table></div>'; };
+      h+=card(b.name||'브랜드 '+(i+1), '<div class="g3">'+fText(pre+'.name','브랜드 이름')+fText(pre+'.line','라인업')+fText(pre+'.note','한 줄 특징')+'</div>'+
+        tbl('wall','벽걸이')+tbl('stand','스탠드')+tbl('ceil','천장형 (시스템)')+
+        '<div class="g2">'+fText(pre+'.models.outdoor.0','시스템 실외기 모델명')+fNum(pre+'.models.outdoor.1','시스템 실외기 가격 (원)')+'</div>',
+        '', draft.brands.length>1?del(pre):'');
+    });
+    h+='<div>'+addBtn('brands', Object.assign(clone(DEFAULTS.brands[2]),{id:'b'+Date.now().toString(36),name:'새 브랜드',line:'',note:''}), '브랜드 추가')+'</div>';
+  }
+  if(tab==='rent'){
+    h+=card('렌탈 계수 (제품가 대비 총 납입 배수)', '<div class="g3">'+fRange('rent.factor.36','36개월')+fRange('rent.factor.48','48개월')+fRange('rent.factor.60','60개월')+'</div>', '1.24 = 약정 기간 동안 제품가의 1.24배를 나눠 냅니다.');
+    h+=card('월 부가 항목 (원/월)', '<div class="g3">'+fRange('rent.care.1','연 1회 청소 관리')+fRange('rent.care.2','연 2회 청소 관리')+fRange('rent.warranty','보증·보험')+'</div>'+'<div class="g3">'+fNum('rent.multiDiscount','2대 이상 할인율','0.05 = 5%')+'</div>');
+    h+=card('설치 환경별 추가 설치비 (렌탈료에 분할)', '<div class="g3">'+fRange('rent.installExtra.apt','아파트·오피스텔')+fRange('rent.installExtra.house','주택·빌라')+fRange('rent.installExtra.biz','매장·사무실')+'</div>');
+  }
+  if(tab==='inbox') h+=renderInbox();
+  P.innerHTML=h;
+}
+function renderInbox(){
+  const bk=load('ssw_bookings'), tc=load('ssw_biz');
+  const bkH = bk.length ? bk.map(b=>'<div class="bk"><div class="h"><span>'+b.id+' · '+esc(b.svcLabel)+'</span><span class="tag '+(b.status.startsWith('기사 수락')?'ok':b.status.startsWith('거절')?'warn':'acc')+'">'+esc(b.status)+'</span></div>'+
+    '<div>'+esc(b.summary)+' · <b class="num">'+rangeShort(b.total[0],b.total[1])+'</b></div>'+(b.models&&b.models.length?'<div class="muted">'+esc(b.models.join(', '))+'</div>':'')+
     '<div class="muted">'+esc(b.customer.name)+' · '+esc(b.customer.phone)+' · '+esc(b.customer.addr)+' '+esc(b.customer.addr2)+'</div>'+
     '<div class="muted">희망 '+fmtDate(b.customer.date)+' '+esc(b.customer.slot)+' · 기사 정산 <span class="num">'+rangeText(b.payout[0],b.payout[1])+'</span></div>'+
-    '<div class="muted small">접수 '+new Date(b.createdAt).toLocaleString('ko-KR')+(b.site?' · '+esc(b.site):'')+(b.customer.memo?' · 메모: '+esc(b.customer.memo):'')+'</div></div>').join('')
-    : '<div class="empty">아직 접수된 예약이 없습니다.</div>';
-  const tc=load('ssw_biz'); $('tc-count').textContent=tc.length;
-  $('tc-list').innerHTML = tc.length ? tc.map(t=>'<div class="bk"><div class="h"><span>'+t.id+' · '+esc(t.company)+' · '+esc(t.kind)+'</span><span class="tag acc">'+esc(t.via)+' · '+esc(t.status)+'</span></div>'+
+    '<div class="muted small">접수 '+new Date(b.createdAt).toLocaleString('ko-KR')+(b.site?' · '+esc(b.site):'')+(b.customer.memo?' · 메모: '+esc(b.customer.memo):'')+'</div></div>').join('') : '<div class="empty">아직 접수된 예약이 없습니다.</div>';
+  const tcH = tc.length ? tc.map(t=>'<div class="bk"><div class="h"><span>'+t.id+' · '+esc(t.company)+' · '+esc(t.kind)+'</span><span class="tag acc">'+esc(t.via)+' · '+esc(t.status)+'</span></div>'+
     '<div class="muted">'+esc(t.name)+' · '+esc(t.phone)+(t.email?' · '+esc(t.email):'')+' · '+esc(t.addr||'주소 없음')+'</div>'+
     '<div class="muted">'+esc((t.sites||[]).map(s=>s.space+' '+s.count+' '+s.py).join(', ')||'설치 내용 없음')+' · '+esc((t.svc||[]).join(', '))+'</div>'+
-    '<div class="muted small">접수 '+new Date(t.at).toLocaleString('ko-KR')+(t.date?' · 희망 '+esc(t.date):'')+(t.memo?' · '+esc(t.memo):'')+'</div></div>').join('')
-    : '<div class="empty">아직 문의가 없습니다.</div>';
+    '<div class="muted small">접수 '+new Date(t.at).toLocaleString('ko-KR')+(t.date?' · 희망 '+esc(t.date):'')+(t.memo?' · '+esc(t.memo):'')+'</div></div>').join('') : '<div class="empty">아직 문의가 없습니다.</div>';
+  return card('예약·렌탈 상담 ('+bk.length+')', '<div class="admin">'+bkH+'</div><div><button class="btn sm" type="button" data-act="clear-bk">예약 목록 비우기</button></div>', '이 브라우저에서 접수한 건만 보입니다. 실제 운영에서는 서버 데이터베이스와 알림 발송 기록으로 대체됩니다.')+
+    card('기업 전용 문의 ('+tc.length+')', '<div class="admin">'+tcH+'</div><div><button class="btn sm" type="button" data-act="clear-tc">문의 목록 비우기</button></div>');
 }
-$('bk-clear').addEventListener('click',()=>{ save('ssw_bookings',[]); render(); });
-$('tc-clear').addEventListener('click',()=>{ save('ssw_biz',[]); render(); });
-render();
+
+/* ---------- 입력 반영 ---------- */
+$('panel').addEventListener('input', e=>{ const el=e.target; const p=el.dataset.p; if(!p) return;
+  let v; if(el.dataset.b) v=el.checked; else if(el.dataset.n){ v=el.value===''?0:Number(el.value); if(Number.isNaN(v)) return; } else v=el.value;
+  setPath(draft,p,v); keepLocal(); });
+$('panel').addEventListener('click', e=>{
+  const a=e.target.closest('[data-add],[data-del],[data-act]'); if(!a) return;
+  if(a.dataset.add){ const arr=getPath(draft,a.dataset.add); arr.push(JSON.parse(a.dataset.tpl)); keepLocal(); render(); return; }
+  if(a.dataset.del){ const ks=a.dataset.del.split('.'); const idx=+ks.pop(); const arr=getPath(draft,ks.join('.')); if(!confirm('이 항목을 삭제할까요?')) return; arr.splice(idx,1); keepLocal(); render(); return; }
+  if(a.dataset.act==='clear-bk'){ if(confirm('예약 목록을 비울까요?')){ save('ssw_bookings',[]); render(); } }
+  if(a.dataset.act==='clear-tc'){ if(confirm('문의 목록을 비울까요?')){ save('ssw_biz',[]); render(); } }
+});
+
+/* ---------- 동작 버튼 ---------- */
+$('act-more').addEventListener('click',()=>$('more').classList.toggle('open'));
+$('act-preview').addEventListener('click',()=>{ try{ localStorage.setItem('ssw_preview_cfg', JSON.stringify(toConfig())); }catch(e){} window.open('index.html?preview=1','ssw_preview'); });
+$('act-save').addEventListener('click', async ()=>{
+  if(mode==='local'){ keepLocal(); download(); return; }
+  const btn=$('act-save'); btn.disabled=true;
+  try{ const r=await api('save',{config:toConfig()}); if(r.ok) toast('저장했습니다. 페이지를 새로고침하면 반영됩니다.'); else if(r.error==='auth'){ toast('로그인이 풀렸습니다. 다시 로그인해 주세요.',true); $('editor').hidden=true; $('gate').hidden=false; $('login').hidden=false; } else toast('저장 실패: '+(r.message||r.error), true); }
+  catch(e){ toast('저장 실패: '+e.message, true); } finally{ btn.disabled=false; }
+});
+function download(){ const blob=new Blob(['window.SSW_CONFIG = '+JSON.stringify(toConfig(),null,1)+';\n'],{type:'text/javascript'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='config.js'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); toast('config.js 를 내려받았습니다. data/config.js 에 넣고 배포하세요.'); }
+$('act-download').addEventListener('click',download);
+$('act-export').addEventListener('click',()=>{ const blob=new Blob([JSON.stringify(toConfig(),null,1)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='sokshiwon-config-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); });
+$('act-import').addEventListener('change', e=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ try{ let t=String(rd.result).trim().replace(/^window\.SSW_CONFIG\s*=\s*/,'').replace(/;\s*$/,''); const cfg=JSON.parse(t); draft=fromConfig(cfg); keepLocal(); render(); toast('가져왔습니다. 확인 후 저장하세요.'); }catch(ex){ toast('파일을 읽지 못했습니다: '+ex.message,true); } }; rd.readAsText(f); e.target.value=''; });
+const RESET={basic:['site.brand','site.contact','site.biz'],home:['site.home'],pages:['site.pages'],guide:['site.promises','site.steps','site.faq'],rates:['rates'],brands:['brands'],rent:['rent']};
+$('act-reset').addEventListener('click',()=>{ const ks=RESET[tab]; if(!ks) return; if(!confirm('이 탭의 값을 기본값으로 되돌릴까요? 저장 전까지는 서버에 반영되지 않습니다.')) return; ks.forEach(p=>setPath(draft,p,clone(getPath(DEFAULTS,p)))); keepLocal(); render(); });
+$('act-reset-all').addEventListener('click',()=>{ if(!confirm('모든 설정을 기본값으로 되돌릴까요? 저장 전까지는 서버에 반영되지 않습니다.')) return; draft=fromConfig({}); keepLocal(); render(); });
+window.addEventListener('beforeunload', e=>{ if(mode==='server' && draft && $('editor') && !$('editor').hidden){ /* 저장 안 한 변경 보호는 생략: 폼 입력이 잦아 경고가 번거로움 */ } });
+
+init();
 })();
 </script>
 </body>

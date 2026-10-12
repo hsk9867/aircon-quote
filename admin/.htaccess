@@ -1,0 +1,10 @@
+# 관리자 비밀번호 해시와 잠금 파일은 외부에서 열 수 없게 막습니다.
+<FilesMatch "^(auth\.php|\.lock\.json)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>

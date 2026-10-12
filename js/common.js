@@ -723,6 +723,8 @@ const RATES  = deepMerge(RATES_DEFAULT, isObj(CFG.rates)?CFG.rates:{});
 const BRANDS = (Array.isArray(CFG.brands) && CFG.brands.length) ? CFG.brands : BRANDS_DEFAULT;
 const RENT   = deepMerge(RENT_DEFAULT, isObj(CFG.rent)?CFG.rent:{});
 const SITE   = deepMerge(SITE_DEFAULT, isObj(CFG.site)?CFG.site:{});
+/* 예전 기본값으로 저장된 첫 화면 메뉴 이름은 새 이름으로 읽음 (관리자 페이지에서 다시 저장하면 그 값 우선) */
+if(SITE.home && SITE.home.menu && SITE.home.menu.install && SITE.home.menu.install.title==='설치 견적 내기') SITE.home.menu.install.title='가정용 설치 견적 내기';
 
 /* 시스템 에어컨 실외기 선택: 실내기 냉방 용량 합(평수 × 0.4kW)에 맞는 가장 작은 멀티 실외기. 조합률 130%까지 허용 */
 const kwOfPy = py => Math.round(py*0.4*10)/10;

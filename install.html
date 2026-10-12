@@ -27,7 +27,6 @@
       <div class="seg">
         <label><input type="radio" name="home" value="apt" checked>아파트·오피스텔<small>실외기 베란다·실외기실</small></label>
         <label><input type="radio" name="home" value="house">주택·빌라<small>외벽 앵글 또는 지상 설치</small></label>
-        <label><input type="radio" name="home" value="shop">상가·사무실<small>외벽·옥상 실외기</small></label>
       </div>
     </div>
     <div class="fs" id="pipe-fs">
@@ -109,7 +108,7 @@
 const {TYPE_LABEL, RATES, BRANDS, $, won, manWon, rangeText, rangeShort, mul, add, radio, esc, isPeak, plusDays, applySeason, linesHtml, Booking, pickOutdoor, kwOfPy} = window.SSW;
 
 const PY = [5,6,7,8,9,10,11,13,15,16,17,18,19,23,30,40];
-const ROOMS = ['거실','안방','작은방','아이방','서재','주방·식당','사무실','매장','홀','회의실'];
+const ROOMS = ['거실','안방','작은방','아이방','서재','주방·식당','사무실'];
 const HOME_LABEL = {apt:'아파트·오피스텔', house:'주택·빌라', shop:'상가·사무실'}; const HOME_SHORT = {apt:'아파트', house:'주택', shop:'상가'};
 const DEFAULT_ROOM = ['거실','안방','아이방','작은방'];
 const DEFAULT_PY = [18,6,5,5]; /* 기본 구성: 거실 18평, 안방 6평, 아이방 5평, 작은방 5평 */
@@ -143,7 +142,7 @@ function pipeHint(){ const v=radio('pipe'); $('pipe-hint').textContent = v==='si
 document.querySelectorAll('input[name=pipe]').forEach(r=>r.addEventListener('change', pipeHint)); pipeHint();
 $('units').addEventListener('change', updateKinds);
 document.querySelectorAll('input[name=home]').forEach(r=>r.addEventListener('change', ()=>{
-  const house = radio('home')!=='apt';
+  const house = radio('home')==='house';
   $('addr-hint').textContent = house ? '주택은 실외기 자리(외벽·지상·옥상)와 배관 길이가 집마다 달라 범위가 넓어집니다. 참고 사항에 실외기 자리를 적어 주시면 좋습니다.' : '아파트 단지·평형을 적어 주시면 더 정확합니다. 부동산 플랫폼 연동 후에는 주소만으로 단지 구조(베란다 위치, 배관 길이)를 자동으로 파악할 예정입니다.';
 }));
 
@@ -153,7 +152,7 @@ function readInput(){
   return {home:radio('home'), pipe:radio('pipe')||'unknown', units:readUnits(), addr:$('addr').value.trim(), occupied:radio('occupied'), opts, date:$('q-date').value, memo:$('q-memo').value.trim()};
 }
 function laborFor(inp){
-  const items=[]; const house = inp.home!=='apt'; /* 주택·상가: 외벽 타공, 외부 배관, 앵글 */ const n=inp.units.length;
+  const items=[]; const house = inp.home==='house'; const n=inp.units.length;
   if(isSystem(inp.units)){
     const C=RATES.ceil;
     inp.units.forEach((u,i)=>{
@@ -231,7 +230,7 @@ function renderResult(){
 
 /* ---------- 모의 설치 플랜 (입력 조건 기반) ---------- */
 function rulePlan(inp){
-  const house=inp.home!=='apt';
+  const house=inp.home==='house';
   if(isSystem(inp.units)){
     return { units: inp.units.map(u=>({
         room:u.room, kind:'천장형 '+u.py+'평',

@@ -508,9 +508,9 @@ const SITE_DEFAULT = {
       "desc": "제품 구매와 신규 설치를 한 번에. 브랜드별 총액 비교",
       "show": true
      },
-     "clean": {
-      "title": "청소 견적 내기",
-      "desc": "분해 세척, 실외기 세척. 기종·대수별 금액",
+     "shop": {
+      "title": "상가·사무실 설치 견적 내기",
+      "desc": "매장·사무실·학원 설치. 천장형 시스템과 스탠드 브랜드별 총액",
       "show": true
      },
      "gas": {
@@ -540,6 +540,11 @@ const SITE_DEFAULT = {
     }
    },
    "pages": {
+    "shop": {
+     "eyebrow": "상가·사무실 설치 견적 · 구매 + 설치",
+     "title": "매장과 사무실 설치, 브랜드별 총액을 바로 봅니다",
+     "desc": "건물 형태, 설치 대수와 평수, 영업 여부, 추가 옵션을 입력하면 삼성·LG·캐리어 제품으로 설치까지 한 총액을 비교해 드립니다. 3대 이상은 시스템 에어컨(천장형 + 실외기 1대)으로 계산합니다."
+    },
     "install": {
      "eyebrow": "설치 견적 · 구매 + 신규 설치",
      "title": "설치 조건만 고르면 브랜드별 총액이 바로 나옵니다",
@@ -704,7 +709,7 @@ function linesHtml(items, total, totalLabel){
 
 /* ---------- 로고 ---------- */
 const LOGO_SVG = '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="2" y="2" width="44" height="44" rx="12" fill="var(--accent)"/><path d="M12 17h18a4 4 0 1 1-3 6.7" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/><path d="M12 25h22a4.5 4.5 0 1 0-3.4-7.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" opacity=".55"/><path d="M12 33h12a3.5 3.5 0 1 1-2.6 5.8" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg>';
-const NAV = [['install.html','설치 견적'],['clean.html','청소 견적'],['gas.html','냉매 충전'],['move.html','이전·설치'],['rental.html','렌탈'],['business.html','기업 문의'],['prices.html','단가표']];
+const NAV = [['install.html','설치 견적'],['shop.html','상가·사무실'],['clean.html','청소 견적'],['gas.html','냉매 충전'],['move.html','이전·설치'],['rental.html','렌탈'],['business.html','기업 문의'],['prices.html','단가표']];
 function mountChrome(){
   const here = location.pathname.split('/').pop() || 'index.html';
   const top = document.querySelector('header.top');

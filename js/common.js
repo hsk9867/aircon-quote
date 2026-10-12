@@ -524,7 +524,7 @@ const SITE_DEFAULT = {
    "home": {
     "menu": {
      "install": {
-      "title": "설치 견적 내기",
+      "title": "가정용 설치 견적 내기",
       "desc": "제품 구매와 신규 설치를 한 번에. 브랜드별 총액 비교",
       "show": true
      },

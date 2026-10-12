@@ -115,7 +115,7 @@ const clone=o=>JSON.parse(JSON.stringify(o));
 const isObj=v=>!!v&&typeof v==='object'&&!Array.isArray(v);
 function setPath(o,p,v){ const ks=p.split('.'); let a=o; for(let i=0;i<ks.length-1;i++){ if(a[ks[i]]==null) a[ks[i]]=/^\d+$/.test(ks[i+1])?[]:{}; a=a[ks[i]]; } a[ks[ks.length-1]]=v; }
 let mode='local', st={}, draft=null, tab='basic';
-try{ const h=location.hash.slice(1); if(/^(basic|home|pages|guide|rates|brands|rent|inbox)$/.test(h)) tab=h; }catch(e){}
+try{ const h=location.hash.slice(1); if(/^(basic|home|pages|guide|rates|brands|rent|techs|inbox)$/.test(h)) tab=h; }catch(e){}
 
 /* ---------- 서버 API ---------- */
 async function api(action,data){

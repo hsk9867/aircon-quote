@@ -46,7 +46,7 @@
 
 ## 공개 주소
 - GitHub Pages (개발 확인용): https://hsk9867.github.io/aircon-quote/
-- 실제 서비스: https://soksiwon-air.com (카페24 웹호스팅, 도메인 연결 후)
+- 실제 서비스: http://soksiwon-air.com (카페24 뉴아우토반호스팅 일반형, 서버 IP 183.110.224.226, PHP 8.4). SSL Basic 신청 후 https
 
 ## 카페24 호스팅에 올리기
 서버 코드가 없는 정적 사이트라 카페24 웹호스팅 가장 낮은 요금제(절약형·10G 광아우토반)로 충분합니다.
@@ -58,8 +58,9 @@
      ```
      powershell -ExecutionPolicy Bypass -File deploy\cafe24.ps1
      ```
-     html, css, js, 관리자 API를 서버의 `www` 폴더에 올립니다. 파일을 고친 뒤 다시 실행하면 덮어쓰고, 관리자 페이지에서 저장한 `data/config.js` 는 건드리지 않습니다.
-   - 수동: `dist/sokshiwon-cafe24.zip`(또는 html·css·js 전체)을 카페24 웹FTP나 FileZilla로 `www` 폴더에 그대로 올립니다.
+     html, css, js, 관리자 API를 서버 웹 루트(뉴아우토반호스팅은 FTP 최상위 폴더)에 올립니다. 파일을 고친 뒤 다시 실행하면 덮어쓰고, 관리자 페이지에서 저장한 `data/config.js` 는 건드리지 않습니다.
+   - 수동: `dist/sokshiwon-cafe24.zip`(또는 html·css·js·admin·data 전체)을 FileZilla로 FTP 최상위 폴더에 그대로 올립니다.
+   - FTP 비밀번호는 `deploy/set-ftp-password.ps1`(입력 창)로 저장하면 채팅이나 화면에 남지 않습니다.
 4. 도메인 soksiwon-air.com 연결: 나의서비스관리 → 호스팅 관리 → 도메인 연결에서 `soksiwon-air.com`과 `www.soksiwon-air.com`을 추가합니다. 도메인을 카페24 밖에서 샀다면 그 업체에서 네임서버를 카페24 것(ns1.cafe24.com, ns2.cafe24.com)으로 바꿉니다. 연결 뒤 같은 메뉴의 보안서버(SSL)에서 무료 SSL을 신청해야 https로 열립니다.
 
 `deploy/cafe24.local.ps1`과 `dist/`는 `.gitignore`에 있어 GitHub에 올라가지 않습니다. 비밀번호는 절대 커밋하지 마세요.

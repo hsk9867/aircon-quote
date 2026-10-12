@@ -14,7 +14,7 @@ $user = $env:CAFE24_FTP_USER
 $pass = $env:CAFE24_FTP_PASS
 $ftpHost = $env:CAFE24_FTP_HOST
 if (-not $ftpHost -and $user) { $ftpHost = "$user.cafe24.com" }
-$remoteDir = if ($env:CAFE24_REMOTE_DIR) { $env:CAFE24_REMOTE_DIR } else { 'www' }
+$remoteDir = if ($null -ne $env:CAFE24_REMOTE_DIR) { $env:CAFE24_REMOTE_DIR.Trim('/') } else { '' }  # 뉴아우토반호스팅은 FTP 최상위가 웹 루트. 구형 상품(www 폴더)은 'www'
 $adminPass = $env:CAFE24_ADMIN_PASS
 
 if (-not $user -or -not $pass) {
@@ -28,7 +28,7 @@ if (-not (Test-Path $curl)) { $curl = 'curl.exe' }
 # 비밀번호가 명령줄에 남지 않도록 임시 netrc 파일을 씁니다.
 $netrc = New-TemporaryFile
 "machine $ftpHost login $user password $pass" | Set-Content -Path $netrc.FullName -Encoding ascii
-$base = "ftp://$ftpHost/$remoteDir"
+$base = if ($remoteDir) { "ftp://$ftpHost/$remoteDir" } else { "ftp://$ftpHost" }
 
 function Remote-Exists($rel) {
   & $curl --silent --netrc-file $netrc.FullName --connect-timeout 20 --head "$base/$rel" *> $null

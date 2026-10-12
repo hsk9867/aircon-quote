@@ -116,7 +116,7 @@ function calc(){
 function renderBrands(){
   $('r-brands').innerHTML = result.brands.map((b,i)=>
     '<div class="bcard'+(picked===b.id?' pick':'')+'">'+
-      '<div class="hd"><h3>'+brandLogo(b)+esc(b.name)+(i===0?'<span class="tag ok">최저가</span>':'')+'</h3><div class="amt num">월 '+rangeShort(b.monthly[0],b.monthly[1])+'<small class="vat">부가세 별도</small></div>'+
+      '<div class="hd"><h3>'+brandLogo(b)+esc(b.name)+(i===0?'<span class="tag ok">최저가</span>':'')+'</h3><div class="amt num">월 '+rangeShort(b.monthly[0],b.monthly[1])+'</div>'+
       '<div class="sub">'+esc(b.model.name)+(result.n>1?' × '+result.n:'')+' · 총 납입 '+rangeShort(b.total[0],b.total[1])+' ('+result.term+'개월) · 일시불 구매+설치 '+rangeShort(b.product+b.install[0], b.product+b.install[1])+'</div></div>'+
       '<details><summary>월 렌탈료 구성 보기</summary>'+linesHtml(b.items, b.monthly, '월 렌탈료')+'<div style="height:12px"></div></details>'+
       '<div class="ft"><button class="btn '+(picked===b.id?'primary':'')+' block" type="button" data-pick="'+b.id+'">'+(picked===b.id?'선택됨 · 아래에서 상담 신청':esc(b.name)+' 렌탈 상담 신청')+'</button></div>'+

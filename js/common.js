@@ -697,6 +697,15 @@ function pickOutdoor(brand, pys, key){
   const sorted = list.slice().sort((a,b)=>a.kw-b.kw);
   return sorted.find(o=>o.kw*1.3>=need) || sorted[sorted.length-1];
 }
+/* 브랜드 로고: brand.logo(이미지 주소)가 있으면 <img>, 없으면 브랜드 색 글자 배지 */
+const BRAND_STYLE = { samsung:{text:'SAMSUNG',bg:'#1428A0',fg:'#fff',font:'700 .62rem/1 "IBM Plex Sans KR",Arial,sans-serif',pad:'0 7px',radius:'4px',ls:'.02em'},
+  lg:{text:'LG',bg:'#A50034',fg:'#fff',font:'800 .78rem/1 Arial,sans-serif',pad:'0',radius:'50%',w:'26px'},
+  carrier:{text:'Carrier',bg:'#0A3D91',fg:'#fff',font:'italic 700 .68rem/1 Arial,sans-serif',pad:'0 7px',radius:'4px'} };
+function brandLogo(b){
+  if(b && b.logo) return '<img class="blogo" src="'+esc(b.logo)+'" alt="'+esc(b.name||'')+' 로고">';
+  const st = BRAND_STYLE[b && b.id] || {text:String((b&&b.name)||'?').slice(0,2), bg:'var(--accent)', fg:'#fff', font:'700 .7rem/1 "IBM Plex Sans KR",sans-serif', pad:'0 6px', radius:'4px'};
+  return '<span class="blogo badge-logo" style="background:'+st.bg+';color:'+st.fg+';font:'+st.font+';padding:'+st.pad+';border-radius:'+st.radius+(st.w?';width:'+st.w+';min-width:'+st.w:'')+(st.ls?';letter-spacing:'+st.ls:'')+'" aria-hidden="true">'+esc(st.text)+'</span>';
+}
 const getPath = (o,p) => p.split('.').reduce((a,k)=>(a==null?undefined:a[k]), o);
 
 /* ---------- 유틸 ---------- */
@@ -835,7 +844,7 @@ const Booking = {
   }
 };
 
-window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, sendToServer, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, linesHtml, Booking, LOGO_SVG};
+window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, sendToServer, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, brandLogo, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, linesHtml, Booking, LOGO_SVG};
 document.addEventListener('DOMContentLoaded', mountChrome);
 /* 시작 화면은 각 페이지 <head>의 스크립트와 css(html.splash-on)가 처리. 화면을 누르면 바로 닫습니다 */
 document.addEventListener('click', ()=>document.documentElement.classList.remove('splash-on'), {once:true});

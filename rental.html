@@ -83,7 +83,7 @@
 <script>
 (function(){
 'use strict';
-const {TYPE_LABEL, RATES, BRANDS, $, won, rangeText, rangeShort, mul, add, radio, esc, plusDays, linesHtml, Booking} = window.SSW;
+const {TYPE_LABEL, RATES, BRANDS, $, won, rangeText, rangeShort, mul, add, radio, esc, plusDays, linesHtml, Booking, brandLogo} = window.SSW;
 /* 렌탈 계산 가정: 월 렌탈료 = 제품가 × 렌탈 계수 ÷ 약정 개월 + 설치비 분할 + 관리 서비스 + 보증·보험 */
 const RENT = window.SSW.RENT; /* 관리자 페이지에서 수정 */
 const PY = {wall:[6,7,8,9,10,11,13,15], stand:[16,17,18,19,23,30,40]};
@@ -107,7 +107,7 @@ function calc(){
     let monthly = items.reduce((a,i)=>add(a,i.r),[0,0]);
     if(n>1){ const d=mul(monthly,-RENT.multiDiscount); items.push({label:'다대 할인 5%', r:d}); monthly=add(monthly,d); }
     monthly=[Math.round(monthly[0]/100)*100, Math.round(monthly[1]/100)*100];
-    return {id:b.id, name:b.name, line:b.line, note:b.note, model:m, items, monthly, total:mul(monthly,term), product:m.price*n, install:mul(install,n)};
+    return {id:b.id, name:b.name, line:b.line, note:b.note, logo:b.logo, model:m, items, monthly, total:mul(monthly,term), product:m.price*n, install:mul(install,n)};
   }).sort((a,b)=>a.monthly[0]-b.monthly[0]);
   result={t,py,n,term,care,home,date,brands};
   $('r-sum').innerHTML='<span class="k">입력 조건</span><div><b>'+TYPE_LABEL[t]+' '+py+'평 × '+n+'대</b> · '+term+'개월 약정 · '+(care?'연 '+care+'회 청소 포함':'기본 보증')+' · '+$('home').options[$('home').selectedIndex].text+'</div><div class="small muted">약정 종료 후 제품 소유권은 고객에게 이전됩니다.</div>';
@@ -116,7 +116,7 @@ function calc(){
 function renderBrands(){
   $('r-brands').innerHTML = result.brands.map((b,i)=>
     '<div class="bcard'+(picked===b.id?' pick':'')+'">'+
-      '<div class="hd"><h3>'+esc(b.name)+' <span class="tag">'+esc(b.line)+'</span>'+(i===0?'<span class="tag ok">최저가</span>':'')+'</h3><div class="amt num">월 '+rangeShort(b.monthly[0],b.monthly[1])+'</div>'+
+      '<div class="hd"><h3>'+brandLogo(b)+esc(b.name)+(i===0?'<span class="tag ok">최저가</span>':'')+'</h3><div class="amt num">월 '+rangeShort(b.monthly[0],b.monthly[1])+'</div>'+
       '<div class="sub">'+esc(b.model.name)+(result.n>1?' × '+result.n:'')+' · 총 납입 '+rangeShort(b.total[0],b.total[1])+' ('+result.term+'개월) · 일시불 구매+설치 '+rangeShort(b.product+b.install[0], b.product+b.install[1])+'</div></div>'+
       '<details><summary>월 렌탈료 구성 보기</summary>'+linesHtml(b.items, b.monthly, '월 렌탈료')+'<div style="height:12px"></div></details>'+
       '<div class="ft"><button class="btn '+(picked===b.id?'primary':'')+' block" type="button" data-pick="'+b.id+'">'+(picked===b.id?'선택됨 · 아래에서 상담 신청':esc(b.name)+' 렌탈 상담 신청')+'</button></div>'+

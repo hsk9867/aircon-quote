@@ -111,6 +111,9 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .bcard.pick{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
 .bcard .hd{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:14px 16px;align-items:center}
 .bcard .hd h3{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.blogo{display:inline-flex;align-items:center;justify-content:center;height:26px;vertical-align:middle;flex-shrink:0}
+img.blogo{width:auto;max-width:72px;object-fit:contain}
+.badge-logo{white-space:nowrap}
 .bcard .hd .amt{font-family:var(--display);font-weight:700;font-size:1.2rem;text-align:right;white-space:nowrap}
 .bcard .hd .sub{grid-column:1/-1;font-size:.82rem;color:var(--muted)}
 .bcard .models{padding:0 16px 12px;display:grid;gap:4px;font-size:.86rem}

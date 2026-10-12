@@ -778,7 +778,11 @@ const NAV = [['install.html','설치 견적'],['shop.html','상가·사무실'],
 function mountChrome(){
   const here = location.pathname.split('/').pop() || 'index.html';
   const top = document.querySelector('header.top');
-  if(top) top.innerHTML = '<div class="in"><a class="logo" href="index.html"><img src="img/logo-mark.png" alt="" width="40" height="40" decoding="async"><span><span class="word">'+esc(SITE.brand.name)+'</span></span></a>'+
+  /* 첫 화면(body.home-page)은 로고 글씨 이미지만, 나머지 페이지는 마크 + 상호 */
+  const logoInner = document.body.classList.contains('home-page')
+    ? '<img class="wordmark" src="img/logo-word.png" alt="'+esc(SITE.brand.name)+'" width="862" height="302" decoding="async">'
+    : '<img src="img/logo-mark.png" alt="" width="40" height="40" decoding="async"><span><span class="word">'+esc(SITE.brand.name)+'</span></span>';
+  if(top) top.innerHTML = '<div class="in"><a class="logo" href="index.html">'+logoInner+'</a>'+
     '<nav class="nav" aria-label="바로가기">'+NAV.map(([h,l])=>'<a href="'+h+'"'+(h===here?' aria-current="page"':'')+'>'+l+'</a>').join('')+'</nav></div>';
   const foot = document.querySelector('footer');
   if(foot && !foot.innerHTML.trim()) foot.innerHTML =

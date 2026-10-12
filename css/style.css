@@ -229,8 +229,8 @@ html.splash-on{overflow:hidden}
 .home-page{background:var(--bg)}
 .home-top{background:rgba(255,255,255,.84);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid rgba(181,208,232,.7);box-shadow:0 2px 12px rgba(15,42,68,.06)}
 .home-top .in{max-width:none;padding:8px 20px 8px 16px;min-height:60px}
-.home-top .logo img{width:44px;height:44px;box-shadow:0 2px 8px rgba(30,136,229,.2);background:#fff}
-.home-top .logo .word{font-size:1.25rem;color:var(--accent-ink)}
+.home-top .logo img.wordmark{width:auto;height:40px;border-radius:0;box-shadow:none;background:none}
+@media (min-width:600px){.home-top .logo img.wordmark{height:46px}}
 .home-page .home{min-height:calc(100vh - 61px);min-height:calc(100dvh - 61px)}
 .home-page .home .brand .tag-line{background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.8);border-radius:12px;padding:10px 16px;color:var(--fg);font-weight:500;max-width:30em;box-shadow:0 4px 16px rgba(15,42,68,.08)}
 .home-page .menu a{background:rgba(255,255,255,.94);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}

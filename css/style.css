@@ -287,11 +287,11 @@ html.splash-on{overflow:hidden}
 
 /* 브랜드별 제품 슬라이드: 카드가 옆으로 끝없이 흐르고, 마우스를 올리면 멈춤 */
 .products{border-bottom:1px solid var(--line);overflow:hidden}
-.pslide{overflow:hidden;border-top:1px solid var(--line)}
+.pslide{overflow:hidden}
 .pslide .track{display:flex;width:max-content;animation:pslide 60s linear infinite;will-change:transform}
 .pslide:hover .track,.pslide:focus-within .track{animation-play-state:paused}
 @keyframes pslide{to{transform:translateX(-50%)}}
-.pcard{width:170px;flex-shrink:0;border-right:1px solid var(--line);background:#fff;display:block}
+.pcard{width:110px;flex-shrink:0;border-right:1px solid var(--line);background:#fff;display:block}
 .pcard:hover{background:var(--surface)}
 .pcard .ill{position:relative;aspect-ratio:1/1;background:#fff;display:grid;place-items:center;overflow:hidden}
 .pcard .ill svg{width:72%;height:72%;color:var(--fg)}
@@ -299,7 +299,7 @@ html.splash-on{overflow:hidden}
 .pcard .ill .bl{position:absolute;left:8px;top:8px;z-index:2}
 .pcard .ill .bl .blogo{height:18px}
 .pcard .ill .bl .badge-logo{font-size:.7rem!important}
-@media (min-width:760px){.pcard{width:210px}}
+@media (min-width:760px){.pcard{width:140px}}
 
 /* 오른쪽 아래 빠른 문의 버튼: 카카오톡 · 전화 · 시공사례 (링크는 관리자 연락처 값, 시공사례는 추후 연결) */
 .quick{position:fixed;right:18px;bottom:76px;z-index:30;display:grid;gap:8px;justify-items:end}

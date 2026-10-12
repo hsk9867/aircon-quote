@@ -5,9 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>속시원</title>
 <link rel="icon" type="image/png" href="img/favicon.png">
+<script>try{if(!sessionStorage.getItem('ssw_splash')){sessionStorage.setItem('ssw_splash','1');if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){document.documentElement.classList.add('splash-on');setTimeout(function(){document.documentElement.classList.remove('splash-on')},2400)}}}catch(e){}</script>
+<link rel="preload" as="image" href="img/logo.jpg">
 <meta name="description" content="속시원 · 에어컨 설치, 청소, 냉매 충전, 이전 설치 무료 견적. 조건만 고르면 금액이 바로 나옵니다.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261012e">
+<link rel="stylesheet" href="css/style.css?v=20261012g">
 </head>
 <body>
 <main class="wrap">
@@ -59,8 +61,8 @@
   </div>
 </main>
 <footer></footer>
-<script src="data/config.js?v=20261012e"></script>
-<script src="js/common.js?v=20261012e"></script>
+<script src="data/config.js?v=20261012g"></script>
+<script src="js/common.js?v=20261012g"></script>
 <script>
 (function(){ const c=window.SSW.SITE.contact, e=window.SSW.esc; document.getElementById('contact').innerHTML='상담 전화 <b class="num">'+e(c.phone)+'</b> · 카카오톡 채널 <b>'+e(c.kakaoId)+'</b>'+(c.note?' ('+e(c.note)+')':'');
 document.getElementById('contact-link').addEventListener('click', ev=>{ ev.preventDefault(); document.getElementById('contact').hidden=false; }); })();

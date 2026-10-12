@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>설치 견적 · 속시원</title>
 <link rel="icon" type="image/png" href="img/favicon.png">
+<script>try{if(!sessionStorage.getItem('ssw_splash')){sessionStorage.setItem('ssw_splash','1');if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){document.documentElement.classList.add('splash-on');setTimeout(function(){document.documentElement.classList.remove('splash-on')},2400)}}}catch(e){}</script>
+<link rel="preload" as="image" href="img/logo.jpg">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261012e">
+<link rel="stylesheet" href="css/style.css?v=20261012g">
 </head>
 <body>
 <header class="top"></header>
@@ -89,12 +91,12 @@
 
 </main>
 <footer></footer>
-<script src="data/config.js?v=20261012e"></script>
-<script src="js/common.js?v=20261012e"></script>
+<script src="data/config.js?v=20261012g"></script>
+<script src="js/common.js?v=20261012g"></script>
 <script>
 (function(){
 'use strict';
-const {TYPE_LABEL, RATES, BRANDS, $, won, manWon, rangeText, rangeShort, mul, add, radio, esc, isPeak, plusDays, applySeason, linesHtml, Booking} = window.SSW;
+const {TYPE_LABEL, RATES, BRANDS, $, won, manWon, rangeText, rangeShort, mul, add, radio, esc, isPeak, plusDays, applySeason, linesHtml, Booking, pickOutdoor, kwOfPy} = window.SSW;
 
 const PY = [5,6,7,8,9,10,11,13,15,16,17,18,19,23,30,40];
 const ROOMS = ['거실','안방','작은방','아이방','서재','주방·식당','사무실'];
@@ -180,7 +182,7 @@ function quoteAll(inp){
   const has = (b,t)=> b.models[t] && Object.keys(b.models[t]).length>0;
   const brands = BRANDS.filter(b=>inp.units.every(u=>has(b, sys?'ceil':typeOf(u.py)))).map(b=>{
     const models = inp.units.map(u=>Object.assign({room:u.room}, pickModel(b,u.py, sys?'ceil':null)));
-    if(sys) models.push({room:'실외기', name:b.models.outdoor[0], price:b.models.outdoor[1], type:'outdoor', outdoor:true});
+    if(sys){ const od=pickOutdoor(b, inp.units.map(u=>u.py)); if(od) models.push({room:'실외기', name:od.name+(od.kw?' · 실내기 합 '+inp.units.reduce((a,u)=>a+kwOfPy(u.py),0).toFixed(1)+'kW':''), price:od.price, type:'outdoor', outdoor:true}); }
     const prod = models.reduce((a,m)=>a+m.price,0);
     return {id:b.id, name:b.name, line:b.line, note:b.note, models, product:prod, labor:L.labor, total:[prod+L.labor[0], prod+L.labor[1]]};
   }).sort((a,b)=>a.total[0]-b.total[0]);

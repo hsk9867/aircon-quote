@@ -158,7 +158,7 @@ const BRANDS_DEFAULT = [
   id: "lg",
   name: "LG",
   line: "휘센",
-  note: "2026-10-06 단가표 기준 (배송 포함가)",
+  note: "2026-10-06 단가표 기준. 시스템(천장형)은 LG 공급가격표의 주거용 멀티 출하가",
   models: {
    wall: {
     6: [
@@ -227,46 +227,106 @@ const BRANDS_DEFAULT = [
     ]
    },
    ceil: {
+    3: [
+     "시스템 1WAY 3평 RNQ0120K2WP",
+     537900,
+     322740
+    ],
+    4: [
+     "시스템 1WAY 4평 RNQ0160K2WP",
+     544500,
+     326700
+    ],
+    5: [
+     "시스템 1WAY 5평 RNQ0200C2WP",
+     554400,
+     332640
+    ],
     6: [
-     "천장형 1WAY 6평 TQ0232U2S",
-     850000
+     "시스템 1WAY 6평 RNQ0230C2WP",
+     566500,
+     339900
     ],
     8: [
-     "천장형 1WAY 8평 TQ0322U2S",
-     950000
+     "시스템 1WAY 8평 RNQ0320C2WP",
+     579700,
+     347820
     ],
     10: [
-     "천장형 1WAY 10평 TQ0401U2S",
-     1080000
+     "시스템 1WAY 10평 RNQ0400C2WP",
+     591800,
+     355080
     ],
     13: [
-     "천장형 1WAY 13평 TQ0521T2S",
-     1200000
+     "시스템 1WAY 13평 RNQ0520C2WP",
+     728200,
+     436920
     ],
     15: [
-     "천장형 1WAY 15평 TQ0601T2S",
-     1290000
+     "시스템 1WAY 15평 RNQ0600C2WP",
+     847000,
+     508200
     ],
     18: [
-     "천장형 1WAY 18평 TQ0721T2S",
-     1360000
-    ],
-    25: [
-     "천장형 4WAY 25평 TQ0720B2SD",
-     1490000
-    ],
-    31: [
-     "천장형 4WAY 31평 TQ1100A2DR",
-     1790000
-    ],
-    40: [
-     "천장형 4WAY 40평 TQ1450A2DR",
-     2080000
+     "시스템 1WAY 18평 RNQ0720C2WP",
+     870100,
+     522060
     ]
    },
    outdoor: [
-    "실외기 (싱글 세트 가격에 포함)",
+    "주거용 멀티 실외기 (용량에 맞춰 자동 선택)",
     0
+   ],
+   outdoors: [
+    {
+     hp: 2.5,
+     kw: 7.3,
+     name: "주거용 멀티 실외기 2.5마력 RPUQ025SA2R",
+     price: 1320000,
+     cost: 792000
+    },
+    {
+     hp: 3,
+     kw: 8,
+     name: "주거용 멀티 실외기 3마력 RPUQ030SA2R",
+     price: 1529000,
+     cost: 917400
+    },
+    {
+     hp: 4,
+     kw: 11.2,
+     name: "주거용 멀티 실외기 4마력 RPUQ040SB2R",
+     price: 1782000,
+     cost: 1069200
+    },
+    {
+     hp: 5,
+     kw: 14.5,
+     name: "주거용 멀티 실외기 5마력 RPUQ050SG2R",
+     price: 2464000,
+     cost: 1478400
+    },
+    {
+     hp: 6,
+     kw: 16,
+     name: "주거용 멀티 실외기 6마력 RPUQ060SG2R",
+     price: 2937000,
+     cost: 1762200
+    },
+    {
+     hp: 8,
+     kw: 22.4,
+     name: "주거용 멀티 실외기 8마력 RPUQ080S2S9R",
+     price: 3630000,
+     cost: 2178000
+    },
+    {
+     hp: 10,
+     kw: 28,
+     name: "주거용 멀티 실외기 10마력 RPUQ100S2S9R",
+     price: 4994000,
+     cost: 2996400
+    }
    ]
   }
  },
@@ -535,6 +595,16 @@ const RATES  = deepMerge(RATES_DEFAULT, isObj(CFG.rates)?CFG.rates:{});
 const BRANDS = (Array.isArray(CFG.brands) && CFG.brands.length) ? CFG.brands : BRANDS_DEFAULT;
 const RENT   = deepMerge(RENT_DEFAULT, isObj(CFG.rent)?CFG.rent:{});
 const SITE   = deepMerge(SITE_DEFAULT, isObj(CFG.site)?CFG.site:{});
+
+/* 시스템 에어컨 실외기 선택: 실내기 냉방 용량 합(평수 × 0.4kW)에 맞는 가장 작은 멀티 실외기. 조합률 130%까지 허용 */
+const kwOfPy = py => Math.round(py*0.4*10)/10;
+function pickOutdoor(brand, pys){
+  const list = brand.models.outdoors;
+  if(!Array.isArray(list) || !list.length) return brand.models.outdoor ? {name:brand.models.outdoor[0], price:brand.models.outdoor[1], kw:0} : null;
+  const need = pys.reduce((a,p)=>a+kwOfPy(p),0);
+  const sorted = list.slice().sort((a,b)=>a.kw-b.kw);
+  return sorted.find(o=>o.kw*1.3>=need) || sorted[sorted.length-1];
+}
 const getPath = (o,p) => p.split('.').reduce((a,k)=>(a==null?undefined:a[k]), o);
 
 /* ---------- 유틸 ---------- */
@@ -673,19 +743,8 @@ const Booking = {
   }
 };
 
-window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, linesHtml, Booking, LOGO_SVG};
+window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, linesHtml, Booking, LOGO_SVG};
 document.addEventListener('DOMContentLoaded', mountChrome);
-/* 시작 화면: 첫 접속 때 로고가 나타났다 사라짐. 세션당 1회, 동작 줄이기 설정이면 생략 */
-(function splash(){
-  try{
-    if(sessionStorage.getItem('ssw_splash')) return;
-    sessionStorage.setItem('ssw_splash','1');
-    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const el=document.createElement('div'); el.className='splash'; el.setAttribute('aria-hidden','true');
-    el.innerHTML='<img src="img/logo.jpg" alt="" width="547" height="640">';
-    (document.body||document.documentElement).appendChild(el);
-    const done=()=>{ if(el.parentNode) el.parentNode.removeChild(el); };
-    el.addEventListener('click', done); setTimeout(done, 2400);
-  }catch(e){}
-})();
+/* 시작 화면은 각 페이지 <head>의 스크립트와 css(html.splash-on)가 처리. 화면을 누르면 바로 닫습니다 */
+document.addEventListener('click', ()=>document.documentElement.classList.remove('splash-on'), {once:true});
 })();

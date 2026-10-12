@@ -117,6 +117,10 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .bcard .models div{display:flex;justify-content:space-between;gap:10px}
 .bcard .models span:first-child{min-width:0}
 .bcard .models span:last-child{white-space:nowrap}
+.bcard .split{margin:0 16px 12px;padding:10px 12px;background:var(--surface-2);border-radius:10px;display:grid;gap:5px;font-size:.9rem}
+.bcard .split div{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.bcard .split div span{color:var(--muted)}
+.bcard .split .t{border-top:1px dashed var(--line);padding-top:6px;margin-top:2px} .bcard .split .t span{color:var(--fg);font-weight:600}
 .bcard details{border-top:1px solid var(--line);padding:0 16px}
 .bcard summary{cursor:pointer;font-size:.85rem;font-weight:600;padding:10px 0;list-style:none;display:flex;justify-content:space-between}
 .bcard summary::after{content:"+";color:var(--muted)} .bcard details[open] summary::after{content:"–"}

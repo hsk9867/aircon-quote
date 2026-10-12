@@ -134,8 +134,9 @@ function updateKinds(){
   const sys = +radio('count')>=3;
   $('pipe-fs').hidden = !sys;
   const gasChip = document.querySelector('input[name=opt][value=gas]'); if(gasChip){ gasChip.closest('.chip').hidden = sys; if(sys) gasChip.checked=false; }
+  const paperChip = document.querySelector('input[name=opt][value=paper]'); if(paperChip){ paperChip.closest('.chip').hidden = sys; if(sys) paperChip.checked=false; }
   document.querySelectorAll('#units .unit').forEach(u=>{ const py=+u.querySelector('[data-u=py]').value; u.querySelector('.kind').textContent = sys ? '천장형 실내기 · 실외기 1대 공용 (시스템 에어컨)' : TYPE_LABEL[typeOf(py)]+' 형 · '+(py<=9?'벽 상단 설치, 실외기 소형':'바닥 설치, 실외기 대형'); });
-  $('units-hint').textContent = sys ? '3대부터는 시스템 에어컨으로 계산합니다. 천장형 실내기를 실외기 1대에 묶는 구성이며 천장 점검구·드레인 배관이 포함됩니다.' : '15평 이하는 벽걸이, 16평 이상은 스탠드로 계산합니다. 배관 5m가 기본으로 들어가고, 초과 길이는 현장 실측 후 1m당 단가로 추가됩니다.';
+  $('units-hint').textContent = sys ? '3대부터는 시스템 에어컨으로 계산합니다. 천장형 실내기를 실외기 1대에 묶는 구성이며 천장 점검구·드레인 배관과 실크 도배 마감이 항상 포함됩니다.' : '15평 이하는 벽걸이, 16평 이상은 스탠드로 계산합니다. 배관 5m가 기본으로 들어가고, 초과 길이는 현장 실측 후 1m당 단가로 추가됩니다.';
 }
 $('count-seg').addEventListener('change', renderUnits);
 function pipeHint(){ const v=radio('pipe'); $('pipe-hint').textContent = v==='single' ? '단배관: 실외기에서 배관 1세트를 올리고 천장 속 분배기로 각 방에 나눕니다. 배관 공사가 적어 신축·리모델링에 유리합니다.' : v==='multi' ? '다배관: 실내기마다 실외기까지 배관을 따로 연결합니다. 기존 집에 추가 설치할 때 일반적입니다.' : '어떤 방식인지 모르면 다배관 제품으로 계산해 드립니다. 현장 확인 후 단배관이 가능하면 금액을 다시 안내합니다.'; }
@@ -162,7 +163,7 @@ function laborFor(inp){
       if(inp.opts.includes('remove')) items.push({label:(i+1)+'번 기존 에어컨 철거', r:C.remove});
     });
     items.push(C.outdoor&&C.outdoor[1] ? {label:'실외기 1대 설치 (시스템 멀티, '+n+'대 공용)', r:C.outdoor} : {label:'실외기 1대 설치 (시스템 멀티, '+n+'대 공용)', r:[0,0], info:'실내기 가격에 포함'});
-    if(inp.opts.includes('paper')) items.push({label:'천장·벽 부분 도배 마감 (전체 1회)', r:C.paper});
+    items.push({label:'실크 도배 마감 (천장 작업 후 필수, 전체 1회)', r:C.paper}); /* 시스템 에어컨은 도배 마감이 항상 포함 */
     if(house){
       items.push({label:'외벽 타공 1곳', r:RATES.hole});
     }

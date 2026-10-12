@@ -619,7 +619,7 @@ const SITE_DEFAULT = {
     "ceilOutdoor": "시스템 실외기 1대 설치 (실내기 공용)",
     "ceilClean": "천장형 분해 청소 (1대)",
     "ceilProtect": "거주 중 천장 작업 보양 (1대)",
-    "ceilPaper": "천장·벽 부분 도배 (1대)",
+    "ceilPaper": "실크 도배 마감 (시스템 설치 시 필수)",
     "ceilGas": "냉매 추가 충전 (긴 배관 분)",
     "hole": "타공 (1곳)",
     "elec": "전용 전기 작업",

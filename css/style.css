@@ -21,7 +21,7 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word}
 img{max-width:100%}
 [hidden]{display:none!important}
 .wrap{max-width:760px;margin:0 auto;padding-inline:20px;padding-block:0 64px}
@@ -81,7 +81,7 @@ input[type=text],input[type=tel],input[type=date],input[type=number],input[type=
 textarea{min-height:80px;resize:vertical}
 input[type=range]{width:100%;accent-color:var(--fg)}
 .seg{display:grid;gap:0;grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid var(--line)}
-.seg label{position:relative;border-right:1px solid var(--line);padding:11px 6px;text-align:center;font-size:.9rem;cursor:pointer;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.seg label{position:relative;border-right:1px solid var(--line);padding:11px 6px;text-align:center;font-size:.9rem;line-height:1.3;cursor:pointer;background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
 .seg label:last-child{border-right:0}
 .seg label small{font-size:.74rem;color:var(--muted);font-weight:400}
 .seg input{position:absolute;opacity:0;pointer-events:none}
@@ -146,7 +146,8 @@ img.blogo{width:auto;max-width:72px;object-fit:contain}
 /* 표 */
 .tbl-wrap{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
 table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:560px}
-#t-sys,#t-common{min-width:0} #t-sys td:first-child,#t-common td:first-child,#t-sys th:first-child,#t-common th:first-child{min-width:0}
+#t-sys,#t-common{min-width:0} #t-sys td:first-child,#t-common td:first-child,#t-sys th:first-child,#t-common th:first-child{min-width:9em}
+#t-sys td.r,#t-common td.r{white-space:normal;min-width:5em}
 td:first-child,th:first-child{min-width:170px} td.src{min-width:150px}
 th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
 th{font-family:var(--en);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--fg);font-weight:800;background:var(--surface-2);border-bottom:1px solid var(--line)}
@@ -158,9 +159,9 @@ tr:last-child td{border-bottom:0} td.r,th.r{text-align:right;white-space:nowrap}
 .step::before{counter-increment:s;content:"0" counter(s);font-family:var(--en);font-weight:800;font-size:1.1rem;line-height:1.3}
 .step b{display:block} .step span{font-size:.86rem;color:var(--muted)}
 .plist2{display:grid;gap:0;border:1px solid var(--line)}
-.plist2 div{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;background:var(--surface);border-bottom:1px solid var(--line-soft);padding:14px 16px} .plist2 div:last-child{border-bottom:0}
+.plist2>div{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;background:var(--surface);border-bottom:1px solid var(--line-soft);padding:14px 16px} .plist2>div:last-child{border-bottom:0}
 .plist2 .ck{width:22px;height:22px;background:var(--fg);color:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem}
-.plist2 span{font-size:.86rem;color:var(--muted)}
+.plist2 b{display:block;margin-bottom:2px} .plist2 span{display:block;font-size:.86rem;color:var(--muted)}
 .faq details{background:var(--surface);border:1px solid var(--line);padding:0 16px} .faq details+details{margin-top:-1px}
 .faq summary{cursor:pointer;font-weight:700;padding:14px 0;list-style:none;display:flex;justify-content:space-between;gap:12px}
 .faq summary::after{content:"+";font-family:var(--en);font-weight:800} .faq details[open] summary::after{content:"–"}
@@ -308,4 +309,15 @@ html.splash-on{overflow:hidden}
 .quick a.kakao{background:#FAE100;border-color:#FAE100;color:#1B1616}
 .quick a.tel{background:var(--fg);border-color:var(--fg);color:var(--bg)}
 .quick svg{width:20px;height:20px;flex-shrink:0}
-@media (max-width:600px){.quick{right:12px;bottom:70px;gap:6px}.quick a{width:46px;padding:0;justify-content:center}.quick a span{display:none}.totop{right:12px;bottom:12px}}
+/* 모바일: 화면 아래 가로 바로 바꿔 본문을 가리지 않게 */
+@media (max-width:600px){
+  body{padding-bottom:52px}
+  .quick{left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;justify-items:stretch;border-top:1px solid var(--line);background:var(--bg)}
+  .quick a{height:52px;padding:0;justify-content:center;border:0;border-right:1px solid var(--line);font-size:.84rem}
+  .quick a:last-child{border-right:0}
+  .quick a:hover{transform:none}
+  .totop{right:12px;bottom:64px;width:40px;height:40px}
+  .preview-bar{bottom:52px}
+}
+@media (max-width:420px){.seg label{font-size:.84rem;padding:10px 4px}.seg label small{font-size:.68rem}}
+.sec-title .arr{align-self:center}

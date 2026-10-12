@@ -36,7 +36,7 @@
 
 ## 공개 주소
 - GitHub Pages (개발 확인용): https://hsk9867.github.io/aircon-quote/
-- 카페24 웹호스팅 (실제 서비스): 아래 절차로 올린 뒤 `아이디.cafe24.com` 또는 연결한 도메인
+- 실제 서비스: https://soksi-won.com (카페24 웹호스팅, 도메인 연결 후)
 
 ## 카페24 호스팅에 올리기
 서버 코드가 없는 정적 사이트라 카페24 웹호스팅 가장 낮은 요금제(절약형·10G 광아우토반)로 충분합니다.
@@ -50,6 +50,6 @@
      ```
      html, css, js를 서버의 `www` 폴더에 올립니다. 파일을 고친 뒤 다시 실행하면 덮어씁니다.
    - 수동: `dist/sokshiwon-cafe24.zip`(또는 html·css·js 전체)을 카페24 웹FTP나 FileZilla로 `www` 폴더에 그대로 올립니다.
-4. 도메인(예: sokshiwon.kr)을 쓰려면 카페24 도메인 구매 후 호스팅 관리 → 도메인 연결. 무료 SSL(Let's Encrypt)도 같은 메뉴에서 켭니다.
+4. 도메인 soksi-won.com 연결: 나의서비스관리 → 호스팅 관리 → 도메인 연결에서 `soksi-won.com`과 `www.soksi-won.com`을 추가합니다. 도메인을 카페24 밖에서 샀다면 그 업체에서 네임서버를 카페24 것(ns1.cafe24.com, ns2.cafe24.com)으로 바꿉니다. 연결 뒤 같은 메뉴의 보안서버(SSL)에서 무료 SSL을 신청해야 https로 열립니다.
 
 `deploy/cafe24.local.ps1`과 `dist/`는 `.gitignore`에 있어 GitHub에 올라가지 않습니다. 비밀번호는 절대 커밋하지 마세요.

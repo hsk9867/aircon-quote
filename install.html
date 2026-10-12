@@ -8,7 +8,7 @@
 <script>try{if(!sessionStorage.getItem('ssw_splash')){sessionStorage.setItem('ssw_splash','1');if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){document.documentElement.classList.add('splash-on');setTimeout(function(){document.documentElement.classList.remove('splash-on')},2400)}}}catch(e){}</script>
 <link rel="preload" as="image" href="img/logo.jpg">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261012k">
+<link rel="stylesheet" href="css/style.css?v=20261012l">
 </head>
 <body>
 <header class="top"></header>
@@ -91,8 +91,8 @@
 
 </main>
 <footer></footer>
-<script src="data/config.js?v=20261012k"></script>
-<script src="js/common.js?v=20261012k"></script>
+<script src="data/config.js?v=20261012l"></script>
+<script src="js/common.js?v=20261012l"></script>
 <script>
 (function(){
 'use strict';
@@ -123,7 +123,7 @@ function updateKinds(){
   const sys = +radio('count')>=3;
   const gasChip = document.querySelector('input[name=opt][value=gas]'); if(gasChip){ gasChip.closest('.chip').hidden = sys; if(sys) gasChip.checked=false; }
   document.querySelectorAll('#units .unit').forEach(u=>{ const py=+u.querySelector('[data-u=py]').value; u.querySelector('.kind').textContent = sys ? '천장형 실내기 · 실외기 1대 공용 (시스템 에어컨)' : TYPE_LABEL[typeOf(py)]+' 형 · '+(py<=9?'벽 상단 설치, 실외기 소형':'바닥 설치, 실외기 대형'); });
-  $('units-hint').textContent = sys ? '3대부터는 시스템 에어컨으로 계산합니다. 천장형 실내기를 실외기 1대에 묶는 구성이며 천장 점검구·드레인 배관이 포함됩니다.' : '15평 이하는 벽걸이, 16평 이상은 스탠드로 계산합니다. 배관은 현장 실측 길이만큼 1m 단위로 추가됩니다.';
+  $('units-hint').textContent = sys ? '3대부터는 시스템 에어컨으로 계산합니다. 천장형 실내기를 실외기 1대에 묶는 구성이며 천장 점검구·드레인 배관이 포함됩니다.' : '15평 이하는 벽걸이, 16평 이상은 스탠드로 계산합니다. 배관 5m가 기본으로 들어가고, 초과 길이는 현장 실측 후 1m당 단가로 추가됩니다.';
 }
 $('count-seg').addEventListener('change', renderUnits);
 $('units').addEventListener('change', updateKinds);
@@ -158,7 +158,7 @@ function laborFor(inp){
     inp.units.forEach((u,i)=>{
       const t=typeOf(u.py); const disc = i>0 ? (1-RATES.multiDiscount) : 1;
       items.push({label:(i+1)+'번 '+u.room+' '+TYPE_LABEL[t]+' 기본 설치 (배관 별도)'+(i>0?' (동시 설치 10% 할인)':''), r:mul(RATES.base[t],disc)});
-      items.push({label:(i+1)+'번 배관 · 현장 실측 길이만큼 추가', r:[0,0], info:'1m당 '+rangeText(RATES.pipePerM[t][0],RATES.pipePerM[t][1])});
+      items.push({label:(i+1)+'번 배관 기본 5m (초과분은 1m당 '+rangeShort(RATES.pipePerM[t][0],RATES.pipePerM[t][1])+' 현장 추가)', r:mul(RATES.pipePerM[t],5)});
       if(house) items.push({label:(i+1)+'번 배관 연장 '+RATES.housePipe[0]+'~'+RATES.housePipe[1]+'m (주택 외벽·지상 경로)', r:[RATES.pipePerM[t][0]*RATES.housePipe[0], RATES.pipePerM[t][1]*RATES.housePipe[1]]});
       if(inp.occupied==='living') items.push({label:(i+1)+'번 가구 이동·보양', r:RATES.protect[t]});
       if(inp.opts.includes('paper')) items.push({label:(i+1)+'번 부분 도배 마감', r:RATES.paper[t]});
@@ -228,7 +228,7 @@ function rulePlan(inp){
       room:u.room, kind:TYPE_LABEL[t]+' '+u.py+'평',
       indoor: t==='stand' ? '베란다 쪽 벽면 옆, 콘센트와 배수가 가까운 자리' : '창문 위쪽 벽 상단, 침대 머리맡을 피한 위치',
       outdoor: house ? '외벽 앵글 또는 지상 받침대. 소음이 침실로 들어오지 않는 면' : (t==='stand'?'거실 앞 베란다 바닥 또는 실외기실':'방 쪽 베란다 바닥, 거실 실외기와 나란히'),
-      pipe: house ? '외벽 타공 후 외부 배관 '+RATES.housePipe[0]+'~'+RATES.housePipe[1]+'m, 배관 커버 마감' : '베란다 벽 타공 또는 매립 배관 이용, 배관은 현장 실측 길이만큼 1m 단위 계산',
+      pipe: house ? '외벽 타공 후 외부 배관 '+RATES.housePipe[0]+'~'+RATES.housePipe[1]+'m, 배관 커버 마감' : '베란다 벽 타공 또는 매립 배관 이용, 배관 5m 기본 포함 (초과분 1m당 추가)',
       caution: inp.occupied==='living' ? '가구를 옮기고 바닥·벽을 보양한 뒤 작업합니다.' : '입주 전 설치라 배관 자리 부분 도배까지 같은 날 마감할 수 있습니다.' };}),
     overall: house ? '주택은 실외기 자리와 배관 경로가 집마다 달라 방문 전 외벽 사진을 받으면 범위를 좁힐 수 있습니다.' : '아파트는 세대 배관 구조가 비슷해 기본 설치비 범위 안에서 대부분 마무리됩니다.',
     tips:['실외기 여러 대는 같은 베란다에 나란히 두면 배관이 짧아집니다.','전용 콘센트가 없으면 전기 작업 옵션이 필요합니다.'] };

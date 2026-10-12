@@ -46,7 +46,7 @@
 3. 업로드 방법 둘 중 하나
    - 스크립트: `deploy/cafe24.local.example.ps1`을 복사해 `deploy/cafe24.local.ps1`로 저장하고 아이디·비밀번호를 적은 뒤
      ```
-     powershell -ExecutionPolicy Bypass -File deployfe24.ps1
+     powershell -ExecutionPolicy Bypass -File deploy\cafe24.ps1
      ```
      html, css, js를 서버의 `www` 폴더에 올립니다. 파일을 고친 뒤 다시 실행하면 덮어씁니다.
    - 수동: `dist/sokshiwon-cafe24.zip`(또는 html·css·js 전체)을 카페24 웹FTP나 FileZilla로 `www` 폴더에 그대로 올립니다.

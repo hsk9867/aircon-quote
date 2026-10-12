@@ -1,28 +1,28 @@
 /* 속시원 공통 스타일. 모바일 우선, 최대 720px 한 열. */
 :root{
-  --bg:#F1F5F8; --surface:#FFFFFF; --surface-2:#E9F0F4;
-  --fg:#15222C; --muted:#5B6C78; --line:#D3DEE5;
-  --accent:#0F7A8C; --accent-ink:#0A5A68; --accent-soft:#DDEFF2;
+  --bg:#EEF6FC; --surface:#FFFFFF; --surface-2:#E2EFFA;
+  --fg:#0F2A44; --muted:#56708A; --line:#CBDFF0;
+  --accent:#1E88E5; --accent-ink:#0B5FB0; --accent-soft:#DCEEFC;
   --warn:#A8521A; --warn-soft:#F8E8DC; --ok:#2E7D4F; --ok-soft:#E1F1E7;
   --display:"IBM Plex Sans KR","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   --body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-  --radius:10px; --shadow:0 1px 2px rgba(21,34,44,.06),0 6px 20px rgba(21,34,44,.06);
+  --radius:10px; --shadow:0 1px 2px rgba(15,42,68,.06),0 6px 20px rgba(30,136,229,.10);
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --bg:#0E161B; --surface:#172229; --surface-2:#1F2C35;
-    --fg:#E5EDF1; --muted:#98A9B4; --line:#2A3942;
-    --accent:#49BFD0; --accent-ink:#8FDCE7; --accent-soft:#12343B;
+    --bg:#0B1B2A; --surface:#12263A; --surface-2:#1A3350;
+    --fg:#E6F0FA; --muted:#9AB3CC; --line:#26425E;
+    --accent:#5FB4F5; --accent-ink:#9ED2FA; --accent-soft:#11314D;
     --warn:#E59A6A; --warn-soft:#3B2719; --ok:#7DCB9B; --ok-soft:#163324;
     --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
     color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0E161B; --surface:#172229; --surface-2:#1F2C35;
-  --fg:#E5EDF1; --muted:#98A9B4; --line:#2A3942;
-  --accent:#49BFD0; --accent-ink:#8FDCE7; --accent-soft:#12343B;
+  --bg:#0B1B2A; --surface:#12263A; --surface-2:#1A3350;
+  --fg:#E6F0FA; --muted:#9AB3CC; --line:#26425E;
+  --accent:#5FB4F5; --accent-ink:#9ED2FA; --accent-soft:#11314D;
   --warn:#E59A6A; --warn-soft:#3B2719; --ok:#7DCB9B; --ok-soft:#163324;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.35);
   color-scheme:dark;
@@ -47,7 +47,7 @@ a{color:var(--accent-ink)}
 /* 로고 */
 .logo{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--fg);font-family:var(--display);font-weight:700;letter-spacing:-.02em;white-space:nowrap;flex-shrink:0}
 .logo svg{width:34px;height:34px;flex-shrink:0}
-.logo img{width:40px;height:33px;object-fit:contain;flex-shrink:0;border-radius:6px}
+.logo img{width:40px;height:40px;object-fit:contain;flex-shrink:0;border-radius:50%}
 .logo .word{font-size:1.25rem;line-height:1}
 .logo .sub{display:block;font-size:.68rem;font-weight:500;color:var(--muted);letter-spacing:.06em;margin-top:3px}
 
@@ -186,7 +186,8 @@ footer .links a{text-decoration:none;color:var(--muted)} footer .links a:hover{c
 .home{min-height:calc(100vh - 32px);min-height:calc(100dvh - 32px);display:grid;grid-template-rows:auto auto auto;align-content:center;gap:18px;padding-block:20px}
 .home .brand{display:grid;justify-items:center;gap:8px;text-align:center}
 .home .brand svg{width:56px;height:56px}
-.home .brand .logo-img{width:auto;height:150px;max-width:80vw;object-fit:contain}
+.home .brand .logo-wrap{width:176px;height:176px;border-radius:50%;background:#fff;border:3px solid var(--accent-soft);box-shadow:0 8px 28px rgba(30,136,229,.18);display:grid;place-items:center;overflow:hidden}
+.home .brand .logo-img{width:80%;height:80%;object-fit:contain}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .home .brand .word{font-family:var(--display);font-size:1.9rem;font-weight:700;letter-spacing:-.03em;line-height:1}
 .home .brand .tag-line{color:var(--muted);max-width:26em;font-size:.86rem;line-height:1.45}
@@ -198,15 +199,15 @@ footer .links a{text-decoration:none;color:var(--muted)} footer .links a:hover{c
 .menu a span{font-size:.76rem;line-height:1.4;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .home .sub-links{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 18px;font-size:.84rem}
 .home .sub-links a{color:var(--muted);text-decoration:none} .home .sub-links a:hover{color:var(--fg)}
-@media (max-height:700px){.home{gap:12px}.home .brand svg{width:44px;height:44px}.home .brand .logo-img{height:110px}.home .brand .tag-line{display:none}.menu a{padding:10px 10px 8px}.menu a span{-webkit-line-clamp:1}}
-@media (min-width:600px){.home .brand svg{width:80px;height:80px}.home .brand .logo-img{height:200px}.home .brand .word{font-size:2.4rem}.home .brand .tag-line{font-size:1rem}.menu a{padding:20px 16px}.menu a b{font-size:1.08rem}.menu a span{font-size:.84rem}}
+@media (max-height:700px){.home{gap:12px}.home .brand svg{width:44px;height:44px}.home .brand .logo-wrap{width:128px;height:128px}.home .brand .tag-line{display:none}.menu a{padding:10px 10px 8px}.menu a span{-webkit-line-clamp:1}}
+@media (min-width:600px){.home .brand svg{width:80px;height:80px}.home .brand .logo-wrap{width:220px;height:220px}.home .brand .word{font-size:2.4rem}.home .brand .tag-line{font-size:1rem}.menu a{padding:20px 16px}.menu a b{font-size:1.08rem}.menu a span{font-size:.84rem}}
 
 /* 관리자 미리보기 표시줄 */
 .preview-bar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;padding:8px 16px;background:var(--warn);color:#fff;font-size:.82rem;font-weight:600}
 .preview-bar a{color:#fff;text-decoration:underline}
 
 /* 시작 화면: 첫 접속 때 로고가 나타났다 사라짐 (세션당 1회) */
-.splash{position:fixed;inset:0;z-index:100;background:#fff;display:grid;place-items:center;animation:splash-out .55s ease 1.7s forwards;cursor:pointer}
-.splash img{width:min(62vw,280px);height:auto;animation:splash-in .7s cubic-bezier(.2,.8,.2,1) both}
+.splash{position:fixed;inset:0;z-index:100;background:linear-gradient(180deg,#F4FAFE 0%,#CFE6FA 100%);display:grid;place-items:center;animation:splash-out .55s ease 1.7s forwards;cursor:pointer}
+.splash img{width:min(62vw,280px);height:min(62vw,280px);border-radius:50%;object-fit:contain;padding:7%;background:#fff;box-shadow:0 12px 40px rgba(30,136,229,.25);animation:splash-in .7s cubic-bezier(.2,.8,.2,1) both}
 @keyframes splash-in{from{opacity:0;transform:scale(.86) translateY(10px)}to{opacity:1;transform:none}}
 @keyframes splash-out{to{opacity:0;visibility:hidden}}

@@ -561,7 +561,7 @@ function applySeason(items, date){
   return labor;
 }
 function linesHtml(items, total, totalLabel){
-  return '<div class="lines">'+items.map(it=>'<div class="line"><span class="k">'+esc(it.label)+'</span><span class="v num">'+rangeText(it.r[0],it.r[1])+'</span></div>').join('')+
+  return '<div class="lines">'+items.map(it=>'<div class="line"><span class="k">'+esc(it.label)+'</span><span class="v num">'+(it.info?esc(it.info):rangeText(it.r[0],it.r[1]))+'</span></div>').join('')+
     (total?'<div class="line tot"><span class="k">'+esc(totalLabel||'총액')+'</span><span class="v num">'+rangeText(total[0],total[1])+'</span></div>':'')+'</div>';
 }
 
@@ -571,7 +571,7 @@ const NAV = [['install.html','설치 견적'],['clean.html','청소 견적'],['g
 function mountChrome(){
   const here = location.pathname.split('/').pop() || 'index.html';
   const top = document.querySelector('header.top');
-  if(top) top.innerHTML = '<div class="in"><a class="logo" href="index.html"><img src="img/logo-mark.png" alt="" width="40" height="33" decoding="async"><span><span class="word">'+esc(SITE.brand.name)+'</span></span></a>'+
+  if(top) top.innerHTML = '<div class="in"><a class="logo" href="index.html"><img src="img/logo-mark.png" alt="" width="40" height="40" decoding="async"><span><span class="word">'+esc(SITE.brand.name)+'</span></span></a>'+
     '<nav class="nav" aria-label="바로가기">'+NAV.map(([h,l])=>'<a href="'+h+'"'+(h===here?' aria-current="page"':'')+'>'+l+'</a>').join('')+'</nav></div>';
   const foot = document.querySelector('footer');
   if(foot && !foot.innerHTML.trim()) foot.innerHTML =

@@ -6,7 +6,7 @@
 <title>에어컨 렌탈 · 속시원</title>
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261012b">
+<link rel="stylesheet" href="css/style.css?v=20261012d">
 </head>
 <body>
 <header class="top"></header>
@@ -76,8 +76,8 @@
 
 </main>
 <footer></footer>
-<script src="data/config.js?v=20261012b"></script>
-<script src="js/common.js?v=20261012b"></script>
+<script src="data/config.js?v=20261012d"></script>
+<script src="js/common.js?v=20261012d"></script>
 <script>
 (function(){
 'use strict';
@@ -93,12 +93,12 @@ let result=null, picked=null;
 function calc(){
   const t=radio('type'), py=+$('py').value, n=+$('count').value, term=+radio('term'), care=+radio('care'), home=$('home').value, date=$('q-date').value;
   const f=RENT.factor[term]; const disc = n>1 ? 1-RENT.multiDiscount : 1;
-  const install = add(add(RATES.base[t], mul(RATES.pipePerM[t],5)), RENT.installExtra[home]); /* 기본 설치 + 배관 5m 기준, 렌탈료에 분할 포함 */
+  const install = add(RATES.base[t], RENT.installExtra[home]); /* 기본 설치비를 렌탈료에 분할 포함. 배관은 현장 실측 후 별도 */
   const brands = BRANDS.map(b=>{
     const m=pickModel(b,t,py);
     const items=[
       {label:'제품 '+m.name+' (×'+n+') 분할', r:mul([m.price*f[0]/term, m.price*f[1]/term], n)},
-      {label:'설치비 분할 (배관 5m 기준, 하자 보증 포함)', r:mul([install[0]/term, install[1]/term], n)},
+      {label:'설치비 분할 (하자 보증 포함 · 배관은 실측 별도)', r:mul([install[0]/term, install[1]/term], n)},
       {label:'보증·보험', r:mul(RENT.warranty, n)}
     ];
     if(care>0) items.push({label:'관리 서비스 (연 '+care+'회 분해 청소)', r:mul(RENT.care[care], n)});

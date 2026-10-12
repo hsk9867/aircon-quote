@@ -6,7 +6,7 @@
 <title>이전·설치 견적 · 속시원</title>
 <link rel="icon" type="image/png" href="img/favicon.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261012b">
+<link rel="stylesheet" href="css/style.css?v=20261012d">
 </head>
 <body>
 <header class="top"></header>
@@ -38,10 +38,6 @@
         <div class="fs"><label class="lbl" for="home">거주 형태</label><select id="home"><option value="apt">아파트·오피스텔</option><option value="house">주택·빌라</option></select></div>
         <div class="fs"><label class="lbl" for="floor">층수</label><select id="floor"><option value="low">1~2층</option><option value="mid">3~5층</option><option value="high">6층 이상 (엘리베이터)</option></select></div>
       </div>
-    </div>
-    <div class="fs">
-      <div class="lbl">배관 길이 <b class="num" id="pipe-v">5m</b> <span class="hint">1m 단위 계산</span></div>
-      <input type="range" id="pipe" min="1" max="20" step="1" value="5" aria-label="배관 길이">
     </div>
     <div class="fs">
       <div class="lbl"><span class="n">3</span>현장 조건</div>
@@ -80,14 +76,13 @@
 
 </main>
 <footer></footer>
-<script src="data/config.js?v=20261012b"></script>
-<script src="js/common.js?v=20261012b"></script>
+<script src="data/config.js?v=20261012d"></script>
+<script src="js/common.js?v=20261012d"></script>
 <script>
 (function(){
 'use strict';
-const {TYPE_LABEL, RATES, $, mul, add, isPeak, plusDays, applySeason, linesHtml, rangeShort, radio, Booking} = window.SSW;
+const {TYPE_LABEL, RATES, $, mul, add, isPeak, plusDays, applySeason, linesHtml, rangeShort, rangeText, radio, Booking} = window.SSW;
 let result=null;
-$('pipe').addEventListener('input', ()=>{ $('pipe-v').textContent=$('pipe').value+'m'; });
 function calc(){
   const t=radio('type'), n=+$('count').value, date=$('q-date').value, house=$('home').value==='house'; const items=[];
   items.push({label:TYPE_LABEL[t]+' 이전 설치 기본 (배관 별도)'+(n>1?' × '+n+'대':''), r:mul(RATES.moveBase[t],n)});
@@ -98,8 +93,7 @@ function calc(){
   const f=$('floor').value;
   if(f==='mid') items.push({label:'도착지 3~5층 작업 가산', r:RATES.floorMid});
   if(f==='high') items.push({label:'도착지 고층 작업 가산', r:RATES.floorHigh});
-  const pipe=+$('pipe').value;
-  items.push({label:'배관 '+pipe+'m × '+n+'대 (1m당)', r:mul(RATES.pipePerM[t],pipe*n)});
+  items.push({label:'배관 · 현장 실측 길이만큼 추가'+(n>1?' (대당)':''), r:[0,0], info:'1m당 '+rangeText(RATES.pipePerM[t][0],RATES.pipePerM[t][1])});
   if(house){ items.push({label:'주택 외벽·지상 경로 배관 '+RATES.housePipe[0]+'~'+RATES.housePipe[1]+'m', r:[RATES.pipePerM[t][0]*RATES.housePipe[0], RATES.pipePerM[t][1]*RATES.housePipe[1]]}); items.push({label:'타공 '+n+'곳', r:mul(RATES.hole,n)}); }
   if($('buried').checked) items.push({label:'매립 배관 교체·연결', r:RATES.pipeReplace[t]});
   if($('angle').checked) items.push({label:'실외기 앵글 재설치', r:RATES.angle[t]});
@@ -113,7 +107,7 @@ function calc(){
   $('r-total').textContent = rangeShort(total[0],total[1]);
   $('r-season').textContent = isPeak(date)?'성수기 (6~8월)':'비수기'; $('r-season').className='tag '+(isPeak(date)?'warn':'ok');
   $('r-lines').innerHTML = linesHtml(items, total, '총액');
-  $('r-advice').textContent = (house ? '주택 도착지는 외벽 타공과 배관 커버 마감이 들어가고, 실외기를 앵글에 올리면 앵글 비용이 추가됩니다. ' : '아파트는 세대 배관 구조가 비슷해 기본 범위 안에서 대부분 마무리됩니다. ')+(pipe+(house?RATES.housePipe[1]:0) > 8 ? '배관이 길어지면 냉매 보충이 필요할 수 있어 옵션을 함께 켜 두는 것이 안전합니다.' : '기존 배관을 재사용할 수 있으면 배관 연장비가 줄어듭니다.');
+  $('r-advice').textContent = (house ? '주택 도착지는 외벽 타공과 배관 커버 마감이 들어가고, 실외기를 앵글에 올리면 앵글 비용이 추가됩니다. ' : '아파트는 세대 배관 구조가 비슷해 기본 범위 안에서 대부분 마무리됩니다. ')+(house ? '외벽 경로는 배관이 길어져 냉매 보충이 필요할 수 있어 옵션을 함께 켜 두는 것이 안전합니다.' : '기존 배관을 재사용할 수 있으면 배관 비용이 줄어듭니다.');
   $('result').hidden=false; Booking.refresh();
 }
 $('qform').addEventListener('submit', e=>{ e.preventDefault(); calc(); $('result').scrollIntoView({behavior:'smooth'}); });

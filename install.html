@@ -8,7 +8,7 @@
 <script>try{if(!sessionStorage.getItem('ssw_splash')){sessionStorage.setItem('ssw_splash','1');if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){document.documentElement.classList.add('splash-on');setTimeout(function(){document.documentElement.classList.remove('splash-on')},2400)}}}catch(e){}</script>
 <link rel="preload" as="image" href="img/logo.jpg">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="css/style.css?v=20261012h">
+<link rel="stylesheet" href="css/style.css?v=20261012i">
 </head>
 <body>
 <header class="top"></header>
@@ -91,8 +91,8 @@
 
 </main>
 <footer></footer>
-<script src="data/config.js?v=20261012h"></script>
-<script src="js/common.js?v=20261012h"></script>
+<script src="data/config.js?v=20261012i"></script>
+<script src="js/common.js?v=20261012i"></script>
 <script>
 (function(){
 'use strict';
@@ -121,6 +121,7 @@ function renderUnits(){
 function readUnits(){ return Array.from(document.querySelectorAll('#units .unit')).map(u=>({room:u.querySelector('[data-u=room]').value, py:+u.querySelector('[data-u=py]').value})); }
 function updateKinds(){
   const sys = +radio('count')>=3;
+  const gasChip = document.querySelector('input[name=opt][value=gas]'); if(gasChip){ gasChip.closest('.chip').hidden = sys; if(sys) gasChip.checked=false; }
   document.querySelectorAll('#units .unit').forEach(u=>{ const py=+u.querySelector('[data-u=py]').value; u.querySelector('.kind').textContent = sys ? '천장형 실내기 · 실외기 1대 공용 (시스템 에어컨)' : TYPE_LABEL[typeOf(py)]+' 형 · '+(py<=9?'벽 상단 설치, 실외기 소형':'바닥 설치, 실외기 대형'); });
   $('units-hint').textContent = sys ? '3대부터는 시스템 에어컨으로 계산합니다. 천장형 실내기를 실외기 1대에 묶는 구성이며 천장 점검구·드레인 배관이 포함됩니다.' : '15평 이하는 벽걸이, 16평 이상은 스탠드로 계산합니다. 배관은 현장 실측 길이만큼 1m 단위로 추가됩니다.';
 }
@@ -143,17 +144,14 @@ function laborFor(inp){
     inp.units.forEach((u,i)=>{
       items.push({label:(i+1)+'번 '+u.room+' 천장형 실내기 설치', r:C.indoor});
       items.push({label:(i+1)+'번 천장 점검구·타공, 드레인 배관', r:add(C.hatch,C.drain)});
-      items.push({label:(i+1)+'번 냉매 배관 · 현장 실측 길이만큼 추가', r:[0,0], info:'1m당 '+rangeText(RATES.pipePerM.stand[0],RATES.pipePerM.stand[1])});
       if(inp.occupied==='living') items.push({label:(i+1)+'번 가구 이동·천장 작업 보양', r:C.protect});
       if(inp.opts.includes('paper')) items.push({label:(i+1)+'번 천장·벽 부분 도배 마감', r:C.paper});
       if(inp.opts.includes('remove')) items.push({label:(i+1)+'번 기존 에어컨 철거', r:C.remove});
     });
     items.push({label:'실외기 1대 설치 (시스템 멀티, '+n+'대 공용)', r:C.outdoor});
     if(house){
-      items.push({label:'메인 배관 연장 '+RATES.housePipe[0]+'~'+RATES.housePipe[1]+'m (외벽·지상 경로)', r:[RATES.pipePerM.stand[0]*RATES.housePipe[0], RATES.pipePerM.stand[1]*RATES.housePipe[1]]});
       items.push({label:'외벽 타공 1곳', r:RATES.hole});
     }
-    if(inp.opts.includes('gas')) items.push({label:'냉매 추가 충전 (긴 배관 분)', r:C.gas});
     if(inp.opts.includes('angle')) items.push({label:'실외기 앵글', r:RATES.angle.stand});
     else if(house) items.push({label:'실외기 앵글 (외벽 설치 시, 필요 없으면 제외)', r:[0,RATES.angle.stand[1]]});
   } else {

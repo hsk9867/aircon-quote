@@ -115,6 +115,8 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 img.blogo{width:auto;max-width:72px;object-fit:contain}
 .badge-logo{white-space:nowrap}
 .bcard .hd .amt{font-family:var(--display);font-weight:700;font-size:1.2rem;text-align:right;white-space:nowrap}
+.vat{display:block;font:500 .68rem/1.2 var(--body);color:var(--muted);letter-spacing:0}
+.vat-in{font:500 .72rem/1 var(--body);color:var(--muted);margin-left:4px;white-space:nowrap}
 .bcard .hd .sub{grid-column:1/-1;font-size:.82rem;color:var(--muted)}
 .bcard .models{padding:0 16px 12px;display:grid;gap:4px;font-size:.86rem}
 .bcard .models div{display:flex;justify-content:space-between;gap:10px}

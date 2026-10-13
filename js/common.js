@@ -577,7 +577,8 @@ const SITE_DEFAULT = {
      "area": "서울 마포구",
      "svc": "벽걸이 설치",
      "text": "견적에 나온 금액 그대로 끝났어요. 배관 길이 미리 적어둔 게 맞아서 추가 비용 없이 깔끔하게 설치해 주셨습니다.",
-     "img": "img/reviews/r01.jpg",
+     "type": "설치",
+    "img": "img/reviews/r01.jpg",
      "date": "2026-10"
     },
     {
@@ -585,7 +586,8 @@ const SITE_DEFAULT = {
      "area": "경기 고양시",
      "svc": "스탠드 설치",
      "text": "전화 돌리지 않고 사이트에서 바로 총액 보고 예약했어요. 기사님이 시간 딱 맞춰 오셔서 두 시간 만에 끝났습니다.",
-     "img": "img/reviews/r02.jpg",
+     "type": "설치",
+    "img": "img/reviews/r02.jpg",
      "date": "2026-10"
     },
     {
@@ -593,7 +595,8 @@ const SITE_DEFAULT = {
      "area": "서울 강서구",
      "svc": "분해 청소",
      "text": "실외기까지 같이 청소했는데 냄새가 완전히 사라졌어요. 분해한 부품 사진도 보여주셔서 믿음이 갔습니다.",
-     "img": "img/reviews/r03.jpg",
+     "type": "청소",
+    "img": "img/reviews/r03.jpg",
      "date": "2026-09"
     },
     {
@@ -601,7 +604,8 @@ const SITE_DEFAULT = {
      "area": "인천 서구",
      "svc": "시스템 에어컨 설치",
      "text": "천장형 3대 설치했는데 실외기 한 대로 구성해 주셔서 베란다가 넓어졌어요. 점검구 위치도 미리 설명해 주셨습니다.",
-     "img": "img/reviews/r04.jpg",
+     "type": "설치",
+    "img": "img/reviews/r04.jpg",
      "date": "2026-09"
     },
     {
@@ -609,15 +613,17 @@ const SITE_DEFAULT = {
      "area": "서울 은평구",
      "svc": "이전 설치",
      "text": "이사하면서 철거부터 새집 설치까지 한 번에 했어요. 층수 가산까지 견적에 있어서 당일에 더 낸 돈이 없었습니다.",
-     "img": "img/reviews/r05.jpg",
+     "type": "설치",
+    "img": "img/reviews/r05.jpg",
      "date": "2026-09"
     },
     {
      "name": "한*수",
      "area": "경기 김포시",
-     "svc": "냉매 충전",
-     "text": "안 시원해서 문의했더니 누설 점검 먼저 해주시고 충전했어요. 구형 모델이라 걱정했는데 부품 안내도 정확했습니다.",
-     "img": "img/reviews/r06.jpg",
+     "svc": "천장형 청소",
+     "text": "사무실 천장형 2대 분해 청소했는데 필터 안쪽 곰팡이까지 다 꺼내 보여주셨어요. 바람 냄새가 바로 달라졌습니다.",
+     "type": "청소",
+    "img": "img/reviews/r06.jpg",
      "date": "2026-08"
     },
     {
@@ -625,7 +631,8 @@ const SITE_DEFAULT = {
      "area": "서울 양천구",
      "svc": "상가 설치",
      "text": "매장 천장형 2대 견적이 바로 나와서 사장님께 바로 보고했어요. 영업 중이라 새벽 시간에 맞춰 시공해 주셨습니다.",
-     "img": "img/reviews/r07.jpg",
+     "type": "설치",
+    "img": "img/reviews/r07.jpg",
      "date": "2026-08"
     },
     {
@@ -633,7 +640,8 @@ const SITE_DEFAULT = {
      "area": "경기 부천시",
      "svc": "벽걸이 설치",
      "text": "주택이라 외벽 배관이 걱정이었는데 사진 보내니 범위를 먼저 알려주셨어요. 배관 커버까지 깔끔하게 마감됐습니다.",
-     "img": "img/reviews/r08.jpg",
+     "type": "설치",
+    "img": "img/reviews/r08.jpg",
      "date": "2026-08"
     },
     {
@@ -641,15 +649,17 @@ const SITE_DEFAULT = {
      "area": "서울 영등포구",
      "svc": "분해 청소",
      "text": "사용 연수 고르니 오염도 가산까지 미리 보여줘서 좋았어요. 청소 후 바람 세기가 확실히 달라졌습니다.",
-     "img": "img/reviews/r09.jpg",
+     "type": "청소",
+    "img": "img/reviews/r09.jpg",
      "date": "2026-07"
     },
     {
      "name": "서*연",
      "area": "경기 파주시",
-     "svc": "스탠드 설치",
-     "text": "제품 구매와 설치를 한 번에 비교할 수 있어서 편했어요. 카카오톡으로 진행 상황도 바로바로 알려주셨습니다.",
-     "img": "img/reviews/r10.jpg",
+     "svc": "스탠드 청소",
+     "text": "실외기 1대까지 같이 청소 신청했는데 대수대로 금액이 바로 나와서 좋았어요. 작업 후 바닥 정리까지 깔끔했습니다.",
+     "type": "청소",
+    "img": "img/reviews/r10.jpg",
      "date": "2026-07"
     }
    ],

@@ -425,3 +425,9 @@ html,body{overflow-x:clip}  /* 화면 가득 히어로 띠가 가로 스크롤�
 .rv-wrap.drag{cursor:grabbing} .rv-wrap.drag .rv{pointer-events:none}
 .rv-track{animation:none!important}
 .rv-nav{display:flex;gap:6px} .rv-nav .arr{appearance:none;border:0;cursor:pointer;font:inherit}
+/* 후기 종류 버튼 */
+.rv-filter{display:flex;gap:6px;margin:-4px 0 12px}
+.rv-filter button{appearance:none;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;font-weight:700;font-size:.84rem;padding:7px 14px;border-radius:999px;cursor:pointer;transition:background .15s,color .15s,border-color .15s,transform .15s}
+.rv-filter button:hover{background:var(--surface);transform:translateY(-1px)}
+.rv-filter button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.rv-empty{padding:16px;color:var(--muted);font-size:.9rem}

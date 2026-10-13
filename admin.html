@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
-<link rel="stylesheet" href="css/style.css?v=20261015p">
+<link rel="stylesheet" href="css/style.css?v=20261015q">
 <style>
 .abar{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:6px;margin-bottom:14px;position:sticky;top:56px;z-index:10;background:var(--bg)}
 .quick,.totop{display:none}  /* 관리자에서는 떠 있는 문의 버튼 숨김 */
@@ -115,7 +115,7 @@ table.edit input[type=text]{min-width:120px}
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261015n"></script>
+<script src="js/common.js?v=20261015o"></script>
 <script>
 (function(){
 'use strict';
@@ -249,7 +249,7 @@ function render(){
   }
   if(tab==='reviews'){
     if(!Array.isArray(draft.site.reviews)) draft.site.reviews=clone(DEFAULTS.site.reviews||[]);
-    h+=card('고객 후기', fText('site.home.titles.reviews','섹션 제목')+draft.site.reviews.map((r,i)=>'<div class="item"><div class="ih"><span>후기 '+(i+1)+'</span>'+del('site.reviews.'+i)+'</div><div class="g3">'+fText('site.reviews.'+i+'.name','이름','예: 김*현')+fText('site.reviews.'+i+'.area','지역','예: 서울 마포구')+fText('site.reviews.'+i+'.svc','작업','예: 벽걸이 설치')+'</div>'+fText('site.reviews.'+i+'.text','후기 내용','',true)+'<div class="g2">'+fText('site.reviews.'+i+'.img','사진 주소','예: img/reviews/r01.jpg')+fText('site.reviews.'+i+'.date','날짜','예: 2026-10')+'</div></div>').join('')+addBtn('site.reviews',{name:'',area:'',svc:'',text:'',img:'',date:''},'후기 추가'), '첫 화면 "속시원하게 약속!" 위에 옆으로 천천히 흐르는 카드로 나옵니다. 사진은 FTP로 img/reviews 폴더에 올린 뒤 주소를 적습니다. 후기를 모두 지우면 섹션이 숨겨집니다.');
+    h+=card('고객 후기', fText('site.home.titles.reviews','섹션 제목')+draft.site.reviews.map((r,i)=>'<div class="item"><div class="ih"><span>후기 '+(i+1)+'</span>'+del('site.reviews.'+i)+'</div><div class="g3">'+fText('site.reviews.'+i+'.name','이름','예: 김*현')+fText('site.reviews.'+i+'.area','지역','예: 서울 마포구')+fText('site.reviews.'+i+'.svc','작업','예: 벽걸이 설치')+'</div><div class="f"><label>구분 <span class="hint">첫 화면 후기 버튼(설치/청소)에 쓰임</span></label><select data-p="site.reviews.'+i+'.type">'+['설치','청소'].map(t=>'<option value="'+t+'"'+((r.type||'설치')===t?' selected':'')+'>'+t+'</option>').join('')+'</select></div>'+fText('site.reviews.'+i+'.text','후기 내용','',true)+'<div class="g2">'+fText('site.reviews.'+i+'.img','사진 주소','예: img/reviews/r01.jpg')+fText('site.reviews.'+i+'.date','날짜','예: 2026-10')+'</div></div>').join('')+addBtn('site.reviews',{name:'',area:'',svc:'',text:'',img:'',date:''},'후기 추가'), '첫 화면 "속시원하게 약속!" 위에 옆으로 천천히 흐르는 카드로 나옵니다. 사진은 FTP로 img/reviews 폴더에 올린 뒤 주소를 적습니다. 후기를 모두 지우면 섹션이 숨겨집니다.');
   }
   if(tab==='plan'){
     if(!isObj(draft.site.plan)) draft.site.plan=clone(DEFAULTS.site.plan||{});

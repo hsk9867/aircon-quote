@@ -366,7 +366,7 @@ h1,h2,h3{letter-spacing:-.02em}
 .slide .cta{left:max(16px,calc(50vw - 540px + 16px));bottom:40px;background:var(--accent);color:#fff;border-radius:10px;padding:14px 24px;font-size:.98rem;transition:transform .15s,background .15s,box-shadow .15s}
 .slide:hover .cta{background:#0F4BC0;transform:translateY(-2px);box-shadow:0 8px 18px rgba(20,92,230,.3)}
 .slide .pic{right:max(0px,calc(50vw - 540px));bottom:0;width:44%;max-width:520px;aspect-ratio:4/3;border-radius:0}
-.slide .pic img{object-fit:cover;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 18%);mask-image:linear-gradient(90deg,transparent 0,#000 18%)}
+.slide .pic img{object-fit:cover}
 .promo-ctl{right:max(12px,calc(50vw - 540px + 12px));bottom:12px;background:rgba(31,36,41,.55)}
 @media (max-width:599px){.slide .txt{max-width:70%}.slide .pic{width:58%;max-width:none;right:-10px;bottom:-8px;aspect-ratio:1/1}}
 /* 실적 띠: 연파랑 바탕에 파란 숫자 */
@@ -403,7 +403,8 @@ html,body{overflow-x:clip}  /* 화면 가득 히어로 띠가 가로 스크롤�
 /* 카드뉴스형 첫 슬라이드: 사진 한 장 대신 HTML로 그려 화면 폭에 맞춤 */
 .slide.rich{display:block;min-height:380px;background:linear-gradient(90deg,#F3F5F8 0%,#E9EEF4 50%,#DEE6F0 100%);overflow:hidden}
 .slide.rich .ph{position:absolute;right:0;top:0;bottom:0;width:52%;max-width:640px}
-.slide.rich .ph img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 28%);mask-image:linear-gradient(90deg,transparent 0,#000 28%)}
+.slide.rich .ph img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
+.slide.rich .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#E9EEF4 0%,rgba(233,238,244,0) 32%)}
 .slide.rich .body{position:relative;z-index:2;padding:36px 16px 32px;max-width:min(58%,600px);margin-left:max(0px,calc(50vw - 540px));display:grid;gap:12px;align-content:start}
 .slide.rich .eb{display:inline-flex;align-items:center;gap:10px;font-size:.92rem;font-weight:700;color:#4B5563} .slide.rich .eb::before{content:"";width:22px;height:2px;background:#145CE6}
 .slide.rich .tt{font-size:clamp(1.6rem,4.2vw,2.75rem);font-weight:800;line-height:1.18;letter-spacing:-.035em;color:#1B2431}
@@ -418,11 +419,11 @@ html,body{overflow-x:clip}  /* 화면 가득 히어로 띠가 가로 스크롤�
 .slide.rich .nt{font-size:.88rem;color:#4B5563;line-height:1.45}
 .slide.rich .tag-v{position:absolute;right:max(16px,calc(50vw - 540px + 8px));top:50%;transform:translateY(-50%);z-index:2;display:none;text-align:right;color:#4B5563;font-size:.8rem;line-height:1.5}
 .slide.rich .tag-v span{display:block;white-space:pre-line} .slide.rich .tag-v::after{content:"";display:block;width:1px;height:28px;background:#4B5563;margin:8px 0 8px auto} .slide.rich .tag-v em{font-style:normal;letter-spacing:.22em;font-size:.7rem;font-weight:700}
-@media (min-width:1200px){.slide.rich .tag-v{display:block}}
+@media (min-width:1500px){.slide.rich .tag-v{display:block}}
 @media (max-width:599px){
   .slide.rich{min-height:0}
   .slide.rich .ph{width:100%;max-width:none;opacity:.35}
-  .slide.rich .ph img{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 45%);mask-image:linear-gradient(90deg,transparent 0,#000 45%)}
+  .slide.rich .ph::after{background:linear-gradient(90deg,#EDF1F6 0%,rgba(237,241,246,.2) 55%)}
   .slide.rich .body{max-width:100%;padding:24px 18px 22px;gap:10px}
   .slide.rich .fts{display:grid;grid-template-columns:1fr;gap:8px}
   .slide.rich .ft{border-right:0;margin-right:0;padding-right:0}

@@ -556,3 +556,5 @@ footer .links.sub{opacity:.8;font-size:.76rem}
 @media (min-width:600px){.slide.s3 .pic img{object-position:60% 18%}.slide.s3 .pic{-webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.3) 14%,#000 40%),linear-gradient(180deg,rgba(0,0,0,.8) 0,#000 18%);mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.3) 14%,#000 40%),linear-gradient(180deg,rgba(0,0,0,.8) 0,#000 18%)}}
 /* PC 넓은 화면에서 글 묶음만 오른쪽으로 밀던 옛 여백(margin-left:calc(50vw - 540px)) 제거 → 제목·설명·버튼이 같은 왼쪽 선에 정렬 */
 .slide .txt{margin-left:0}
+/* 모바일 카드뉴스: 위쪽 빈 여백 제거 — 글 묶음을 위에 붙이고 카드 높이를 내용에 맞춤 (PC는 그대로) */
+@media (max-width:599px){.slide{height:auto;min-height:0;align-content:start;padding:20px 18px 22px}.slide .txt{max-width:58%}.slide .cta{margin-top:12px}.slide .pic{height:78%}}

@@ -786,8 +786,7 @@ function mountChrome(){
   const kakaoHref = c.kakaoChat || '#', telHref = c.phone ? 'tel:'+String(c.phone).replace(/[^0-9+]/g,'') : '#';
   if(top){
     top.innerHTML = '<div class="in"><a class="logo" href="index.html"><img src="img/logo-word.png" alt="'+esc(SITE.brand.name)+'" width="862" height="302" decoding="async"></a>'+
-      '<div class="acts"><a class="kakao" href="'+esc(kakaoHref)+'"'+(kakaoHref!=='#'?' target="_blank" rel="noopener"':'')+' aria-label="카카오톡 상담"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.8 5.2 4.6 6.6L5.5 21l4.3-2.6c.7.1 1.4.2 2.2.2 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg></a>'+
-      '<a class="tel" href="'+esc(telHref)+'" aria-label="전화 상담"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></a></div></div>'+
+      '</div>'+
       '<nav class="nav" aria-label="바로가기"><a href="index.html"'+(here==='index.html'?' aria-current="page"':'')+'>홈</a>'+NAV.map(([h,l])=>'<a href="'+h+'"'+(h===here?' aria-current="page"':'')+'>'+l+'</a>').join('')+'</nav>';
   }
   const foot = document.querySelector('footer');

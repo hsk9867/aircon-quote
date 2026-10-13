@@ -203,16 +203,17 @@ footer .copy{border-top:1px solid var(--line);padding-top:14px;font-size:.72rem;
 footer .copy em{font-style:normal}
 
 /* 맨 위로 */
-.totop{position:fixed;right:16px;bottom:calc(132px + env(safe-area-inset-bottom,0px));z-index:30;width:42px;height:42px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--fg);display:grid;place-items:center;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s;padding:0;box-shadow:var(--shadow)}
+.totop{position:fixed;right:22px;bottom:calc(150px + env(safe-area-inset-bottom,0px));z-index:30;width:42px;height:42px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--fg);display:grid;place-items:center;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s;padding:0;box-shadow:var(--shadow)}
 .totop.show{opacity:1;pointer-events:auto} .totop svg{width:18px;height:18px}
 
 /* 오른쪽 아래 떠 있는 카카오톡·전화 버튼 */
 .quick{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;display:grid;gap:10px;justify-items:end}
-.quick a{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 16px 0 14px;border-radius:999px;text-decoration:none;font-weight:800;font-size:.86rem;white-space:nowrap;box-shadow:0 4px 16px rgba(23,25,28,.16);transition:transform .15s}
+.quick a{display:grid;place-items:center;width:54px;height:54px;border-radius:999px;text-decoration:none;box-shadow:0 4px 16px rgba(23,25,28,.16);transition:transform .15s}
+.quick a span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .quick a:hover{transform:translateY(-2px)} .quick a:active{transform:scale(.97)}
 .quick a.kakao{background:#FAE100;color:#1B1616}
 .quick a.tel{background:var(--accent);color:#fff}
-.quick svg{width:22px;height:22px;flex-shrink:0}
+.quick svg{width:26px;height:26px}
 
 /* ===== 첫 화면 ===== */
 .home-main{max-width:760px;margin:0 auto;padding:12px 16px 0;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}

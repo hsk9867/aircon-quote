@@ -48,7 +48,7 @@
 
 ## 코드에서 직접 고칠 때
 - 기본 단가: `js/common.js`의 `RATES_DEFAULT`. 관리자 페이지 저장값이 있으면 그 값이 우선합니다.
-- 기본 브랜드 모델과 판매가: `js/common.js`의 `BRANDS_DEFAULT` (모두 예시)
+- 기본 브랜드 모델과 판매가: `js/common.js`의 `BRANDS_DEFAULT`. 각 모델은 `[모델명, 판매가, 원가]`이며 판매가 = 원가(유통 단가표) + 플랫폼 마진 10% (천 원 단위 반올림, 2026-10-13 적용). 멀티 실외기는 `price`·`cost`
 - 기본 문구·연락처: `js/common.js`의 `SITE_DEFAULT`. 페이지의 `data-t="경로"` 요소가 이 값으로 채워집니다.
 - 렌탈 기본 계수: `js/common.js`의 `RENT_DEFAULT`
 

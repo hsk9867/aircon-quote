@@ -435,3 +435,8 @@ html,body{overflow-x:clip}  /* 화면 가득 히어로 띠가 가로 스크롤�
 .slide.s3 .pic img{object-position:72% 40%}
 /* 상단 메뉴의 제휴 문의는 살짝 구분 */
 .top-nav a.pt{color:var(--muted)} .top-nav a.pt:hover{color:var(--accent)}
+/* 시작 화면 문구: 로고 위 "에어컨 모든견적", 로고 옆 "하게!!" */
+html.splash-on body::before{content:"에어컨 모든견적";display:flex;justify-content:center;align-items:flex-end;box-sizing:border-box;padding-bottom:calc(50vh + min(21vw,105px) / 2 + 14px);font:800 min(7vw,32px)/1.2 var(--display);color:#1F2429;letter-spacing:-.02em;animation:splash-text .7s cubic-bezier(.2,.8,.2,1) both,splash-out .55s ease 1.7s forwards}
+html.splash-on body::after{content:"하게!!";display:flex;align-items:center;width:auto;height:min(21vw,105px);margin-left:0;margin-top:calc(min(21vw,105px) / -2);left:50%;padding-left:calc(min(60vw,300px) + 10px);background-position:left center;background-size:min(60vw,300px) auto;font:800 min(9vw,44px)/1 var(--display);color:#145CE6;letter-spacing:-.03em;white-space:nowrap;animation:splash-in2 .7s cubic-bezier(.2,.8,.2,1) both,splash-out .55s ease 1.7s forwards}
+@keyframes splash-in2{from{opacity:0;transform:translateX(-50%) scale(.9) translateY(10px)}to{opacity:1;transform:translateX(-50%)}}
+@keyframes splash-text{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}

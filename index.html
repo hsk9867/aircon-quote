@@ -102,6 +102,7 @@
       const html=items.map(card).join(''); track.innerHTML=html+html; const wrapEl=track.parentElement;
       let unit=track.scrollWidth/2; let k=1; while(unit*k<wrapEl.clientWidth+40 && k<6) k++;   /* 한 벌이 화면보다 짧으면 반복해서 끊김 없이 */
       if(k>1){ const u=html.repeat(k); track.innerHTML=u+u; } wrapEl.scrollLeft=1; };
+    document.getElementById('reviews-sec').hidden=false;   /* 폭을 재기 전에 보이게 */
     render('');
     document.querySelectorAll('.rv-filter button').forEach(b=>b.addEventListener('click', ()=>{ document.querySelectorAll('.rv-filter button').forEach(x=>x.classList.toggle('on', x===b)); render(b.dataset.rvt); }));
     document.getElementById('reviews-sec').hidden=false;

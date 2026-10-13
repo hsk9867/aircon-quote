@@ -535,3 +535,22 @@ html.splash-on body::after{font:400 min(8.6vw,42px)/1 "Cafe24Ssurround","SUIT Va
 @media (min-width:600px){.svc-grid{grid-template-columns:repeat(3,1fr)}.svc{padding:26px 24px}}
 @media (min-width:900px){.svc-head h2{font-size:1.45rem}.svc>p{font-size:1rem}.svc-tabs{top:64px}}
 footer .links.sub{opacity:.8;font-size:.76rem}
+
+/* ===== 카드뉴스(추천 슬라이드) 사진: 사각 테두리가 보이지 않게 왼쪽·위쪽을 투명하게 흐리고(마스크), 2·3번 사진은 작업 장면이 보이도록 위치 조정 (2026-10-13) ===== */
+.slide .pic::before{content:none}
+.slide .pic{border-radius:0;-webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.35) 18%,#000 48%),linear-gradient(180deg,transparent 0,rgba(0,0,0,.4) 22%,#000 55%);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.35) 18%,#000 48%),linear-gradient(180deg,transparent 0,rgba(0,0,0,.4) 22%,#000 55%);mask-composite:intersect}
+.slide .pic img{object-position:50% 40%}
+.slide.s1 .pic img{object-position:42% 30%;transform:scale(1.08);transform-origin:100% 100%}   /* 1번 사진은 파일 자체에 둥근 흰 테두리가 있어 살짝 키워서 가장자리를 밖으로 */
+.slide.s2 .pic img{object-position:94% 55%}   /* 2번(청소): 오른쪽의 기사와 필터가 보이게 */
+.slide.s3 .pic img{object-position:68% 42%}   /* 3번(시스템 설치): 비계 위 두 기사와 천장형 실내기가 보이게 */
+@media (min-width:600px){.slide .pic{-webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.3) 14%,#000 40%),linear-gradient(180deg,rgba(0,0,0,.55) 0,#000 25%);mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.3) 14%,#000 40%),linear-gradient(180deg,rgba(0,0,0,.55) 0,#000 25%)}.slide.s2 .pic img{object-position:90% 50%}.slide.s3 .pic img{object-position:66% 40%}}
+/* 카드뉴스 문구·버튼: 제목-설명-버튼을 한 덩어리로 세로 가운데에 두고, 버튼은 설명 바로 아래 (2026-10-13) */
+.slide{display:grid;align-content:center;justify-items:start;padding:22px 20px}
+.slide .txt{padding:0;max-width:60%;gap:8px}
+.slide b{font-size:clamp(1.1rem,4.6vw,1.45rem);line-height:1.3}
+.slide p{font-size:.86rem;line-height:1.5}
+.slide .cta{position:static;left:auto;bottom:auto;margin:14px 0 0}
+@media (min-width:600px){.slide{padding:32px 28px}.slide .txt{padding:0;max-width:52%;gap:10px}.slide b{font-size:1.7rem}.slide .cta{margin-top:18px}}
+@media (min-width:900px){.slide{padding:48px 44px}.slide .txt{padding:0;max-width:54%;gap:12px}.slide b{font-size:2.2rem}.slide p{font-size:1.05rem}.slide .cta{margin-top:22px;left:auto;bottom:auto}}
+.slide.s3 .pic img{object-position:68% 22%}
+@media (min-width:600px){.slide.s3 .pic img{object-position:60% 18%}.slide.s3 .pic{-webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.3) 14%,#000 40%),linear-gradient(180deg,rgba(0,0,0,.8) 0,#000 18%);mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.3) 14%,#000 40%),linear-gradient(180deg,rgba(0,0,0,.8) 0,#000 18%)}}

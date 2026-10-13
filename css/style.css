@@ -399,3 +399,20 @@ html,body{overflow-x:clip}  /* 화면 가득 히어로 띠가 가로 스크롤�
 .slide .pic{overflow:hidden}
 .slide .pic::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,#E8EFFC 0%,rgba(232,239,252,.6) 14%,rgba(232,239,252,0) 42%),linear-gradient(180deg,#EDF2FC 0%,rgba(237,242,252,0) 30%)}
 @media (max-width:599px){.slide .pic::before{background:linear-gradient(90deg,#E8EFFC 0%,rgba(232,239,252,.5) 18%,rgba(232,239,252,0) 48%),linear-gradient(180deg,#EDF2FC 0%,rgba(237,242,252,0) 34%)}}
+
+/* 고객 후기: 사진 + 별점 + 한 줄 후기, 왼쪽으로 흐르는 슬라이드 (손을 올리면 멈춤, 동작 줄이기 설정이면 가로 스크롤) */
+.rv-wrap{overflow:hidden;margin:0 -16px;padding:4px 0 8px;-webkit-mask-image:none}
+.rv-track{display:flex;gap:12px;width:max-content;padding-left:16px;animation:rv-move calc(var(--rv-n,10) * 6s) linear infinite;will-change:transform}
+.rv-wrap:hover .rv-track,.rv-wrap:focus-within .rv-track{animation-play-state:paused}
+@keyframes rv-move{to{transform:translateX(-50%)}}
+.rv{flex:0 0 260px;background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:transform .18s,box-shadow .18s}
+.rv:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(31,36,41,.1)}
+.rv .ph{aspect-ratio:1/1;background:var(--surface)}  /* 세로 사진이 많아 정사각형으로 */ .rv .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.rv .bd{padding:12px 14px 14px;display:grid;gap:6px}
+.rv .st{display:flex;gap:2px;color:#F5A524} .rv .st svg{width:14px;height:14px}
+.rv p{font-size:.86rem;line-height:1.5;color:var(--fg);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.rv .who{font-size:.76rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px;align-items:baseline} .rv .who b{color:var(--fg)} .rv .who span{margin-left:auto}
+@media (min-width:900px){.rv{flex-basis:300px}.rv-track{gap:16px}}
+@media (prefers-reduced-motion:reduce){.rv-wrap{overflow-x:auto;scroll-snap-type:x proximity}.rv-track{animation:none}.rv{scroll-snap-align:start}}
+/* 2번 슬라이드(청소) 사진은 오른쪽에 작업 장면이 있어 오른쪽을 기준으로 자름 */
+.slide.s2 .pic img{object-position:88% 45%}

@@ -10,7 +10,7 @@
 <meta name="description" content="속시원 · 에어컨 설치, 청소, 냉매 충전, 이전 설치 무료 견적. 조건만 고르면 금액이 바로 나옵니다.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
-<link rel="stylesheet" href="css/style.css?v=20261015l">
+<link rel="stylesheet" href="css/style.css?v=20261015m">
 </head>
 <body>
 <header class="top"></header>
@@ -33,6 +33,11 @@
       <a href="gas.html" data-menu="gas"><span class="ico"><span class="em" aria-hidden="true">❄️</span></span><span data-t="home.quick.gas">냉매 충전</span></a>
       <a href="business.html" data-menu="business"><span class="ico"><span class="em" aria-hidden="true">🏢</span></span><span data-t="home.quick.business">기업 문의</span></a>
     </nav>
+  </section>
+
+  <section aria-labelledby="reviews-title" id="reviews-sec" hidden>
+    <div class="sec-title"><h2 id="reviews-title" data-t="home.titles.reviews">속시원한 고객 후기!</h2></div>
+    <div class="rv-wrap"><div class="rv-track" id="rv-track"></div></div>
   </section>
 
   <section aria-labelledby="promise-title">
@@ -59,7 +64,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261015m"></script>
+<script src="js/common.js?v=20261015n"></script>
 <script>
 (function(){
   const S=window.SSW, SITE=S.SITE, e=S.esc, c=SITE.contact;
@@ -83,6 +88,17 @@
     };
     if(!needServer){ draw(null); return; }
     fetch('admin/api.php?action=stats&_='+Date.now()).then(r=>r.text()).then(t=>{ let j=null; try{ j=JSON.parse(t); }catch(x){} draw(j); }).catch(()=>draw(null));
+  })();
+
+  /* 고객 후기: 사진 1장당 후기 1개, 왼쪽으로 천천히 흐르고 손을 올리면 멈춤 (관리자 > 후기) */
+  (function(){
+    const list=(SITE.reviews||[]).filter(r=>r&&(r.text||r.img)); if(!list.length) return;
+    const STAR='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z"/></svg>';
+    const card=r=>'<article class="rv">'+(r.img?'<div class="ph"><img src="'+e(r.img)+'" alt="'+e(r.svc||'')+' 시공 사진" loading="lazy"></div>':'')+'<div class="bd"><div class="st" aria-label="별점 5점">'+STAR.repeat(5)+'</div><p>'+e(r.text||'')+'</p><div class="who"><b>'+e(r.name||'')+'</b>'+(r.area?' · '+e(r.area):'')+(r.svc?' · '+e(r.svc):'')+(r.date?'<span>'+e(r.date)+'</span>':'')+'</div></div></article>';
+    const html=list.map(card).join('');
+    const track=document.getElementById('rv-track'); track.innerHTML=html+html;   /* 두 번 이어 붙여 끊김 없이 순환 */
+    track.style.setProperty('--rv-n', list.length);
+    document.getElementById('reviews-sec').hidden=false;
   })();
 
   /* 추천 슬라이드 카드는 관리자 (예전 기본 사진 img/home-bg.jpg 가 저장돼 있으면 img/home-slide1.jpg 로 읽음) > 첫 화면 > 추천 슬라이드 값으로 만듭니다 */

@@ -7,62 +7,45 @@
 <link rel="icon" type="image/png" href="img/favicon.png">
 <script>try{if(!sessionStorage.getItem('ssw_splash')){sessionStorage.setItem('ssw_splash','1');if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){document.documentElement.classList.add('splash-on');setTimeout(function(){document.documentElement.classList.remove('splash-on')},2400)}}}catch(e){}</script>
 <link rel="preload" as="image" href="img/logo-word.png">
-<link rel="preload" as="image" href="img/home-bg.jpg">
 <meta name="description" content="속시원 · 에어컨 설치, 청소, 냉매 충전, 이전 설치 무료 견적. 조건만 고르면 금액이 바로 나옵니다.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-<link rel="stylesheet" href="css/style.css?v=20261014x">
+<link rel="stylesheet" href="css/style.css?v=20261014y">
 </head>
 <body>
 <header class="top"></header>
 <main class="home-main">
 
   <section class="promo" aria-label="추천">
-    <div class="promo-track" id="promo">
-      <a class="slide s1" href="install.html">
-        <div class="txt"><b>에어컨 가격,<br>현장에서 바뀌지 않게</b><p data-t="brand.tagline">조건만 고르면 설치까지 총액이 바로 나옵니다</p></div>
-        <span class="cta">설치 견적 내기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-        <div class="pic"><img src="img/home-bg.jpg" alt="천장형 에어컨을 설치하는 기사" width="1448" height="1086" fetchpriority="high"></div>
-      </a>
-      <a class="slide s2" href="clean.html">
-        <div class="txt"><b>여름 오기 전,<br>분해 청소 예약</b><p>기종과 사용 연수만 고르면 금액이 바로</p></div>
-        <span class="cta">청소 견적 내기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-        <div class="pic"><img src="img/products/samsung-wall.jpg" alt="벽걸이 에어컨" loading="lazy"></div>
-      </a>
-      <a class="slide s3" href="rental.html">
-        <div class="txt"><b>설치비 0원,<br>월 렌탈료만</b><p>약정 기간별 월 렌탈료를 브랜드별로 비교</p></div>
-        <span class="cta">렌탈 상담 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
-        <div class="pic"><img src="img/products/lg-stand.webp" alt="스탠드 에어컨" loading="lazy"></div>
-      </a>
-    </div>
+    <div class="promo-track" id="promo"></div>
     <div class="promo-ctl" aria-live="polite"><button type="button" class="nav-btn" id="promo-prev" aria-label="이전 공지"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><span id="promo-pos">1 / 3</span><button type="button" class="nav-btn" id="promo-next" aria-label="다음 공지"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button><button type="button" id="promo-pause" aria-label="자동 넘김 멈춤"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></button></div>
   </section>
 
   <section aria-labelledby="quick-title">
-    <div class="sec-title"><h2 id="quick-title">속시원하게 무료견적내기!</h2></div>
+    <div class="sec-title"><h2 id="quick-title" data-t="home.titles.quick">속시원하게 무료견적내기!</h2></div>
     <nav class="igrid">
-      <a href="install.html" data-menu="install"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="9" rx="2"/><path d="M7 14v3M17 14v3M9 10h6"/></svg></span>가정용 설치</a>
-      <a href="shop.html" data-menu="shop"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l1.5-5h15L21 10"/><path d="M3 10a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M5 12v8h14v-8"/><path d="M10 20v-5h4v5"/></svg></span>상가·사무실</a>
-      <a href="move.html" data-menu="move"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h8v8H3zM11 11h5l3 3v2h-8"/><circle cx="6.5" cy="18" r="1.5"/><circle cx="16.5" cy="18" r="1.5"/></svg></span>이전 설치</a>
-      <a href="clean.html"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="2.5"/><path d="M12 9.5c0-4 2-6 4-6 1.5 0 2 1.5 1 3-1 1.2-3 1.8-5 3zM14.5 12c4 0 6 2 6 4 0 1.5-1.5 2-3 1-1.2-1-1.8-3-3-5zM12 14.5c0 4-2 6-4 6-1.5 0-2-1.5-1-3 1-1.2 3-1.8 5-3zM9.5 12c-4 0-6-2-6-4 0-1.5 1.5-2 3-1 1.2 1 1.8 3 3 5z"/></svg></span>분해 청소</a>
-      <a href="gas.html" data-menu="gas"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3h4v3h-4zM8 6h8v13a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2z"/><path d="M8 13h8M12 13v6"/></svg></span>냉매 충전</a>
-      <a href="business.html" data-menu="business"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v16M15 9h3a1 1 0 0 1 1 1v11"/><path d="M8 8h2M8 12h2M8 16h2M11 8h1M11 12h1M11 16h1"/></svg></span>기업 문의</a>
+      <a href="install.html" data-menu="install"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="9" rx="2"/><path d="M7 14v3M17 14v3M9 10h6"/></svg></span><span data-t="home.quick.install">가정용 설치</span></a>
+      <a href="shop.html" data-menu="shop"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10l1.5-5h15L21 10"/><path d="M3 10a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M5 12v8h14v-8"/><path d="M10 20v-5h4v5"/></svg></span><span data-t="home.quick.shop">상가·사무실</span></a>
+      <a href="move.html" data-menu="move"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8h8v8H3zM11 11h5l3 3v2h-8"/><circle cx="6.5" cy="18" r="1.5"/><circle cx="16.5" cy="18" r="1.5"/></svg></span><span data-t="home.quick.move">이전 설치</span></a>
+      <a href="clean.html" data-menu="clean"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="2.5"/><path d="M12 9.5c0-4 2-6 4-6 1.5 0 2 1.5 1 3-1 1.2-3 1.8-5 3zM14.5 12c4 0 6 2 6 4 0 1.5-1.5 2-3 1-1.2-1-1.8-3-3-5zM12 14.5c0 4-2 6-4 6-1.5 0-2-1.5-1-3 1-1.2 3-1.8 5-3zM9.5 12c-4 0-6-2-6-4 0-1.5 1.5-2 3-1 1.2 1 1.8 3 3 5z"/></svg></span><span data-t="home.quick.clean">분해 청소</span></a>
+      <a href="gas.html" data-menu="gas"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3h4v3h-4zM8 6h8v13a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2z"/><path d="M8 13h8M12 13v6"/></svg></span><span data-t="home.quick.gas">냉매 충전</span></a>
+      <a href="business.html" data-menu="business"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v16M15 9h3a1 1 0 0 1 1 1v11"/><path d="M8 8h2M8 12h2M8 16h2M11 8h1M11 12h1M11 16h1"/></svg></span><span data-t="home.quick.business">기업 문의</span></a>
     </nav>
   </section>
 
   <section aria-labelledby="promise-title">
-    <div class="sec-title"><h2 id="promise-title">속시원하게 약속!</h2></div>
+    <div class="sec-title"><h2 id="promise-title" data-t="home.titles.promise">속시원하게 약속!</h2></div>
     <div class="pgrid" id="home-promises"></div>
   </section>
 
   <section aria-labelledby="steps-title">
-    <div class="sec-title"><h2 id="steps-title">속시원하게 진행!</h2></div>
+    <div class="sec-title"><h2 id="steps-title" data-t="home.titles.steps">속시원하게 진행!</h2></div>
     <div class="sgrid" id="home-steps"></div>
   </section>
 
   <section class="contact-band" aria-labelledby="contact-title">
     <div>
       <span class="eyebrow">상담</span>
-      <h2 id="contact-title" style="margin-top:6px">궁금한 건 전화나 카톡으로 연락주세요!<br>속시원하게 답변드립니다!</h2>
+      <h2 id="contact-title" style="margin-top:6px" data-t="home.titles.contact">궁금한 건 전화나 카톡으로 연락주세요!<br>속시원하게 답변드립니다!</h2>
     </div>
     <div class="row">
       <button class="btn primary" type="button" id="contact-link" data-t="home.links.contact">전화·카카오톡 상담</button>
@@ -73,7 +56,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261014w"></script>
+<script src="js/common.js?v=20261014y"></script>
 <script>
 (function(){
   const S=window.SSW, SITE=S.SITE, e=S.esc, c=SITE.contact;
@@ -83,7 +66,12 @@
   document.getElementById('contact-link').addEventListener('click', ()=>{ document.getElementById('contact').hidden=false; });
 
   /* 추천 슬라이드: 4.5초마다 다음 카드로. 손으로 넘기거나 멈춤 버튼을 누르면 자동 넘김 중단. 동작 줄이기 설정이면 자동 넘김 없음 */
-  const track=document.getElementById('promo'), slides=[...track.children], pos=document.getElementById('promo-pos'), pauseBtn=document.getElementById('promo-pause');
+  /* 추천 슬라이드 카드는 관리자 > 첫 화면 > 추천 슬라이드 값으로 만듭니다 */
+  const track=document.getElementById('promo');
+  track.innerHTML=(SITE.home.promo||[]).filter(p=>p&&p.title).map((p,i)=>'<a class="slide s'+(i%3+1)+'" href="'+e(p.href||'install.html')+'"><div class="txt"><b>'+e(p.title).replace(/\n/g,'<br>')+'</b>'+(p.desc?'<p>'+e(p.desc)+'</p>':'')+'</div>'+
+    (p.cta?'<span class="cta">'+e(p.cta)+' <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>':'')+(p.img?'<div class="pic"><img src="'+e(p.img)+'" alt=""'+(i?' loading="lazy"':' fetchpriority="high"')+'></div>':'')+'</a>').join('');
+  const slides=[...track.children], pos=document.getElementById('promo-pos'), pauseBtn=document.getElementById('promo-pause');
+  if(slides.length<2) document.querySelector('.promo-ctl').hidden=true;
   const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
   let cur=0, timer=null, paused=reduce;
   const ICON_PAUSE='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';

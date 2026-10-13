@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" href="img/favicon.png">
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-<link rel="stylesheet" href="css/style.css?v=20261014x">
+<link rel="stylesheet" href="css/style.css?v=20261014y">
 <style>
 .abar{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:6px;margin-bottom:14px;position:sticky;top:56px;z-index:10;background:var(--bg)}
 .abar::-webkit-scrollbar{display:none}
@@ -113,7 +113,7 @@ table.edit input[type=text]{min-width:120px}
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261014w"></script>
+<script src="js/common.js?v=20261014y"></script>
 <script>
 (function(){
 'use strict';
@@ -227,10 +227,11 @@ function render(){
     h+=card('사업자 정보 (하단 표기)', '<div class="g2">'+fText('site.biz.company','상호')+fText('site.biz.ceo','대표자')+fText('site.biz.regNo','사업자등록번호')+fText('site.biz.mailOrderNo','통신판매업 신고번호')+'</div>'+fText('site.biz.address','사업장 주소')+fText('site.biz.footerNote','하단 안내 문구','',true), '비워 두면 "확정 후 표기" 안내가 나옵니다. 통신판매업 신고 후 상호·대표·사업자번호·주소 표기는 의무입니다.');
   }
   if(tab==='home'){
-    for(const k of Object.keys(draft.site.home.menu)){
-      h+=card((DEFAULTS.site.home.menu[k]||{}).title||k, fText('site.home.menu.'+k+'.title','버튼 이름')+fText('site.home.menu.'+k+'.desc','설명 (두 줄까지)'), '', fBool('site.home.menu.'+k+'.show','첫 화면에 표시'));
-    }
-    h+=card('하단 링크', '<div class="g2">'+fText('site.home.links.prices','단가표 링크 문구')+fText('site.home.links.contact','상담 링크 문구')+'</div>');
+    const QUICK={install:'가정용 설치',shop:'상가·사무실',move:'이전 설치',clean:'분해 청소',gas:'냉매 충전',business:'기업 문의'};
+    if(!Array.isArray(draft.site.home.promo)) draft.site.home.promo=clone(DEFAULTS.site.home.promo||[]);
+    h+=card('추천 슬라이드 (맨 위 카드)', draft.site.home.promo.map((p,i)=>'<div class="item"><div class="ih"><span>'+(i+1)+'번 카드</span>'+del('site.home.promo.'+i)+'</div>'+fText('site.home.promo.'+i+'.title','큰 제목','줄바꿈이 그대로 반영됩니다',true)+fText('site.home.promo.'+i+'.desc','작은 설명')+'<div class="g3">'+fText('site.home.promo.'+i+'.cta','버튼 문구')+fText('site.home.promo.'+i+'.href','연결 페이지','install.html, clean.html, rental.html, business.html 등')+fText('site.home.promo.'+i+'.img','사진 주소','예: img/home-bg.jpg')+'</div></div>').join('')+addBtn('site.home.promo',{title:'',desc:'',cta:'',href:'install.html',img:''},'카드 추가'), '4.5초마다 자동으로 넘어갑니다. 사진은 FTP로 img 폴더에 올린 뒤 주소를 적습니다.');
+    h+=card('견적 바로가기 아이콘', '<div class="g2">'+Object.keys(QUICK).map(k=>'<div class="item"><div class="ih"><span>'+esc(QUICK[k])+'</span>'+fBool('site.home.menu.'+k+'.show','첫 화면에 표시')+'</div>'+fText('site.home.quick.'+k,'아이콘 이름')+'</div>').join('')+'</div>', '순서는 가정용 설치 · 상가·사무실 · 이전 설치 · 분해 청소 · 냉매 충전 · 기업 문의로 고정입니다.');
+    h+=card('섹션 제목과 상담 문구', fText('site.home.titles.quick','아이콘 위 제목')+fText('site.home.titles.promise','약속 제목')+fText('site.home.titles.steps','진행 절차 제목')+fText('site.home.titles.contact','상담 카드 문구','줄바꿈 가능',true)+fText('site.home.links.contact','상담 버튼 문구'), '약속·절차 내용은 "약속·절차·FAQ" 탭에서 고칩니다.');
   }
   if(tab==='pages'){
     for(const k of Object.keys(PAGES)) h+=card(PAGES[k]+' 페이지', fText('site.pages.'+k+'.eyebrow','작은 머리글')+fText('site.pages.'+k+'.title','제목')+fText('site.pages.'+k+'.desc','설명','',true));

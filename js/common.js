@@ -533,6 +533,11 @@ const SITE_DEFAULT = {
       "desc": "매장·사무실·학원 설치. 천장형 시스템과 스탠드 브랜드별 총액",
       "show": true
      },
+     "clean": {
+      "title": "분해 청소 견적",
+      "desc": "기종·대수·사용 연수로 금액 안내",
+      "show": true
+     },
      "gas": {
       "title": "냉매 충전 견적",
       "desc": "안 시원할 때. 냉매 종류·기종별 충전 비용",
@@ -557,7 +562,14 @@ const SITE_DEFAULT = {
     "links": {
      "prices": "단가표 전체 보기",
      "contact": "전화·카카오톡 상담"
-    }
+    },
+    "promo": [
+     {"title": "에어컨 가격,\n현장에서 바뀌지 않게", "desc": "조건만 고르면 설치까지 총액이 바로 나옵니다", "cta": "설치 견적 내기", "href": "install.html", "img": "img/home-bg.jpg"},
+     {"title": "여름 오기 전,\n분해 청소 예약", "desc": "기종과 사용 연수만 고르면 금액이 바로", "cta": "청소 견적 내기", "href": "clean.html", "img": "img/products/samsung-wall.jpg"},
+     {"title": "설치비 0원,\n월 렌탈료만", "desc": "약정 기간별 월 렌탈료를 브랜드별로 비교", "cta": "렌탈 상담", "href": "rental.html", "img": "img/products/lg-stand.webp"}
+    ],
+    "quick": {"install": "가정용 설치", "shop": "상가·사무실", "move": "이전 설치", "clean": "분해 청소", "gas": "냉매 충전", "business": "기업 문의"},
+    "titles": {"quick": "속시원하게 무료견적내기!", "promise": "속시원하게 약속!", "steps": "속시원하게 진행!", "contact": "궁금한 건 전화나 카톡으로 연락주세요!\n속시원하게 답변드립니다!"}
    },
    "pages": {
     "shop": {
@@ -820,7 +832,7 @@ function bizLine(){
 }
 /* data-t="경로" 요소의 글자를 설정값으로, data-menu 카드는 표시 여부 반영 */
 function applySite(){
-  document.querySelectorAll('[data-t]').forEach(el=>{ const v=getPath(SITE, el.dataset.t); if(typeof v==='string') el.textContent=v; });
+  document.querySelectorAll('[data-t]').forEach(el=>{ const v=getPath(SITE, el.dataset.t); if(typeof v!=='string') return; if(v.includes('\n')) el.innerHTML=esc(v).replace(/\n/g,'<br>'); else el.textContent=v; });
   document.querySelectorAll('[data-menu]').forEach(el=>{ const m=SITE.home.menu[el.dataset.menu]; if(m && m.show===false) el.hidden=true; });
   if(SITE.brand.name && SITE.brand.name!=='속시원') document.title=document.title.replace('속시원', SITE.brand.name);
 }

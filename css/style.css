@@ -255,6 +255,7 @@ footer .copy em{font-style:normal}
 @media (min-width:600px){.igrid .ico{width:64px;height:64px}}
 
 @media (max-width:600px){.sgrid{margin:0 -16px;padding-inline:16px}}
+@media (min-width:600px){.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));overflow:visible;padding-bottom:0}.sgrid div{flex:none;padding:14px 12px}}
 
 /* 약속 · 절차 */
 .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}

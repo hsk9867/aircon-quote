@@ -254,17 +254,6 @@ footer .copy em{font-style:normal}
 .igrid .bdg{position:absolute;top:-6px;left:50%;transform:translateX(6px);background:var(--accent);color:#fff;font-size:.6rem;font-weight:800;padding:2px 6px;border-radius:999px;line-height:1.3;white-space:nowrap}
 @media (min-width:600px){.igrid{grid-template-columns:repeat(8,1fr)}.igrid .ico{width:64px;height:64px}}
 
-/* 견적 메뉴 카드 목록 (관리자에서 이름·설명·표시 여부 수정) */
-.mlist{display:grid;gap:8px}
-.mcard{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:14px 14px 14px 12px;border:1px solid var(--line);border-radius:var(--radius);text-decoration:none;color:var(--fg);background:var(--bg);transition:background .15s}
-.mcard:hover{background:var(--surface)}
-.mcard .ico{width:44px;height:44px;border-radius:14px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
-.mcard .ico svg{width:24px;height:24px}
-.mcard b{display:block;font-size:.98rem;font-weight:700;letter-spacing:-.01em}
-.mcard span{display:block;font-size:.8rem;color:var(--muted);line-height:1.45;margin-top:2px}
-.mcard .go{color:var(--muted)} .mcard .go svg{width:18px;height:18px}
-@media (min-width:600px){.mlist{grid-template-columns:1fr 1fr}}
-
 /* 브랜드별 제품: 옆으로 넘기는 사진 카드 */
 .pslide{overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none}
 @media (max-width:600px){.pslide,.sgrid{margin:0 -16px;padding-inline:16px}}

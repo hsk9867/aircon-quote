@@ -114,7 +114,7 @@ table.edit input[type=text]{min-width:120px}
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261014y"></script>
+<script src="js/common.js?v=20261014z"></script>
 <script>
 (function(){
 'use strict';
@@ -123,7 +123,7 @@ const clone=o=>JSON.parse(JSON.stringify(o));
 const isObj=v=>!!v&&typeof v==='object'&&!Array.isArray(v);
 function setPath(o,p,v){ const ks=p.split('.'); let a=o; for(let i=0;i<ks.length-1;i++){ if(a[ks[i]]==null) a[ks[i]]=/^\d+$/.test(ks[i+1])?[]:{}; a=a[ks[i]]; } a[ks[ks.length-1]]=v; }
 let mode='local', st={}, draft=null, tab='basic';
-try{ const h=location.hash.slice(1); if(/^(basic|home|pages|guide|rates|brands|rent|techs|inbox)$/.test(h)) tab=h; }catch(e){}
+try{ const h=location.hash.slice(1); if(/^(basic|home|pages|guide|plan|rates|brands|rent|techs|inbox)$/.test(h)) tab=h; }catch(e){}
 
 /* ---------- 서버 API ---------- */
 async function api(action,data){
@@ -197,7 +197,7 @@ $('act-pw').addEventListener('click', async ()=>{ const cur=prompt('현재 비�
   try{ const r=await api('password',{current:cur,password:nw}); toast(r.ok?'비밀번호를 바꿨습니다.':(r.error==='wrong'?'현재 비밀번호가 틀립니다.':'실패: '+r.error), !r.ok); }catch(e){ toast('실패: '+e.message,true); } });
 
 /* ---------- 탭 ---------- */
-const TABS=[['basic','기본 정보'],['home','첫 화면'],['pages','페이지 문구'],['guide','약속·절차·FAQ'],['rates','단가'],['brands','브랜드·제품'],['rent','렌탈'],['techs','제휴 기사'],['inbox','접수 내역']];
+const TABS=[['basic','기본 정보'],['home','첫 화면'],['pages','페이지 문구'],['guide','약속·절차·FAQ'],['plan','설치 플랜'],['rates','단가'],['brands','브랜드·제품'],['rent','렌탈'],['techs','제휴 기사'],['inbox','접수 내역']];
 function renderTabs(){ $('tabs').innerHTML=TABS.map(([k,l])=>'<button type="button" role="tab" data-tab="'+k+'" aria-selected="'+(k===tab)+'">'+l+(k==='inbox'&&lastNewCount?' <span class="badge" style="background:var(--warn);color:#fff">'+lastNewCount+'</span>':'')+'</button>').join(''); }
 $('tabs').addEventListener('click', e=>{ const b=e.target.closest('[data-tab]'); if(!b) return; tab=b.dataset.tab; try{ history.replaceState(null,'','#'+tab); }catch(e){} renderTabs(); render(); window.scrollTo({top:0}); });
 
@@ -241,6 +241,13 @@ function render(){
     h+=card('약속 (단가표 페이지)', draft.site.promises.map((p,i)=>'<div class="item"><div class="ih"><span>약속 '+(i+1)+'</span>'+del('site.promises.'+i)+'</div>'+fText('site.promises.'+i+'.title','제목')+fText('site.promises.'+i+'.desc','설명')+'</div>').join('')+addBtn('site.promises',{title:'',desc:''},'약속 추가'));
     h+=card('진행 절차', draft.site.steps.map((p,i)=>'<div class="item"><div class="ih"><span>'+(i+1)+'단계</span>'+del('site.steps.'+i)+'</div>'+fText('site.steps.'+i+'.title','제목')+fText('site.steps.'+i+'.desc','설명')+'</div>').join('')+addBtn('site.steps',{title:'',desc:''},'단계 추가'));
     h+=card('자주 묻는 질문', draft.site.faq.map((p,i)=>'<div class="item"><div class="ih"><span>질문 '+(i+1)+'</span>'+del('site.faq.'+i)+'</div>'+fText('site.faq.'+i+'.q','질문')+fText('site.faq.'+i+'.a','답변','',true)+'</div>').join('')+addBtn('site.faq',{q:'',a:''},'질문 추가'));
+  }
+  if(tab==='plan'){
+    if(!isObj(draft.site.plan)) draft.site.plan=clone(DEFAULTS.site.plan||{});
+    const tips=(p,label)=>{ const arr=getPath(draft,p)||[]; return '<div class="f"><label>'+esc(label)+'</label>'+arr.map((t,i)=>'<div class="rg" style="grid-template-columns:1fr auto"><input type="text" data-p="'+p+'.'+i+'" value="'+esc(t)+'">'+del(p+'.'+i)+'</div>').join('')+addBtn(p,'','참고 문장 추가')+'</div>'; };
+    h+=card('공통 안내', fText('site.plan.note','플랜 위 안내 문장','',true), '설치 견적과 상가·사무실 견적의 "모의 설치 플랜"에 나오는 문구입니다. {n}은 대수, {min}·{max}는 단가 탭의 주택 추가 배관 길이로 바뀝니다.');
+    h+=card('시스템 에어컨 (3대 이상)', fText('site.plan.system.indoor','실내기','',true)+'<div class="g2">'+fText('site.plan.system.outdoorHouse','실외기 · 주택','',true)+fText('site.plan.system.outdoorApt','실외기 · 아파트','',true)+'</div>'+fText('site.plan.system.pipe','배관','',true)+'<div class="g2">'+fText('site.plan.system.cautionLiving','주의 · 거주 중','',true)+fText('site.plan.system.cautionEmpty','주의 · 입주 전','',true)+'</div>'+fText('site.plan.system.overall','종합 설명','{n} = 대수',true)+tips('site.plan.system.tips','참고 문장'));
+    h+=card('벽걸이·스탠드 (1~2대)', '<div class="g2">'+fText('site.plan.normal.indoorStand','실내기 · 스탠드','',true)+fText('site.plan.normal.indoorWall','실내기 · 벽걸이','',true)+'</div><div class="g3">'+fText('site.plan.normal.outdoorHouse','실외기 · 주택','',true)+fText('site.plan.normal.outdoorAptStand','실외기 · 아파트 스탠드','',true)+fText('site.plan.normal.outdoorAptWall','실외기 · 아파트 벽걸이','',true)+'</div><div class="g2">'+fText('site.plan.normal.pipeHouse','배관 · 주택','{min}~{max} = 추가 배관 길이',true)+fText('site.plan.normal.pipeApt','배관 · 아파트','',true)+'</div><div class="g2">'+fText('site.plan.normal.cautionLiving','주의 · 거주 중','',true)+fText('site.plan.normal.cautionEmpty','주의 · 입주 전','',true)+'</div><div class="g2">'+fText('site.plan.normal.overallHouse','종합 설명 · 주택','',true)+fText('site.plan.normal.overallApt','종합 설명 · 아파트','',true)+'</div>'+tips('site.plan.normal.tips','참고 문장'));
   }
   if(tab==='rates'){
     h+=card('기종별 단가', '<div class="tbl-wrap"><table class="edit"><thead><tr><th>항목</th><th>벽걸이 (원)</th><th>스탠드</th><th>2in1</th></tr></thead><tbody>'+
@@ -402,7 +409,7 @@ function download(){ const blob=new Blob(['window.SSW_CONFIG = '+JSON.stringify(
 $('act-download').addEventListener('click',download);
 $('act-export').addEventListener('click',()=>{ const blob=new Blob([JSON.stringify(toConfig(),null,1)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='sokshiwon-config-'+new Date().toISOString().slice(0,10)+'.json'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); });
 $('act-import').addEventListener('change', e=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ try{ let t=String(rd.result).trim().replace(/^window\.SSW_CONFIG\s*=\s*/,'').replace(/;\s*$/,''); const cfg=JSON.parse(t); draft=fromConfig(cfg); keepLocal(); render(); toast('가져왔습니다. 확인 후 저장하세요.'); }catch(ex){ toast('파일을 읽지 못했습니다: '+ex.message,true); } }; rd.readAsText(f); e.target.value=''; });
-const RESET={basic:['site.brand','site.contact','site.biz'],home:['site.home'],pages:['site.pages'],guide:['site.promises','site.steps','site.faq'],rates:['rates','site.priceLabels'],brands:['brands'],rent:['rent']};
+const RESET={basic:['site.brand','site.contact','site.biz'],home:['site.home'],pages:['site.pages'],guide:['site.promises','site.steps','site.faq'],plan:['site.plan'],rates:['rates','site.priceLabels'],brands:['brands'],rent:['rent']};
 $('act-reset').addEventListener('click',()=>{ const ks=RESET[tab]; if(!ks) return; if(!confirm('이 탭의 값을 기본값으로 되돌릴까요? 저장 전까지는 서버에 반영되지 않습니다.')) return; ks.forEach(p=>setPath(draft,p,clone(getPath(DEFAULTS,p)))); keepLocal(); render(); });
 $('act-reset-all').addEventListener('click',()=>{ if(!confirm('모든 설정을 기본값으로 되돌릴까요? 저장 전까지는 서버에 반영되지 않습니다.')) return; draft=fromConfig({}); keepLocal(); render(); });
 window.addEventListener('beforeunload', e=>{ if(mode==='server' && draft && $('editor') && !$('editor').hidden){ /* 저장 안 한 변경 보호는 생략: 폼 입력이 잦아 경고가 번거로움 */ } });

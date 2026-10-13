@@ -571,6 +571,33 @@ const SITE_DEFAULT = {
     "quick": {"install": "가정용 설치", "shop": "상가·사무실", "move": "이전 설치", "clean": "분해 청소", "gas": "냉매 충전", "business": "기업 문의"},
     "titles": {"quick": "속시원하게 무료견적내기!", "promise": "속시원하게 약속!", "steps": "속시원하게 진행!", "contact": "궁금한 건 전화나 카톡으로 연락주세요!\n속시원하게 답변드립니다!"}
    },
+   "plan": {
+    "note": "입력한 조건(거주 형태, 대수·평수, 거주 여부)으로 작성한 일반적인 설치 방식입니다. 실제 자리는 기사 방문 시 확정됩니다.",
+    "system": {
+     "indoor": "천장 매립형. 방 중앙 또는 출입문 반대편 천장에 설치하고 점검구를 함께 냅니다.",
+     "outdoorHouse": "실외기 1대를 외벽 앵글 또는 지상·옥상에 두고 모든 실내기 배관을 모읍니다.",
+     "outdoorApt": "실외기 1대를 베란다 또는 실외기실에 두고 모든 실내기 배관을 한 경로로 모읍니다.",
+     "pipe": "천장 속으로 냉매 배관과 드레인 배관을 지나 실외기까지 연결합니다. 드레인 기울기 확보가 필요합니다.",
+     "cautionLiving": "천장 작업이라 가구를 옮기고 바닥·벽을 보양한 뒤 진행합니다.",
+     "cautionEmpty": "입주 전 설치라 천장 마감과 부분 도배를 같은 날 끝낼 수 있습니다.",
+     "overall": "시스템 에어컨 구성은 실외기 1대로 {n}개 공간을 냉방해 베란다 공간을 아끼고 외관이 깔끔합니다. 천장고와 점검구 위치는 방문 전 사진으로 확인하면 범위를 좁힐 수 있습니다.",
+     "tips": ["천장 속 배관 경로를 짧게 잡으려면 실외기와 가까운 방부터 배치합니다.", "여러 대 동시 가동 시 전력 여유가 필요해 전용 전기 작업 옵션을 권합니다."]
+    },
+    "normal": {
+     "indoorStand": "베란다 쪽 벽면 옆, 콘센트와 배수가 가까운 자리",
+     "indoorWall": "창문 위쪽 벽 상단, 침대 머리맡을 피한 위치",
+     "outdoorHouse": "외벽 앵글 또는 지상 받침대. 소음이 침실로 들어오지 않는 면",
+     "outdoorAptStand": "거실 앞 베란다 바닥 또는 실외기실",
+     "outdoorAptWall": "방 쪽 베란다 바닥, 거실 실외기와 나란히",
+     "pipeHouse": "외벽 타공 후 외부 배관 {min}~{max}m, 배관 커버 마감",
+     "pipeApt": "베란다 벽 타공 또는 매립 배관 이용, 배관 5m 기본 포함 (초과분 1m당 추가)",
+     "cautionLiving": "가구를 옮기고 바닥·벽을 보양한 뒤 작업합니다.",
+     "cautionEmpty": "입주 전 설치라 배관 자리 부분 도배까지 같은 날 마감할 수 있습니다.",
+     "overallHouse": "주택은 실외기 자리와 배관 경로가 집마다 달라 방문 전 외벽 사진을 받으면 범위를 좁힐 수 있습니다.",
+     "overallApt": "아파트는 세대 배관 구조가 비슷해 기본 설치비 범위 안에서 대부분 마무리됩니다.",
+     "tips": ["실외기 여러 대는 같은 베란다에 나란히 두면 배관이 짧아집니다.", "전용 콘센트가 없으면 전기 작업 옵션이 필요합니다."]
+    }
+   },
    "pages": {
     "shop": {
      "eyebrow": "상가·사무실 설치 견적 · 구매 + 설치",
@@ -787,6 +814,15 @@ function linesHtml(items, total, totalLabel){
     (total?'<div class="line tot"><span class="k">'+esc(totalLabel||'총액')+'</span><span class="v num">'+rangeText(total[0],total[1])+'</span></div>':'')+'</div>';
 }
 
+/* 모의 설치 플랜 문구 (설치·상가 견적 공통). 관리자 > 설치 플랜에서 수정. {n}=대수, {min}·{max}=주택 추가 배관 길이 */
+function planFrom(inp, sys, typeOf){
+  const P=SITE.plan||{}, house=inp.home==='house', living=inp.occupied==='living';
+  const fill=s=>String(s||'').split('{n}').join(inp.units.length).split('{min}').join(RATES.housePipe[0]).split('{max}').join(RATES.housePipe[1]);
+  if(sys){ const q=P.system||{}; return { units: inp.units.map(u=>({room:u.room, kind:'천장형 '+u.py+'평', indoor:fill(q.indoor), outdoor:fill(house?q.outdoorHouse:q.outdoorApt), pipe:fill(q.pipe), caution:fill(living?q.cautionLiving:q.cautionEmpty)})), overall:fill(q.overall), tips:(q.tips||[]).map(fill).filter(Boolean) }; }
+  const q=P.normal||{};
+  return { units: inp.units.map(u=>{ const t=typeOf(u.py); return {room:u.room, kind:TYPE_LABEL[t]+' '+u.py+'평', indoor:fill(t==='stand'?q.indoorStand:q.indoorWall), outdoor:fill(house?q.outdoorHouse:(t==='stand'?q.outdoorAptStand:q.outdoorAptWall)), pipe:fill(house?q.pipeHouse:q.pipeApt), caution:fill(living?q.cautionLiving:q.cautionEmpty)}; }), overall:fill(house?q.overallHouse:q.overallApt), tips:(q.tips||[]).map(fill).filter(Boolean) };
+}
+
 /* ---------- 로고 ---------- */
 const LOGO_SVG = '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="2" y="2" width="44" height="44" rx="12" fill="var(--accent)"/><path d="M12 17h18a4 4 0 1 1-3 6.7" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/><path d="M12 25h22a4.5 4.5 0 1 0-3.4-7.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" opacity=".55"/><path d="M12 33h12a3.5 3.5 0 1 1-2.6 5.8" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg>';
 const NAV = [['install.html','설치 견적'],['shop.html','상가·사무실'],['clean.html','청소 견적'],['gas.html','냉매 충전'],['move.html','이전·설치'],['business.html','기업 문의']];
@@ -916,7 +952,7 @@ const Booking = {
   }
 };
 
-window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, sendToServer, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, brandLogo, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, linesHtml, Booking, LOGO_SVG};
+window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, sendToServer, planFrom, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, brandLogo, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, linesHtml, Booking, LOGO_SVG};
 document.addEventListener('DOMContentLoaded', mountChrome);
 /* 시작 화면은 각 페이지 <head>의 스크립트와 css(html.splash-on)가 처리. 화면을 누르면 바로 닫습니다 */
 document.addEventListener('click', ()=>document.documentElement.classList.remove('splash-on'), {once:true});

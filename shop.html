@@ -103,7 +103,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261014y"></script>
+<script src="js/common.js?v=20261014z"></script>
 <script>
 (function(){
 'use strict';
@@ -232,31 +232,11 @@ function renderResult(){
 }
 
 /* ---------- 모의 설치 플랜 (입력 조건 기반) ---------- */
-function rulePlan(inp){
-  const house=inp.home==='house';
-  if(isSystem(inp.units)){
-    return { units: inp.units.map(u=>({
-        room:u.room, kind:'천장형 '+u.py+'평',
-        indoor:'천장 매립형. 방 중앙 또는 출입문 반대편 천장에 설치하고 점검구를 함께 냅니다.',
-        outdoor: house ? '실외기 1대를 외벽 앵글 또는 지상·옥상에 두고 모든 실내기 배관을 모읍니다.' : '실외기 1대를 베란다 또는 실외기실에 두고 모든 실내기 배관을 한 경로로 모읍니다.',
-        pipe:'천장 속으로 냉매 배관과 드레인 배관을 지나 실외기까지 연결합니다. 드레인 기울기 확보가 필요합니다.',
-        caution: inp.occupied==='living' ? '천장 작업이라 가구를 옮기고 바닥·벽을 보양한 뒤 진행합니다.' : '입주 전 설치라 천장 마감과 부분 도배를 같은 날 끝낼 수 있습니다.' })),
-      overall:'시스템 에어컨 구성은 실외기 1대로 '+inp.units.length+'개 공간을 냉방해 베란다 공간을 아끼고 외관이 깔끔합니다. 천장고와 점검구 위치는 방문 전 사진으로 확인하면 범위를 좁힐 수 있습니다.',
-      tips:['천장 속 배관 경로를 짧게 잡으려면 실외기와 가까운 방부터 배치합니다.','여러 대 동시 가동 시 전력 여유가 필요해 전용 전기 작업 옵션을 권합니다.'] };
-  }
-  return { units: inp.units.map(u=>{ const t=typeOf(u.py); return {
-      room:u.room, kind:TYPE_LABEL[t]+' '+u.py+'평',
-      indoor: t==='stand' ? '베란다 쪽 벽면 옆, 콘센트와 배수가 가까운 자리' : '창문 위쪽 벽 상단, 침대 머리맡을 피한 위치',
-      outdoor: house ? '외벽 앵글 또는 지상 받침대. 소음이 침실로 들어오지 않는 면' : (t==='stand'?'거실 앞 베란다 바닥 또는 실외기실':'방 쪽 베란다 바닥, 거실 실외기와 나란히'),
-      pipe: house ? '외벽 타공 후 외부 배관 '+RATES.housePipe[0]+'~'+RATES.housePipe[1]+'m, 배관 커버 마감' : '베란다 벽 타공 또는 매립 배관 이용, 배관 5m 기본 포함 (초과분 1m당 추가)',
-      caution: inp.occupied==='living' ? '가구를 옮기고 바닥·벽을 보양한 뒤 작업합니다.' : '입주 전 설치라 배관 자리 부분 도배까지 같은 날 마감할 수 있습니다.' };}),
-    overall: house ? '주택은 실외기 자리와 배관 경로가 집마다 달라 방문 전 외벽 사진을 받으면 범위를 좁힐 수 있습니다.' : '아파트는 세대 배관 구조가 비슷해 기본 설치비 범위 안에서 대부분 마무리됩니다.',
-    tips:['실외기 여러 대는 같은 베란다에 나란히 두면 배관이 짧아집니다.','전용 콘센트가 없으면 전기 작업 옵션이 필요합니다.'] };
-}
+function rulePlan(inp){ return window.SSW.planFrom(inp, isSystem(inp.units), typeOf); }
 function renderPlan(plan){
   const row=(k,v)=>'<div class="row"><span>'+k+'</span><span>'+esc(v||'-')+'</span></div>';
   $('r-plan').innerHTML =
-    '<div class="state"><span class="tag acc">모의 플랜</span><span>입력한 조건(거주 형태, 대수·평수, 거주 여부)으로 작성한 일반적인 설치 방식입니다. 실제 자리는 기사 방문 시 확정됩니다.</span></div>'+
+    '<div class="state"><span class="tag acc">모의 플랜</span><span>'+esc((window.SSW.SITE.plan||{}).note||'')+'</span></div>'+
     plan.units.map((u,i)=>'<div class="pu"><h4><span class="tag acc">'+(i+1)+'</span>'+esc(u.room)+' <span class="muted small">'+esc(u.kind)+'</span></h4>'+row('실내기',u.indoor)+row('실외기',u.outdoor)+row('배관',u.pipe)+row('주의',u.caution)+'</div>').join('')+
     '<div class="callout">'+esc(plan.overall)+'</div>'+
     '<div class="note">'+plan.tips.map(t=>'<span>· '+esc(t)+'</span>').join('')+'</div>';

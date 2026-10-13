@@ -9,7 +9,6 @@
   --display:"Pretendard Variable","Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
   --body:"Pretendard Variable","Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
   --radius:16px; --r-sm:12px; --shadow:0 2px 14px rgba(23,25,28,.06);
-  --tab-h:62px;
   color-scheme:light;
 }
 :root[data-theme="dark"]{
@@ -24,7 +23,7 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;padding-top:env(safe-area-inset-top,0px)}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto} *{transition:none!important;animation:none!important}}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word;padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 12px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word;padding-bottom:env(safe-area-inset-bottom,0px)}
 img{max-width:100%}
 [hidden]{display:none!important}
 .wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
@@ -204,17 +203,16 @@ footer .copy{border-top:1px solid var(--line);padding-top:14px;font-size:.72rem;
 footer .copy em{font-style:normal}
 
 /* 맨 위로 */
-.totop{position:fixed;right:16px;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 14px);z-index:30;width:42px;height:42px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--fg);display:grid;place-items:center;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s;padding:0;box-shadow:var(--shadow)}
+.totop{position:fixed;right:16px;bottom:calc(132px + env(safe-area-inset-bottom,0px));z-index:30;width:42px;height:42px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--fg);display:grid;place-items:center;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .2s;padding:0;box-shadow:var(--shadow)}
 .totop.show{opacity:1;pointer-events:auto} .totop svg{width:18px;height:18px}
 
-/* 하단 탭 바: 홈 · 견적 · 단가표 · 카카오톡 · 전화 (모든 페이지 공통) */
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--bg);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
-.tabbar .in{max-width:760px;margin:0 auto;height:var(--tab-h);display:grid;grid-template-columns:repeat(5,1fr)}
-.tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-decoration:none;color:var(--muted);font-size:.68rem;font-weight:600}
-.tabbar a svg{width:24px;height:24px}
-.tabbar a[aria-current=page]{color:var(--accent)}
-.tabbar a.kakao svg{color:#1B1616;background:#FAE100;border-radius:999px;padding:3px}
-.tabbar a.tel svg{color:#fff;background:var(--accent);border-radius:999px;padding:4px}
+/* 오른쪽 아래 떠 있는 카카오톡·전화 버튼 */
+.quick{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;display:grid;gap:10px;justify-items:end}
+.quick a{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 16px 0 14px;border-radius:999px;text-decoration:none;font-weight:800;font-size:.86rem;white-space:nowrap;box-shadow:0 4px 16px rgba(23,25,28,.16);transition:transform .15s}
+.quick a:hover{transform:translateY(-2px)} .quick a:active{transform:scale(.97)}
+.quick a.kakao{background:#FAE100;color:#1B1616}
+.quick a.tel{background:var(--accent);color:#fff}
+.quick svg{width:22px;height:22px;flex-shrink:0}
 
 /* ===== 첫 화면 ===== */
 .home-main{max-width:760px;margin:0 auto;padding:12px 16px 0;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
@@ -290,7 +288,7 @@ footer .copy em{font-style:normal}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 /* 관리자 미리보기 표시줄 */
-.preview-bar{position:fixed;left:0;right:0;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px));z-index:50;display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;padding:8px 16px;background:var(--warn);color:#fff;font-size:.82rem;font-weight:600}
+.preview-bar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;padding:8px 16px;background:var(--warn);color:#fff;font-size:.82rem;font-weight:600}
 .preview-bar a{color:#fff;text-decoration:underline}
 
 /* 시작 화면: 첫 접속 때 로고 글씨가 나타났다 사라짐 (세션당 1회). <head>의 짧은 스크립트가 html.splash-on 을 켜고 2.4초 뒤 끕니다 */

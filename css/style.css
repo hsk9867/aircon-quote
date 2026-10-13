@@ -294,3 +294,28 @@ html.splash-on{overflow:hidden}
 @keyframes splash-out{to{opacity:0;visibility:hidden}}
 
 @media (max-width:420px){.seg label{font-size:.84rem;padding:10px 4px}.seg label small{font-size:.68rem}}
+
+/* ===== PC(900px 이상): 모바일은 그대로 두고 가운데 폭과 글자·카드 크기를 키움 ===== */
+@media (min-width:900px){
+  .wrap,.top .in,footer .f-in{max-width:1080px}
+  .top .in{height:64px} .logo img{height:26px}
+  .home-main{max-width:1080px;padding-top:20px;gap:14px}
+  .home-main section{padding-block:16px}
+  .sec-title h2{font-size:1.45rem}
+  .slide{min-height:400px}
+  .slide .txt{padding:48px 44px 0;max-width:60%;gap:12px}
+  .slide b{font-size:2.3rem}
+  .slide p{font-size:1.05rem}
+  .slide .cta{left:44px;bottom:40px;font-size:.95rem;padding:12px 20px}
+  .slide .pic{width:46%;max-width:460px}
+  .promo-ctl{right:16px;bottom:16px;font-size:.84rem}
+  .igrid{gap:18px 12px}
+  .igrid a{font-size:.95rem;gap:10px}
+  .igrid .ico{width:88px;height:88px;border-radius:24px} .igrid .ico svg{width:40px;height:40px}
+  .pgrid{gap:12px} .pgrid div{padding:22px 20px;gap:8px} .pgrid b{font-size:1.08rem} .pgrid span{font-size:.9rem}
+  .sgrid{gap:12px} .sgrid div{padding:20px 18px} .sgrid b{font-size:1.05rem} .sgrid span{font-size:.9rem}
+  .contact-band{padding:36px 32px} .contact-band h2{font-size:1.6rem}
+  .page-head{padding-block:36px 12px} .page-head h1{font-size:2.2rem} .page-head p{font-size:1rem}
+  .form,.result,.plan,.book{padding:28px 24px}
+  .quick a{width:60px;height:60px} .quick svg{width:28px;height:28px}
+}

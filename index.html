@@ -9,11 +9,13 @@
 <link rel="preload" as="image" href="img/logo-word.png">
 <meta name="description" content="속시원 · 에어컨 설치, 청소, 냉매 충전, 이전 설치 무료 견적. 조건만 고르면 금액이 바로 나옵니다.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-<link rel="stylesheet" href="css/style.css?v=20261015b">
+<link rel="stylesheet" href="css/style.css?v=20261015c">
 </head>
 <body>
 <header class="top"></header>
 <main class="home-main">
+
+  <section class="stats" id="stats" aria-label="실적" hidden><div class="in" id="stats-in"></div></section>
 
   <section class="promo" aria-label="추천">
     <div class="promo-track" id="promo"></div>
@@ -56,7 +58,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261015c"></script>
+<script src="js/common.js?v=20261015d"></script>
 <script>
 (function(){
   const S=window.SSW, SITE=S.SITE, e=S.esc, c=SITE.contact;
@@ -66,6 +68,17 @@
   document.getElementById('contact-link').addEventListener('click', ()=>{ document.getElementById('contact').hidden=false; });
 
   /* 추천 슬라이드: 4.5초마다 다음 카드로. 손으로 넘기거나 멈춤 버튼을 누르면 자동 넘김 중단. 동작 줄이기 설정이면 자동 넘김 없음 */
+  /* 실적 숫자 띠: 서버 접수·기사 수 + 관리자 기준값. PHP 없는 곳은 기준값만 표시 */
+  (function(){
+    const ST=SITE.stats||{}; if(ST.show===false) return;
+    const KEYS=[['received','건'],['inProgress','건'],['done','건'],['techs','명']];
+    const draw=n=>{ document.getElementById('stats-in').innerHTML=KEYS.map(([k,u])=>'<div><span class="k">'+e((ST.labels||{})[k]||k)+'</span><b class="num" data-n="'+(n[k]||0)+'">0</b><small>'+u+'</small></div>').join(''); document.getElementById('stats').hidden=false;
+      const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+      document.querySelectorAll('#stats b[data-n]').forEach(el=>{ const target=+el.dataset.n; if(reduce||target<30){ el.textContent=target.toLocaleString('ko-KR'); return; } const t0=performance.now(); const step=t=>{ const p=Math.min(1,(t-t0)/900); el.textContent=Math.round(target*(1-Math.pow(1-p,3))).toLocaleString('ko-KR'); if(p<1) requestAnimationFrame(step); }; requestAnimationFrame(step); }); };
+    const base=ST.base||{}; const sum=r=>{ const n={}; KEYS.forEach(([k])=>{ n[k]=(+base[k]||0)+((r&&r.ok&&+r[k])||0); }); return n; };
+    fetch('admin/api.php?action=stats&_='+Date.now()).then(r=>r.text()).then(t=>{ let j=null; try{ j=JSON.parse(t); }catch(x){} draw(sum(j)); }).catch(()=>draw(sum(null)));
+  })();
+
   /* 추천 슬라이드 카드는 관리자 > 첫 화면 > 추천 슬라이드 값으로 만듭니다 */
   const track=document.getElementById('promo');
   track.innerHTML=(SITE.home.promo||[]).filter(p=>p&&p.title).map((p,i)=>'<a class="slide s'+(i%3+1)+'" href="'+e(p.href||'install.html')+'"><div class="txt"><b>'+e(p.title).replace(/\n/g,'<br>')+'</b>'+(p.desc?'<p>'+e(p.desc)+'</p>':'')+'</div>'+

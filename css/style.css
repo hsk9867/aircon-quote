@@ -231,6 +231,17 @@ footer .copy em{font-style:normal}
 .sec-title .arr{text-decoration:none;color:var(--muted);display:inline-grid;place-items:center;width:32px;height:32px;border-radius:999px;background:var(--surface);flex-shrink:0}
 .sec-title .arr svg{width:18px;height:18px}
 
+/* 실적 숫자 띠 */
+.stats{background:var(--accent);color:#fff;border-radius:var(--radius);padding:0!important}
+.stats .in{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.stats .in div{display:flex;align-items:baseline;justify-content:center;gap:6px;padding:12px 8px;white-space:nowrap}
+.stats .in div:nth-child(-n+2){border-bottom:1px solid rgba(255,255,255,.18)}
+.stats .in div:nth-child(odd){border-right:1px solid rgba(255,255,255,.18)}
+.stats .k{font-size:.78rem;opacity:.85}
+.stats b{font-size:1.25rem;font-weight:800;letter-spacing:-.02em}
+.stats small{font-size:.74rem;opacity:.85}
+@media (min-width:600px){.stats .in{grid-template-columns:repeat(4,1fr)}.stats .in div{padding:14px 12px;border-bottom:0!important}.stats .in div:nth-child(odd){border-right:1px solid rgba(255,255,255,.18)}.stats .in div:nth-child(2){border-right:1px solid rgba(255,255,255,.18)}.stats .in div:last-child{border-right:0}.stats b{font-size:1.5rem}}
+
 /* 추천 슬라이드: 옆으로 넘기는 둥근 카드, 자동 넘김 */
 .promo{position:relative}
 .promo-track{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;border-radius:20px}

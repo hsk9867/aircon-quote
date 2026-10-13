@@ -205,6 +205,15 @@ switch ($action) {
         out(['ok' => true]);
 
     /* ---------- 관리자: 제휴 기사 목록 ---------- */
+    /* ---------- 공개: 실적 숫자 (첫 화면 띠). 접수·진행·완료 건수와 활동 기사 수 ---------- */
+    case 'stats':
+        $bk = readList($bookFile); $iq = readList($inqFile); $tq = readList($storeDir . '/techs.json');
+        $prog = ['기사 알림', '연락 완료', '기사 배정', '회신 완료', '견적 발송', '계약'];
+        $n = ['received' => count($bk) + count($iq), 'inProgress' => 0, 'done' => 0, 'techs' => 0];
+        foreach (array_merge($bk, $iq) as $r) { $st = (string)($r['status'] ?? ''); if (in_array($st, $prog, true)) $n['inProgress']++; if ($st === '시공 완료') $n['done']++; }
+        foreach ($tq as $t) { if (!empty($t['active']) || !isset($t['active'])) $n['techs']++; }
+        out(['ok' => true] + $n);
+
     case 'techs':
         if (!$logged) fail('auth');
         out(['ok' => true, 'techs' => readList($storeDir . '/techs.json')]);

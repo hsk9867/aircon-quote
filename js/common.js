@@ -571,6 +571,11 @@ const SITE_DEFAULT = {
     "quick": {"install": "가정용 설치", "shop": "상가·사무실", "move": "이전 설치", "clean": "분해 청소", "gas": "냉매 충전", "business": "기업 문의"},
     "titles": {"quick": "속시원하게 무료견적내기!", "promise": "속시원하게 약속!", "steps": "속시원하게 진행!", "contact": "궁금한 건 전화나 카톡으로 연락주세요!\n속시원하게 답변드립니다!"}
    },
+   "stats": {
+    "show": true,
+    "labels": {"received": "신청접수", "inProgress": "진행중 서비스", "done": "완료된 서비스", "techs": "등록된 기사님"},
+    "base": {"received": 0, "inProgress": 0, "done": 0, "techs": 0}
+   },
    "plan": {
     "note": "입력한 조건(거주 형태, 대수·평수, 거주 여부)으로 작성한 일반적인 설치 방식입니다. 실제 자리는 기사 방문 시 확정됩니다.",
     "system": {

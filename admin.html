@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" href="img/favicon.png">
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-<link rel="stylesheet" href="css/style.css?v=20261015b">
+<link rel="stylesheet" href="css/style.css?v=20261015c">
 <style>
 .abar{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:6px;margin-bottom:14px;position:sticky;top:56px;z-index:10;background:var(--bg)}
 .quick,.totop{display:none}  /* 관리자에서는 떠 있는 문의 버튼 숨김 */
@@ -114,7 +114,7 @@ table.edit input[type=text]{min-width:120px}
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261015c"></script>
+<script src="js/common.js?v=20261015d"></script>
 <script>
 (function(){
 'use strict';
@@ -225,6 +225,7 @@ function render(){
   if(tab==='basic'){
     h+=card('브랜드', fText('site.brand.name','이름','상단 바, 첫 화면, 하단에 쓰입니다')+fText('site.brand.tagline','첫 화면 한 줄 소개','',true));
     h+=card('상담 연락처', '<div class="g2">'+fText('site.contact.phone','상담 전화')+fText('site.contact.kakaoId','카카오톡 채널 이름','예: @속시원')+'</div>'+fText('site.contact.kakaoChat','카카오톡 채널 채팅 주소','기업 문의 "카카오톡으로 보내기"가 여는 주소. 채널 관리자센터 > 채널 URL')+fText('site.contact.bizEmail','기업 문의 수신 메일')+fText('site.contact.note','연락처 옆 안내 문구','비워 두면 표시되지 않습니다'), '첫 화면의 "전화·카카오톡 상담"과 기업 문의 발송에 쓰입니다.');
+    h+=card('첫 화면 실적 숫자 띠', '<div class="g2">'+fBool('site.stats.show','첫 화면에 표시')+'</div><div class="g2">'+fText('site.stats.labels.received','1번 이름')+fNum('site.stats.base.received','1번 기준값','실제 접수 건수에 더해져 표시')+fText('site.stats.labels.inProgress','2번 이름')+fNum('site.stats.base.inProgress','2번 기준값')+fText('site.stats.labels.done','3번 이름')+fNum('site.stats.base.done','3번 기준값')+fText('site.stats.labels.techs','4번 이름')+fNum('site.stats.base.techs','4번 기준값','활동 중인 제휴 기사 수에 더해져 표시')+'</div>', '접수 내역과 제휴 기사 수가 자동으로 세어지고, 기준값은 그 위에 더해집니다. 운영 전에는 기준값을 0으로 두면 실제 숫자만 나옵니다.');
     h+=card('사업자 정보 (하단 표기)', '<div class="g2">'+fText('site.biz.company','상호')+fText('site.biz.ceo','대표자')+fText('site.biz.regNo','사업자등록번호')+fText('site.biz.mailOrderNo','통신판매업 신고번호')+'</div>'+fText('site.biz.address','사업장 주소')+fText('site.biz.footerNote','하단 안내 문구','',true), '비워 두면 "확정 후 표기" 안내가 나옵니다. 통신판매업 신고 후 상호·대표·사업자번호·주소 표기는 의무입니다.');
   }
   if(tab==='home'){

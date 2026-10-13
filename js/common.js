@@ -829,12 +829,19 @@ const NAV = [['install.html','설치 견적'],['shop.html','상가·사무실'],
 function mountChrome(){
   const here = location.pathname.split('/').pop() || 'index.html';
   const top = document.querySelector('header.top');
-  /* 상단: 로고만 (메뉴는 첫 화면 아이콘, 문의는 오른쪽 아래 버튼) */
-  const c = SITE.contact;
-  const kakaoHref = c.kakaoChat || '#', telHref = c.phone ? 'tel:'+String(c.phone).replace(/[^0-9+]/g,'') : '#';
+  /* 상단: 로고 + 카테고리 버튼. 버튼을 누르면 견적 종류 목록이 펼쳐짐 (이름은 관리자 > 첫 화면 > 아이콘 이름) */
+  const CAT = [['install','install.html'],['shop','shop.html'],['move','move.html'],['clean','clean.html'],['gas','gas.html'],['business','business.html']];
+  const CAT_ICON = {"install":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"9\" rx=\"2\"/><path d=\"M7 14v3M17 14v3M9 10h6\"/></svg>","shop":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 10l1.5-5h15L21 10\"/><path d=\"M3 10a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0\"/><path d=\"M5 12v8h14v-8\"/><path d=\"M10 20v-5h4v5\"/></svg>","move":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 8h8v8H3zM11 11h5l3 3v2h-8\"/><circle cx=\"6.5\" cy=\"18\" r=\"1.5\"/><circle cx=\"16.5\" cy=\"18\" r=\"1.5\"/></svg>","clean":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"2.5\"/><path d=\"M12 9.5c0-4 2-6 4-6 1.5 0 2 1.5 1 3-1 1.2-3 1.8-5 3zM14.5 12c4 0 6 2 6 4 0 1.5-1.5 2-3 1-1.2-1-1.8-3-3-5zM12 14.5c0 4-2 6-4 6-1.5 0-2-1.5-1-3 1-1.2 3-1.8 5-3zM9.5 12c-4 0-6-2-6-4 0-1.5 1.5-2 3-1 1.2 1 1.8 3 3 5z\"/></svg>","gas":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 3h4v3h-4zM8 6h8v13a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2z\"/><path d=\"M8 13h8M12 13v6\"/></svg>","business":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 21h18M5 21V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v16M15 9h3a1 1 0 0 1 1 1v11\"/><path d=\"M8 8h2M8 12h2M8 16h2M11 8h1M11 12h1M11 16h1\"/></svg>"};
   if(top){
+    const items = CAT.filter(([k])=>!(SITE.home.menu[k] && SITE.home.menu[k].show===false)).map(([k,h])=>'<a href="'+h+'"'+(h===here?' aria-current="page"':'')+'><span class="ci">'+CAT_ICON[k]+'</span>'+esc((SITE.home.quick||{})[k]||k)+'</a>').join('');
     top.innerHTML = '<div class="in"><a class="logo" href="index.html"><img src="img/logo-word.png" alt="'+esc(SITE.brand.name)+'" width="862" height="302" decoding="async"></a>'+
-      '</div>';
+      '<button class="cat-btn" type="button" aria-expanded="false" aria-controls="cat-menu"><span class="ic-open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span><span class="ic-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span>카테고리</span></button></div>'+
+      '<nav class="cat-menu" id="cat-menu" aria-label="견적 종류" hidden><div class="in">'+items+'</div></nav>';
+    const btn = top.querySelector('.cat-btn'), menu = top.querySelector('.cat-menu');
+    const setOpen = o => { menu.hidden = !o; btn.setAttribute('aria-expanded', o?'true':'false'); top.classList.toggle('cat-open', o); };
+    btn.addEventListener('click', ()=>setOpen(menu.hidden));
+    document.addEventListener('click', e=>{ if(!menu.hidden && !top.contains(e.target)) setOpen(false); });
+    document.addEventListener('keydown', e=>{ if(e.key==='Escape' && !menu.hidden) setOpen(false); });
   }
   const foot = document.querySelector('footer');
   if(foot && !foot.innerHTML.trim()) foot.innerHTML =

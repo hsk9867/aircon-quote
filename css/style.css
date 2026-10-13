@@ -50,10 +50,16 @@ a{color:var(--fg)}
 .top .acts a{width:38px;height:38px;border-radius:999px;display:grid;place-items:center;color:var(--fg);text-decoration:none;background:var(--surface)}
 .top .acts a svg{width:20px;height:20px}
 .top .acts a.kakao{background:#FAE100;color:#1B1616}
-.nav{max-width:760px;margin:0 auto;padding:0 16px 10px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none} .nav::-webkit-scrollbar{display:none}
-.nav a{white-space:nowrap;font-size:.84rem;font-weight:600;padding:7px 12px;text-decoration:none;color:var(--fg);border:1px solid var(--line);border-radius:999px;background:var(--bg)}
-.nav a:hover{background:var(--surface)}
-.nav a[aria-current=page]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+/* 카테고리 버튼과 펼침 메뉴 */
+.cat-btn{appearance:none;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;font-weight:700;font-size:.86rem;height:38px;padding:0 14px 0 10px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.cat-btn svg{width:20px;height:20px} .cat-btn .ic-close{display:none}
+.top.cat-open .cat-btn{background:var(--fg);border-color:var(--fg);color:var(--bg)} .top.cat-open .cat-btn .ic-open{display:none} .top.cat-open .cat-btn .ic-close{display:inline}
+.cat-menu{position:absolute;left:0;right:0;top:100%;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 12px 28px rgba(23,25,28,.1)}
+.cat-menu .in{max-width:760px;margin:0 auto;padding:12px 16px 16px;height:auto;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.cat-menu a{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:var(--r-sm);text-decoration:none;color:var(--fg);font-weight:600;font-size:.92rem;background:var(--surface)}
+.cat-menu a:hover{background:var(--surface-2)} .cat-menu a[aria-current=page]{background:var(--accent-soft);color:var(--accent)}
+.cat-menu .ci{width:32px;height:32px;border-radius:10px;background:var(--bg);color:var(--accent);display:grid;place-items:center;flex-shrink:0} .cat-menu .ci svg{width:20px;height:20px}
+@media (min-width:600px){.cat-menu .in{grid-template-columns:repeat(3,1fr)}}
 
 section{padding-block:28px} section:last-of-type{border-bottom:0}
 .sec-head{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
@@ -297,7 +303,8 @@ html.splash-on{overflow:hidden}
 
 /* ===== PC(900px 이상): 모바일은 그대로 두고 가운데 폭과 글자·카드 크기를 키움 ===== */
 @media (min-width:900px){
-  .wrap,.top .in,footer .f-in{max-width:1080px}
+  .wrap,.top .in,.cat-menu .in,footer .f-in{max-width:1080px}
+  .cat-menu .in{grid-template-columns:repeat(6,1fr)}
   .top .in{height:64px} .logo img{height:26px}
   .home-main{max-width:1080px;padding-top:20px;gap:14px}
   .home-main section{padding-block:16px}

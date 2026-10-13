@@ -418,3 +418,5 @@ html,body{overflow-x:clip}  /* 화면 가득 히어로 띠가 가로 스크롤�
 .slide.s2 .pic img{object-position:88% 45%}
 /* 모바일 보완: 슬라이드 사진이 설명 글과 겹치지 않게 조금 작게, 넘김 버튼은 손가락 크기로 */
 @media (max-width:599px){.slide .pic{width:52%}.promo-ctl{padding:5px 6px 5px 8px}.promo-ctl button{width:30px;height:30px}.promo-ctl button svg{width:16px;height:16px}}
+/* 모바일 후기 카드: 카드 폭과 사진 높이를 줄여 한 화면에 두 장 반 정도 보이게 */
+@media (max-width:599px){.rv{flex-basis:168px}.rv .ph{aspect-ratio:4/3}.rv .bd{padding:10px 11px 12px;gap:5px}.rv p{font-size:.8rem;-webkit-line-clamp:3}.rv .who{font-size:.7rem}.rv .st svg{width:12px;height:12px}.rv-track{gap:10px}}

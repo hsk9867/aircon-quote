@@ -395,3 +395,7 @@ h1,h2,h3{letter-spacing:-.02em}
 /* 폼 선택 상태도 같은 파랑 */
 .seg label:has(input:checked){color:var(--accent)}
 html,body{overflow-x:clip}  /* 화면 가득 히어로 띠가 가로 스크롤을 만들지 않게 */
+/* 슬라이드 사진 가장자리: 왼쪽·위쪽을 배경색으로 부드럽게 흐려 사진이 바탕에 녹아들게 */
+.slide .pic{overflow:hidden}
+.slide .pic::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,#E8EFFC 0%,rgba(232,239,252,.6) 14%,rgba(232,239,252,0) 42%),linear-gradient(180deg,#EDF2FC 0%,rgba(237,242,252,0) 30%)}
+@media (max-width:599px){.slide .pic::before{background:linear-gradient(90deg,#E8EFFC 0%,rgba(232,239,252,.5) 18%,rgba(232,239,252,0) 48%),linear-gradient(180deg,#EDF2FC 0%,rgba(237,242,252,0) 34%)}}

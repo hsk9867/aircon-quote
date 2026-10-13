@@ -1,0 +1,7 @@
+# 관리자 페이지가 저장하는 설정 파일은 브라우저·중간 캐시에 남지 않게 합니다 (저장 즉시 모든 페이지에 반영).
+<IfModule mod_headers.c>
+  <FilesMatch "^config\.(js|json)$">
+    Header set Cache-Control "no-store, max-age=0"
+    Header set Pragma "no-cache"
+  </FilesMatch>
+</IfModule>

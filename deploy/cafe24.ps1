@@ -44,7 +44,7 @@ function Upload($localPath, $rel) {
 $files = @(Get-ChildItem -Path $root -Filter *.html -File | ForEach-Object { $_.Name })
 $files += Get-ChildItem -Path (Join-Path $root 'css'), (Join-Path $root 'js') -File | ForEach-Object { $_.FullName.Substring($root.Length + 1).Replace('\', '/') }
 $files += Get-ChildItem -Path (Join-Path $root 'img') -File -Recurse | Where-Object { $_.Extension -ne '.txt' } | ForEach-Object { $_.FullName.Substring($root.Length + 1).Replace('\', '/') }  # img 하위 폴더(products 등)까지
-$files += 'admin/api.php', 'admin/.htaccess', 'admin/store/.htaccess'
+$files += 'admin/api.php', 'admin/.htaccess', 'admin/store/.htaccess', 'data/.htaccess'
 
 Write-Host "카페24 업로드: $base  ($($files.Count)개 파일)"
 $fail = 0

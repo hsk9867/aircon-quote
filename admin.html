@@ -113,7 +113,7 @@ table.edit input[type=text]{min-width:120px}
 
 </main>
 <footer></footer>
-<script src="data/config.js?v=20261014a"></script>
+<script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
 <script src="js/common.js?v=20261014j"></script>
 <script>
 (function(){
@@ -394,7 +394,7 @@ $('act-preview').addEventListener('click',()=>{ try{ localStorage.setItem('ssw_p
 $('act-save').addEventListener('click', async ()=>{
   if(mode==='local'){ keepLocal(); download(); return; }
   const btn=$('act-save'); btn.disabled=true;
-  try{ const r=await api('save',{config:toConfig()}); if(r.ok) toast('저장했습니다. 페이지를 새로고침하면 반영됩니다.'); else if(r.error==='auth'){ toast('로그인이 풀렸습니다. 다시 로그인해 주세요.',true); $('editor').hidden=true; $('gate').hidden=false; $('login').hidden=false; } else toast('저장 실패: '+(r.message||r.error), true); }
+  try{ const r=await api('save',{config:toConfig()}); if(r.ok) toast('저장했습니다. 고객 페이지는 새로고침하면 바로 반영됩니다.'); else if(r.error==='auth'){ toast('로그인이 풀렸습니다. 다시 로그인해 주세요.',true); $('editor').hidden=true; $('gate').hidden=false; $('login').hidden=false; } else toast('저장 실패: '+(r.message||r.error), true); }
   catch(e){ toast('저장 실패: '+e.message, true); } finally{ btn.disabled=false; }
 });
 function download(){ const blob=new Blob(['window.SSW_CONFIG = '+JSON.stringify(toConfig(),null,1)+';\n'],{type:'text/javascript'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='config.js'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); toast('config.js 를 내려받았습니다. data/config.js 에 넣고 배포하세요.'); }

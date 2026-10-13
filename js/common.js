@@ -573,8 +573,12 @@ const SITE_DEFAULT = {
    },
    "stats": {
     "show": true,
-    "labels": {"received": "신청접수", "inProgress": "진행중 서비스", "done": "완료된 서비스", "techs": "등록된 기사님"},
-    "base": {"received": 0, "inProgress": 0, "done": 0, "techs": 0}
+    "items": [
+     {"label": "완료된 시공", "auto": "done", "base": 0, "value": "", "unit": "건"},
+     {"label": "견적 그대로 시공", "auto": "", "base": 0, "value": "약속", "unit": ""},
+     {"label": "접수 후 연락", "auto": "", "base": 0, "value": "1시간 내", "unit": ""},
+     {"label": "검증된 기사", "auto": "techs", "base": 0, "value": "", "unit": "명"}
+    ]
    },
    "plan": {
     "note": "입력한 조건(거주 형태, 대수·평수, 거주 여부)으로 작성한 일반적인 설치 방식입니다. 실제 자리는 기사 방문 시 확정됩니다.",

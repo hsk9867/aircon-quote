@@ -554,3 +554,5 @@ footer .links.sub{opacity:.8;font-size:.76rem}
 @media (min-width:900px){.slide{padding:48px 44px}.slide .txt{padding:0;max-width:54%;gap:12px}.slide b{font-size:2.2rem}.slide p{font-size:1.05rem}.slide .cta{margin-top:22px;left:auto;bottom:auto}}
 .slide.s3 .pic img{object-position:68% 22%}
 @media (min-width:600px){.slide.s3 .pic img{object-position:60% 18%}.slide.s3 .pic{-webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.3) 14%,#000 40%),linear-gradient(180deg,rgba(0,0,0,.8) 0,#000 18%);mask-image:linear-gradient(90deg,transparent 0,rgba(0,0,0,.3) 14%,#000 40%),linear-gradient(180deg,rgba(0,0,0,.8) 0,#000 18%)}}
+/* PC 넓은 화면에서 글 묶음만 오른쪽으로 밀던 옛 여백(margin-left:calc(50vw - 540px)) 제거 → 제목·설명·버튼이 같은 왼쪽 선에 정렬 */
+.slide .txt{margin-left:0}

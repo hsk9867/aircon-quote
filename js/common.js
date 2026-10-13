@@ -672,7 +672,7 @@ const SITE_DEFAULT = {
     "hole": "타공 (1곳)",
     "elec": "전용 전기 작업",
     "ladder": "사다리차·스카이차 (4시간)",
-    "outdoorClean": "실외기 세척 (1대)",
+    "outdoorClean": "실외기 청소 (대당)",
     "visit": "수리·충전 출장 점검비",
     "leakCheck": "누설 점검·용접",
     "oldPart": "구형 모델 부품 수급 가산",
@@ -775,6 +775,7 @@ const SITE   = deepMerge(SITE_DEFAULT, isObj(CFG.site)?CFG.site:{});
 if(SITE.home && SITE.home.menu && SITE.home.menu.install && SITE.home.menu.install.title==='설치 견적 내기') SITE.home.menu.install.title='가정용 설치 견적 내기';
 if(SITE.priceLabels && SITE.priceLabels.ceilHatch==='천장 점검구·타공 + 드레인 배관 (1대)') SITE.priceLabels.ceilHatch='천장 타공 + 드레인 배관 (1대)';
 if(SITE.priceLabels && SITE.priceLabels.base==='신규 설치 기본 (배관 별도)') SITE.priceLabels.base='신규 설치 기본 (배관 5m 포함)';
+if(SITE.priceLabels && SITE.priceLabels.outdoorClean==='실외기 세척 (1대)') SITE.priceLabels.outdoorClean='실외기 청소 (대당)';
 
 /* 시스템 에어컨 실외기 선택: 실내기 냉방 용량 합(평수 × 0.4kW)에 맞는 가장 작은 멀티 실외기. 조합률 130%까지 허용 */
 const kwOfPy = py => Math.round(py*0.4*10)/10;

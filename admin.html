@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
-<link rel="stylesheet" href="css/style.css?v=20261015d">
+<link rel="stylesheet" href="css/style.css?v=20261015e">
 <style>
 .abar{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:6px;margin-bottom:14px;position:sticky;top:56px;z-index:10;background:var(--bg)}
 .quick,.totop{display:none}  /* 관리자에서는 떠 있는 문의 버튼 숨김 */
@@ -115,7 +115,7 @@ table.edit input[type=text]{min-width:120px}
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261015f"></script>
+<script src="js/common.js?v=20261015g"></script>
 <script>
 (function(){
 'use strict';
@@ -213,7 +213,7 @@ const del=p=>'<button class="x" type="button" data-del="'+p+'" title="삭제">�
 const addBtn=(p,tpl,label)=>'<button class="btn sm" type="button" data-add="'+p+'" data-tpl=\''+esc(JSON.stringify(tpl))+'\'>+ '+esc(label)+'</button>';
 
 const RL={ base:'신규 설치 기본 (배관 5m 포함)', moveBase:'이전 설치 기본 (배관 별도)', remove:'기존 에어컨 철거', pipePerM:'배관 1m당', pipeReplace:'매립 배관 교체·연결', angle:'실외기 앵글', gas:'냉매 보충 (설치 시)', gasFill:'냉매 충전 (수리 방문)', clean:'분해 청소 1대', fan:'송풍팬 완전 분해', paper:'부분 도배 마감', protect:'거주 중 가구 이동·보양' };
-const RC={ ladder:'사다리차·스카이차 (4시간)', hole:'타공 1곳', elecBase:'전용 전기 작업 기본', elecPer:'전용 전기 작업 대당', outdoorClean:'실외기 세척 1대', visit:'수리·충전 출장 점검비', regionOut:'인접 지역 출장 가산', floorMid:'3~5층 작업 가산', floorHigh:'6층 이상 작업 가산', distCity:'운반 (같은 시·군)', distFar:'운반 (다른 시·도)', highMount:'고소 작업 (3m 이상)', leakCheck:'누설 점검·용접', oldPart:'구형 모델 부품 가산' };
+const RC={ ladder:'사다리차·스카이차 (4시간)', hole:'타공 1곳', elecBase:'전용 전기 작업 기본', elecPer:'전용 전기 작업 대당', outdoorClean:'실외기 청소 (대당)', visit:'수리·충전 출장 점검비', regionOut:'인접 지역 출장 가산', floorMid:'3~5층 작업 가산', floorHigh:'6층 이상 작업 가산', distCity:'운반 (같은 시·군)', distFar:'운반 (다른 시·도)', highMount:'고소 작업 (3m 이상)', leakCheck:'누설 점검·용접', oldPart:'구형 모델 부품 가산' };
 const RCEIL={ indoor:'천장형 실내기 설치 1대', outdoor:'시스템 실외기 1대 설치 (0이면 실내기 가격에 포함으로 표시)', hatch:'천장 타공', drain:'드레인 배관', protect:'거주 중 천장 작업 보양', paper:'실크 도배 마감 (시스템 필수)', remove:'천장형 철거', gas:'냉매 추가 충전', clean:'천장형 분해 청소 1대', fan:'천장형 송풍팬 분해' };
 const GASF={unknown:'냉매 종류 모름', r410:'R410A', r32:'R32', r22:'R22'};
 const CEIL_LBL={indoor:'ceilIndoor',outdoor:'ceilOutdoor',clean:'ceilClean',protect:'ceilProtect',paper:'ceilPaper',gas:'ceilGas'};

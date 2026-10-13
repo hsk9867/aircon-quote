@@ -394,3 +394,4 @@ h1,h2,h3{letter-spacing:-.02em}
 .contact-band #contact{background:var(--bg);color:var(--fg)}
 /* 폼 선택 상태도 같은 파랑 */
 .seg label:has(input:checked){color:var(--accent)}
+html,body{overflow-x:clip}  /* 화면 가득 히어로 띠가 가로 스크롤을 만들지 않게 */

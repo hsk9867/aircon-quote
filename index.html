@@ -10,7 +10,7 @@
 <meta name="description" content="속시원 · 에어컨 설치, 청소, 냉매 충전, 이전 설치 무료 견적. 조건만 고르면 금액이 바로 나옵니다.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
-<link rel="stylesheet" href="css/style.css?v=20261015v">
+<link rel="stylesheet" href="css/style.css?v=20261015w">
 </head>
 <body>
 <header class="top"></header>
@@ -41,6 +41,11 @@
     <div class="rv-wrap"><div class="rv-track" id="rv-track"></div></div>
   </section>
 
+  <section aria-labelledby="teams-title" id="teams-sec" hidden>
+    <div class="sec-title"><h2 id="teams-title" data-t="home.titles.teams">속시원 제휴 시공팀</h2><div class="rv-nav"><button type="button" class="arr" data-tm="prev" aria-label="이전 시공팀"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><button type="button" class="arr" data-tm="next" aria-label="다음 시공팀"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button></div></div>
+    <div class="rv-wrap tm-wrap"><div class="rv-track tm-track" id="tm-track"></div></div>
+  </section>
+
   <section aria-labelledby="promise-title">
     <div class="sec-title"><h2 id="promise-title" data-t="home.titles.promise">속시원하게 약속!</h2></div>
     <div class="pgrid" id="home-promises"></div>
@@ -65,7 +70,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261015t"></script>
+<script src="js/common.js?v=20261015u"></script>
 <script>
 (function(){
   const S=window.SSW, SITE=S.SITE, e=S.esc, c=SITE.contact;
@@ -120,6 +125,30 @@
     window.addEventListener('mousemove', ev=>{ if(!drag) return; const dx=ev.clientX-drag.x; if(Math.abs(dx)>4) drag.moved=true; wrap.scrollLeft=drag.left-dx; });
     window.addEventListener('mouseup', ()=>{ if(!drag) return; const moved=drag.moved; drag=null; wrap.classList.remove('drag'); rest(2500); if(moved) wrap.addEventListener('click', e=>e.preventDefault(), {capture:true, once:true}); });
     document.querySelectorAll('[data-rv]').forEach(btn=>btn.addEventListener('click', ()=>{ const card=track.querySelector('.rv'); const step=card?card.getBoundingClientRect().width+12:280; wrap.scrollBy({left:(btn.dataset.rv==='next'?1:-1)*step, behavior:reduce?'auto':'smooth'}); rest(4000); }));
+    wrap.scrollLeft=1; requestAnimationFrame(tick);
+  })();
+
+  /* 제휴 시공팀: 팀 카드가 옆으로 흐름 (자동 + 손으로 밀기 + 화살표). 관리자 > 시공팀 */
+  (function(){
+    const list=(SITE.teams||[]).filter(t=>t&&t.name); if(!list.length) return;
+    const STAR='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z"/></svg>';
+    const CHK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l4 4 10-10"/></svg>';
+    const card=t=>'<article class="tm"><div class="hd">'+(t.badge?'<span class="bd1">'+e(t.badge)+'</span>':'')+(t.tier?'<span class="bd2">'+e(t.tier)+'</span>':'')+'</div>'+
+      '<div class="row"><div class="info"><span class="ar">'+e(t.area||'')+'</span><b>'+e(t.name)+'</b><span class="ct">'+e(t.cat||'')+'</span>'+(t.rating?'<span class="rt">'+STAR+' '+e(t.rating)+(t.count?' <small>('+e(t.count)+')</small>':'')+'</span>':'')+'</div>'+(t.img?'<div class="ph"><img src="'+e(t.img)+'" alt="'+e(t.name)+' 팀장" loading="lazy"></div>':'')+'</div>'+
+      (t.tags?'<div class="tags">'+String(t.tags).split(',').map(s=>s.trim()).filter(Boolean).slice(0,4).map(s=>'<span>'+CHK+e(s)+'</span>').join('')+'</div>':'')+'</article>';
+    const track=document.getElementById('tm-track'); const wrap=track.parentElement;
+    document.getElementById('teams-sec').hidden=false;
+    const html=list.map(card).join(''); track.innerHTML=html+html; let unit=track.scrollWidth/2, k=1; while(unit*k<wrap.clientWidth+40 && k<6) k++; if(k>1){ const u=html.repeat(k); track.innerHTML=u+u; }
+    const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches; let hold=false, idleT=null, drag=null;
+    const half=()=>track.scrollWidth/2; const loop=()=>{ const hf=half(); if(wrap.scrollLeft>=hf) wrap.scrollLeft-=hf; else if(wrap.scrollLeft<=0) wrap.scrollLeft+=hf; };
+    const tick=()=>{ if(!hold && !reduce && !document.hidden){ wrap.scrollLeft+=0.5; loop(); } requestAnimationFrame(tick); };
+    const rest=ms=>{ hold=true; clearTimeout(idleT); idleT=setTimeout(()=>{ hold=false; }, ms); };
+    wrap.addEventListener('scroll', loop, {passive:true}); wrap.addEventListener('touchstart', ()=>rest(4000), {passive:true}); wrap.addEventListener('touchend', ()=>rest(3000), {passive:true});
+    wrap.addEventListener('mouseenter', ()=>{ hold=true; }); wrap.addEventListener('mouseleave', ()=>{ if(!drag) hold=false; });
+    wrap.addEventListener('mousedown', ev=>{ drag={x:ev.clientX, left:wrap.scrollLeft}; wrap.classList.add('drag'); ev.preventDefault(); });
+    window.addEventListener('mousemove', ev=>{ if(!drag) return; wrap.scrollLeft=drag.left-(ev.clientX-drag.x); });
+    window.addEventListener('mouseup', ()=>{ if(!drag) return; drag=null; wrap.classList.remove('drag'); rest(2500); });
+    document.querySelectorAll('[data-tm]').forEach(btn=>btn.addEventListener('click', ()=>{ const c=track.querySelector('.tm'); const step=c?c.getBoundingClientRect().width+12:300; wrap.scrollBy({left:(btn.dataset.tm==='next'?1:-1)*step, behavior:reduce?'auto':'smooth'}); rest(4000); }));
     wrap.scrollLeft=1; requestAnimationFrame(tick);
   })();
 

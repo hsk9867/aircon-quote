@@ -570,7 +570,7 @@ const SITE_DEFAULT = {
      {"title": "함께 일할\n제휴 기사님을 모십니다", "desc": "지역과 가능한 작업만 등록하면 맞는 건만 알림, 정산은 수수료만 차감", "cta": "제휴 문의하기", "href": "partner.html", "img": "img/home-slide4.jpg"}
     ],
     "quick": {"install": "가정용 설치", "shop": "상가·사무실", "move": "이전 설치", "clean": "분해 청소", "gas": "냉매 충전", "business": "기업 문의"},
-    "titles": {"quick": "속시원하게 무료견적내기!", "reviews": "속시원한 고객 후기!", "promise": "속시원하게 약속!", "steps": "속시원하게 진행!", "contact": "궁금한 건 전화나 카톡으로 연락주세요!\n속시원하게 답변드립니다!"}
+    "titles": {"quick": "속시원하게 무료견적내기!", "reviews": "속시원한 고객 후기!", "teams": "속시원 제휴 시공팀", "promise": "속시원하게 약속!", "steps": "속시원하게 진행!", "contact": "궁금한 건 전화나 카톡으로 연락주세요!\n속시원하게 답변드립니다!"}
    },
    "reviews": [
     {
@@ -662,6 +662,63 @@ const SITE_DEFAULT = {
      "type": "청소",
     "img": "img/reviews/r10.jpg",
      "date": "2026-07"
+    }
+   ],
+   "teams": [
+    {
+     "name": "속시원 직영 1팀",
+     "area": "서울",
+     "cat": "가정용 설치·청소",
+     "badge": "베스트",
+     "tier": "다이아 파트너",
+     "rating": "4.9",
+     "count": "312",
+     "tags": "약속준수,추가요금 없음,친절상담,파손제로",
+     "img": "img/team/t01.jpg"
+    },
+    {
+     "name": "서울 서남 청소팀",
+     "area": "서울 강서·양천·영등포",
+     "cat": "분해 청소 전문",
+     "badge": "청소 1위",
+     "tier": "골드 파트너",
+     "rating": "4.8",
+     "count": "287",
+     "tags": "완전 분해,실외기 청소,당일 예약,친절상담",
+     "img": "img/team/t02.jpg"
+    },
+    {
+     "name": "경기 서부 2팀",
+     "area": "고양·파주·김포",
+     "cat": "설치·이전 설치",
+     "badge": "",
+     "tier": "골드 파트너",
+     "rating": "4.8",
+     "count": "241",
+     "tags": "약속준수,배관 마감 꼼꼼,추가요금 없음,파손제로",
+     "img": "img/team/t03.jpg"
+    },
+    {
+     "name": "시스템 에어컨 3팀",
+     "area": "인천·부천",
+     "cat": "천장형·상가 설치",
+     "badge": "기업 전문",
+     "tier": "다이아 파트너",
+     "rating": "4.9",
+     "count": "168",
+     "tags": "다량 시공,야간 작업 가능,도배 마감,친절상담",
+     "img": "img/team/t04.jpg"
+    },
+    {
+     "name": "경기 북부 4팀",
+     "area": "의정부·양주·남양주",
+     "cat": "설치·냉매 충전",
+     "badge": "",
+     "tier": "실버 파트너",
+     "rating": "4.7",
+     "count": "126",
+     "tags": "약속준수,누설 점검,추가요금 없음,빠른 방문",
+     "img": "img/team/t05.jpg"
     }
    ],
    "stats": {

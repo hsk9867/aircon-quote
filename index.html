@@ -65,7 +65,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261015r"></script>
+<script src="js/common.js?v=20261015s"></script>
 <script>
 (function(){
   const S=window.SSW, SITE=S.SITE, e=S.esc, c=SITE.contact;
@@ -127,7 +127,10 @@
   const track=document.getElementById('promo');
   const DP=((S.DEFAULTS.site.home||{}).promo)||[];
   /* 예전 렌탈 카드가 저장돼 있으면 기업 문의 카드(기본값)로 읽음 */
-  track.innerHTML=(SITE.home.promo||[]).map((p,i)=>(p&&p.href==='rental.html'&&p.title==='설치비 0원,\n월 렌탈료만'&&DP[2])?DP[2]:p).filter(p=>p&&p.title).map((p,i)=>'<a class="slide s'+(i%3+1)+'" href="'+e((p.href==='rental.html'?'business.html':p.href)||'install.html')+'"><div class="txt"><b>'+e(p.title).replace(/\n/g,'<br>')+'</b>'+(p.desc?'<p>'+e(p.desc)+'</p>':'')+'</div>'+
+  const savedPromo=(SITE.home.promo||[]).map((p,i)=>(p&&p.href==='rental.html'&&p.title==='설치비 0원,\n월 렌탈료만'&&DP[2])?DP[2]:p);
+  /* 저장된 카드에 제휴 기사 모집 카드가 없으면 기본 4번 카드를 뒤에 붙임 */
+  if(DP[3] && !savedPromo.some(p=>p&&p.href==='partner.html')) savedPromo.push(DP[3]);
+  track.innerHTML=savedPromo.filter(p=>p&&p.title).map((p,i)=>'<a class="slide s'+(i%3+1)+'" href="'+e((p.href==='rental.html'?'business.html':p.href)||'install.html')+'"><div class="txt"><b>'+e(p.title).replace(/\n/g,'<br>')+'</b>'+(p.desc?'<p>'+e(p.desc)+'</p>':'')+'</div>'+
     (p.cta?'<span class="cta">'+e(p.cta)+' <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>':'')+(p.img?'<div class="pic"><img src="'+e(p.img==='img/home-bg.jpg'?'img/home-slide1.jpg':(p.img==='img/products/samsung-wall.jpg'?'img/home-slide2.jpg':(p.img==='img/products/lg-stand.webp'?'img/home-slide3.jpg':p.img)))+'" alt=""'+(i?' loading="lazy"':' fetchpriority="high"')+'></div>':'')+'</a>').join('');
   const slides=[...track.children], pos=document.getElementById('promo-pos'), pauseBtn=document.getElementById('promo-pause');
   if(slides.length<2) document.querySelector('.promo-ctl').hidden=true;

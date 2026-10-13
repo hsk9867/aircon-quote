@@ -564,9 +564,9 @@ const SITE_DEFAULT = {
      "contact": "전화·카카오톡 상담"
     },
     "promo": [
-     {"eyebrow": "속시원에어", "title": "에어컨 가격,\n현장에서 바뀌지 않게", "desc": "모델만 고르면 설치까지 예상 총액을 바로 확인할 수 있습니다", "features": "투명한 견적|추가비용 걱정 없이;전문 기사 시공|안전하고 꼼꼼하게;빠른 상담|지금 바로, 친절하게", "cta": "설치 견적 내기", "note": "정확한 견적으로\n시원한 여름을 준비하세요.", "tag": "좋은 바람이\n좋은 일상을 만듭니다", "href": "install.html", "img": "img/home-slide3.jpg"},
-     {"eyebrow": "속시원에어", "title": "여름 오기 전,\n분해 청소 예약", "desc": "기종과 사용 연수만 고르면 청소 금액이 바로 나옵니다", "features": "완전 분해 세척|곰팡이·먼지까지 싹;실외기 청소 선택|대수만큼 계산;원하는 날짜 예약|당일 확인 연락", "cta": "청소 견적 내기", "note": "깨끗한 바람으로\n여름을 시작하세요.", "tag": "좋은 바람이\n좋은 일상을 만듭니다", "href": "clean.html", "img": "img/home-slide2.jpg"},
-     {"eyebrow": "속시원에어", "title": "상가·사무실 설치,\n브랜드별 총액 비교", "desc": "천장형 시스템과 스탠드 제품가에 설치비를 합친 금액을 바로 봅니다", "features": "제품+설치 총액|삼성·LG·캐리어 비교;배관 5m 포함|초과분만 추가;설치 하자 1년 보증|검증된 기사 배정", "cta": "상가 견적 내기", "note": "성수기 전에\n미리 준비하세요.", "tag": "좋은 바람이\n좋은 일상을 만듭니다", "href": "shop.html", "img": "img/home-slide1.jpg"}
+     {"title": "에어컨 가격,\n현장에서 바뀌지 않게", "desc": "조건만 고르면 설치까지 총액이 바로 나옵니다", "cta": "설치 견적 내기", "href": "install.html", "img": "img/home-slide1.jpg"},
+     {"title": "여름 오기 전,\n분해 청소 예약", "desc": "기종과 사용 연수만 고르면 금액이 바로", "cta": "청소 견적 내기", "href": "clean.html", "img": "img/products/samsung-wall.jpg"},
+     {"title": "설치비 0원,\n월 렌탈료만", "desc": "약정 기간별 월 렌탈료를 브랜드별로 비교", "cta": "렌탈 상담", "href": "rental.html", "img": "img/products/lg-stand.webp"}
     ],
     "quick": {"install": "가정용 설치", "shop": "상가·사무실", "move": "이전 설치", "clean": "분해 청소", "gas": "냉매 충전", "business": "기업 문의"},
     "titles": {"quick": "속시원하게 무료견적내기!", "promise": "속시원하게 약속!", "steps": "속시원하게 진행!", "contact": "궁금한 건 전화나 카톡으로 연락주세요!\n속시원하게 답변드립니다!"}

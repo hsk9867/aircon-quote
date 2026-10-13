@@ -420,3 +420,8 @@ html,body{overflow-x:clip}  /* 화면 가득 히어로 띠가 가로 스크롤�
 @media (max-width:599px){.slide .pic{width:52%}.promo-ctl{padding:5px 6px 5px 8px}.promo-ctl button{width:30px;height:30px}.promo-ctl button svg{width:16px;height:16px}}
 /* 모바일 후기 카드: 카드 폭과 사진 높이를 줄여 한 화면에 두 장 반 정도 보이게 */
 @media (max-width:599px){.rv{flex-basis:168px}.rv .ph{aspect-ratio:4/3}.rv .bd{padding:10px 11px 12px;gap:5px}.rv p{font-size:.8rem;-webkit-line-clamp:3}.rv .who{font-size:.7rem}.rv .st svg{width:12px;height:12px}.rv-track{gap:10px}}
+/* 후기 슬라이드: 자동 흐름 + 손으로 밀기 + 화살표 (CSS 애니메이션 대신 스크롤로 움직임) */
+.rv-wrap{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;cursor:grab;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain} .rv-wrap::-webkit-scrollbar{display:none}
+.rv-wrap.drag{cursor:grabbing} .rv-wrap.drag .rv{pointer-events:none}
+.rv-track{animation:none!important}
+.rv-nav{display:flex;gap:6px} .rv-nav .arr{appearance:none;border:0;cursor:pointer;font:inherit}

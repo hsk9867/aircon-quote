@@ -433,3 +433,5 @@ html,body{overflow-x:clip}  /* 화면 가득 히어로 띠가 가로 스크롤�
 .rv-empty{padding:16px;color:var(--muted);font-size:.9rem}
 /* 3번 슬라이드 사진도 오른쪽 작업 장면 기준으로 자름 */
 .slide.s3 .pic img{object-position:72% 40%}
+/* 상단 메뉴의 제휴 문의는 살짝 구분 */
+.top-nav a.pt{color:var(--muted)} .top-nav a.pt:hover{color:var(--accent)}

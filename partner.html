@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>설치기사 제휴 문의 · 속시원</title>
+<link rel="icon" type="image/png" href="img/favicon.png">
+<script>try{if(!sessionStorage.getItem('ssw_splash')){sessionStorage.setItem('ssw_splash','1');if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){document.documentElement.classList.add('splash-on');setTimeout(function(){document.documentElement.classList.remove('splash-on')},2400)}}}catch(e){}</script>
+<link rel="preload" as="image" href="img/logo-word.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
+<link rel="stylesheet" href="css/style.css?v=20261015t">
+<style>
+.benefits{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.benefits div{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;display:grid;gap:4px}
+.benefits b{font-family:var(--display)} .benefits span{font-size:.84rem;color:var(--muted)}
+@media (max-width:420px){.benefits{grid-template-columns:1fr}}
+.btn.kakao{background:#FEE500;border-color:#FEE500;color:#191919}
+.btn.kakao:hover{background:#F2DA00;border-color:#F2DA00}
+</style>
+</head>
+<body>
+<header class="top"></header>
+<main class="wrap">
+
+<div class="page-head">
+  <span class="eyebrow" data-t="pages.partner.eyebrow">설치기사 제휴 문의</span>
+  <h1 data-t="pages.partner.title">속시원과 함께할 제휴 기사님을 모십니다</h1>
+  <p data-t="pages.partner.desc">에어컨 설치·청소·이전 작업을 하시는 기사님이라면 지역과 가능한 작업을 적어 주세요. 접수 건이 들어오면 지역·작업에 맞춰 알림을 보내고, 수락한 건만 시공합니다. 정산은 시공비에서 중개 수수료만 차감해 지급합니다.</p>
+</div>
+
+<section>
+  <div class="benefits">
+    <div><b>원하는 지역·작업만</b><span>담당 지역과 가능한 작업을 등록하면 맞는 건만 알림이 갑니다.</span></div>
+    <div><b>투명한 정산</b><span>견적에 나온 시공비에서 수수료만 빼고 정산합니다. 정산 금액을 알림에서 미리 봅니다.</span></div>
+    <div><b>고객 응대는 속시원이</b><span>접수·일정 조율·분쟁 처리는 속시원이 맡고, 기사님은 시공에 집중합니다.</span></div>
+    <div><b>성수기 물량 우선 배정</b><span>평가가 좋은 기사님께 6~8월 성수기 건을 먼저 배정합니다.</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><h2>제휴 신청</h2><p class="small muted">신청하시면 담당자가 확인한 뒤 전화로 연락드립니다. 심사 후 제휴 기사로 등록됩니다.</p></div>
+  <form class="form" id="pt-form" novalidate>
+    <div class="fs">
+      <div class="lbl"><span class="n">1</span>기본 정보</div>
+      <div class="grid2">
+        <div class="fs"><label class="lbl" for="pt-name">이름</label><input type="text" id="pt-name" autocomplete="name" placeholder="홍길동"></div>
+        <div class="fs"><label class="lbl" for="pt-phone">연락처</label><input type="tel" id="pt-phone" autocomplete="tel" placeholder="010-1234-5678"></div>
+      </div>
+      <div class="fs"><label class="lbl" for="pt-area">활동 지역 <span class="hint">시·군·구 단위로 여러 곳 가능</span></label><input type="text" id="pt-area" placeholder="예: 서울 마포구·서대문구, 경기 고양시"></div>
+    </div>
+    <div class="fs">
+      <div class="lbl"><span class="n">2</span>가능한 작업</div>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" name="skill" value="벽걸이·스탠드 설치" checked>벽걸이·스탠드 설치</label>
+        <label class="chip"><input type="checkbox" name="skill" value="시스템 에어컨(천장형) 설치">시스템 에어컨(천장형) 설치</label>
+        <label class="chip"><input type="checkbox" name="skill" value="분해 청소">분해 청소</label>
+        <label class="chip"><input type="checkbox" name="skill" value="이전 설치">이전 설치</label>
+        <label class="chip"><input type="checkbox" name="skill" value="냉매 충전·수리">냉매 충전·수리</label>
+        <label class="chip"><input type="checkbox" name="skill" value="상가·사무실 다량 시공">상가·사무실 다량 시공</label>
+      </div>
+    </div>
+    <div class="fs">
+      <div class="lbl"><span class="n">3</span>경력과 보유 사항</div>
+      <div class="grid2">
+        <div class="fs"><label class="lbl" for="pt-career">경력</label><select id="pt-career"><option>1년 미만</option><option>1~3년</option><option selected>3~5년</option><option>5~10년</option><option>10년 이상</option></select></div>
+        <div class="fs"><label class="lbl" for="pt-team">작업 인원</label><select id="pt-team"><option>1인</option><option selected>2인 1조</option><option>3인 이상 팀</option></select></div>
+      </div>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" name="has" value="작업 차량">작업 차량</label>
+        <label class="chip"><input type="checkbox" name="has" value="사다리차 연계 가능">사다리차 연계 가능</label>
+        <label class="chip"><input type="checkbox" name="has" value="배상책임보험 가입">배상책임보험 가입</label>
+        <label class="chip"><input type="checkbox" name="has" value="사업자 등록">사업자 등록</label>
+        <label class="chip"><input type="checkbox" name="has" value="냉매 취급 자격">냉매 취급 자격</label>
+      </div>
+    </div>
+    <div class="fs">
+      <div class="lbl"><span class="n">4</span>하고 싶은 말 <span class="hint">선택</span></div>
+      <textarea id="pt-memo" placeholder="주로 하던 작업, 가능한 요일·시간, 희망 정산 조건 등"></textarea>
+    </div>
+    <label class="consent"><input type="checkbox" id="pt-consent"><span>제휴 심사와 연락을 위해 이름, 연락처, 활동 지역을 속시원이 보관하는 데 동의합니다. 제휴가 성사되지 않으면 6개월 뒤 삭제합니다.</span></label>
+    <p class="err" id="pt-err" hidden></p>
+    <button class="btn primary block" type="submit" id="pt-submit">제휴 신청하기</button>
+    <p class="small muted">전화가 편하시면 <b class="num" id="pt-phone-txt"></b>로 연락 주시거나, 카카오톡 채널로 문의하셔도 됩니다.</p>
+  </form>
+  <div class="done" id="pt-done" hidden></div>
+</section>
+
+</main>
+<footer></footer>
+<script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
+<script src="js/common.js?v=20261015r"></script>
+<script>
+(function(){
+'use strict';
+const {$, esc} = window.SSW; const c = window.SSW.SITE.contact;
+$('pt-phone-txt').textContent = c.phone || '';
+function read(){
+  return { name:$('pt-name').value.trim(), phone:$('pt-phone').value.trim(), area:$('pt-area').value.trim(),
+    skills:Array.from(document.querySelectorAll('input[name=skill]:checked')).map(x=>x.value),
+    career:$('pt-career').value, team:$('pt-team').value,
+    has:Array.from(document.querySelectorAll('input[name=has]:checked')).map(x=>x.value),
+    memo:$('pt-memo').value.trim(), consent:$('pt-consent').checked };
+}
+$('pt-form').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const f=read(); const problems=[];
+  if(!f.name) problems.push('이름');
+  if(!/^0\d{1,2}-?\d{3,4}-?\d{4}$/.test(f.phone)) problems.push('연락처 형식');
+  if(f.area.length<2) problems.push('활동 지역');
+  if(!f.skills.length) problems.push('가능한 작업 (1개 이상)');
+  if(!f.consent) problems.push('개인정보 보관 동의');
+  const err=$('pt-err');
+  if(problems.length){ err.hidden=false; err.textContent='확인이 필요합니다: '+problems.join(', '); err.scrollIntoView({behavior:'smooth',block:'center'}); return; }
+  err.hidden=true;
+  const text=['[설치기사 제휴 문의]','이름: '+f.name,'연락처: '+f.phone,'활동 지역: '+f.area,'가능한 작업: '+f.skills.join(', '),'경력: '+f.career+' / 인원: '+f.team,'보유: '+(f.has.join(', ')||'-'),'메모: '+(f.memo||'-')].join('\n');
+  const rec={ id:'P'+Date.now().toString(36).toUpperCase().slice(-6), at:new Date().toISOString(), via:'제휴 신청', status:'회신 대기',
+    company:f.name+' (제휴 기사)', name:f.name, phone:f.phone, kind:'설치기사 제휴', state:f.career+' · '+f.team, addr:f.area, brand:f.skills.join(', '), memo:(f.has.length?'보유: '+f.has.join(', ')+(f.memo?' / ':''):'')+f.memo, text };
+  const btn=$('pt-submit'); btn.disabled=true; btn.textContent='접수 중…';
+  let ok=false;
+  try{ const r=await window.SSW.sendToServer('inquiry', {inquiry:rec}); ok=!!(r&&r.ok); if(r&&r.id) rec.id=r.id; }catch(x){}
+  $('pt-form').hidden=true; const d=$('pt-done'); d.hidden=false;
+  d.innerHTML = (ok
+    ? '<div class="notice">제휴 신청이 접수되었습니다. 접수번호 '+esc(rec.id)+' · 담당자가 확인한 뒤 '+esc(f.phone)+'로 연락드립니다.</div>'
+    : '<div class="callout warn">서버 접수가 되지 않았습니다. 아래 내용을 복사해 카카오톡 채널로 보내 주시거나 '+esc(c.phone||'')+'로 전화 주세요.</div>')+
+    '<div class="alarm"><div class="hd"><span>신청 내용</span><span class="tag acc">'+(ok?'접수 완료':'미전송')+'</span></div><div class="bd">'+
+      '<div class="row"><span>이름</span><span>'+esc(f.name)+'</span></div><div class="row"><span>지역</span><span>'+esc(f.area)+'</span></div>'+
+      '<div class="row"><span>작업</span><span>'+esc(f.skills.join(', '))+'</span></div><div class="row"><span>경력</span><span>'+esc(f.career+' · '+f.team)+'</span></div>'+
+      (f.has.length?'<div class="row"><span>보유</span><span>'+esc(f.has.join(', '))+'</span></div>':'')+
+    '</div></div>'+
+    (c.kakaoChat?'<a class="btn kakao block" href="'+esc(c.kakaoChat)+'" target="_blank" rel="noopener">카카오톡 채널로 문의하기</a>':'')+
+    '<a class="btn block" href="index.html">처음으로</a>';
+  d.scrollIntoView({behavior:'smooth',block:'start'});
+});
+})();
+</script>
+</body>
+</html>

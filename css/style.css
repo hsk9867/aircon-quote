@@ -338,3 +338,59 @@ html.splash-on{overflow:hidden}
   .form,.result,.plan,.book{padding:28px 24px}
   .quick a{width:60px;height:60px} .quick svg{width:28px;height:28px}
 }
+
+/* ===== 아정당 톤 (2026-10-13): 파랑 #145CE6 포인트, 연파랑 히어로, SUIT 글꼴, 버튼·카드 호버 반응 ===== */
+:root{--accent:#145CE6;--accent-ink:#145CE6;--accent-soft:#E8EFFD;--brand:#145CE6;--fg:#1F2429;--muted:#6E757C;--surface:#F4F6FA;--surface-2:#ECF0F4;--line:#E6EAEF;--line-soft:#EEF1F5;
+  --body:"SUIT Variable","SUIT","Pretendard Variable","Pretendard","Apple SD Gothic Neo","Noto Sans KR",sans-serif;--display:var(--body);--en:var(--body)}
+body{font-size:15.5px}
+h1,h2,h3{letter-spacing:-.02em}
+/* 버튼 호버 */
+.btn{transition:background .15s,color .15s,transform .15s,box-shadow .15s,border-color .15s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(31,36,41,.1)} .btn:active{transform:translateY(0) scale(.98);box-shadow:none}
+.btn.primary{border-radius:10px} .btn.primary:hover{background:#0F4BC0;border-color:#0F4BC0;color:#fff}
+/* 상단 바: 로고 + PC 글자 메뉴 */
+.top .in{height:64px}
+.top-nav{display:none;gap:2px;margin-left:auto;margin-right:12px}
+.top-nav a{text-decoration:none;color:var(--fg);font-weight:700;font-size:.98rem;padding:8px 11px;border-radius:8px;transition:color .15s,background .15s}
+.top-nav a:hover{color:var(--accent);background:var(--accent-soft)} .top-nav a[aria-current=page]{color:var(--accent)}
+.cat-btn{transition:background .15s,color .15s,transform .15s} .cat-btn:hover{background:var(--surface)}
+@media (min-width:900px){.top-nav{display:flex}.cat-btn{display:none}}
+/* 히어로: 화면 가득 연파랑 띠 */
+.home-main{padding-top:0}
+.promo{margin-inline:calc(50% - 50vw)}
+.promo-track{border-radius:0}
+.slide,.slide.s1,.slide.s2,.slide.s3{border-radius:0;min-height:340px;background:linear-gradient(90deg,#F4F7FD 0%,#E9F0FD 55%,#DCE8FB 100%)}
+.slide .txt{padding:40px 16px 0;max-width:min(62%,560px);margin-left:max(0px,calc(50vw - 540px));gap:12px}
+.slide b{font-size:clamp(1.6rem,5.6vw,2.6rem);font-weight:800;line-height:1.22;letter-spacing:-.03em;color:var(--fg)}
+.slide p{font-size:clamp(.92rem,1.4vw,1.05rem);color:var(--muted)}
+.slide .cta{left:max(16px,calc(50vw - 540px + 16px));bottom:40px;background:var(--accent);color:#fff;border-radius:10px;padding:14px 24px;font-size:.98rem;transition:transform .15s,background .15s,box-shadow .15s}
+.slide:hover .cta{background:#0F4BC0;transform:translateY(-2px);box-shadow:0 8px 18px rgba(20,92,230,.3)}
+.slide .pic{right:max(0px,calc(50vw - 540px));bottom:0;width:44%;max-width:520px;aspect-ratio:4/3;border-radius:0}
+.slide .pic img{object-fit:cover;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 18%);mask-image:linear-gradient(90deg,transparent 0,#000 18%)}
+.promo-ctl{right:max(12px,calc(50vw - 540px + 12px));bottom:12px;background:rgba(31,36,41,.55)}
+@media (max-width:599px){.slide .txt{max-width:70%}.slide .pic{width:58%;max-width:none;right:-10px;bottom:-8px;aspect-ratio:1/1}}
+/* 실적 띠: 연파랑 바탕에 파란 숫자 */
+.stats{background:var(--accent-soft);color:var(--fg)}
+.stats .in div{border-color:rgba(20,92,230,.12)!important}
+.stats .k{color:var(--muted);opacity:1} .stats b{color:var(--accent)} .stats small{color:var(--muted);opacity:1}
+/* 견적 아이콘: 흰 카드 안 이모지 타일 */
+.igrid{background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:18px 8px 14px;box-shadow:var(--shadow);gap:16px 8px}
+.igrid .ico{background:var(--surface);transition:transform .18s,background .18s,box-shadow .18s}
+.igrid .em{font-size:30px;line-height:1;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+.igrid a{transition:color .15s} .igrid a:hover{color:var(--accent)}
+.igrid a:hover .ico{transform:translateY(-3px) scale(1.06);background:var(--accent-soft);box-shadow:0 8px 18px rgba(20,92,230,.16)}
+@media (min-width:900px){.igrid .em{font-size:38px}}
+/* 카드 호버 */
+.pgrid div,.sgrid div{transition:transform .18s,box-shadow .18s}
+.pgrid div:hover,.sgrid div:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(31,36,41,.08)}
+.sec-title .arr{transition:transform .15s,background .15s,color .15s} .sec-title .arr:hover{transform:translateX(3px);background:var(--accent-soft);color:var(--accent)}
+.cat-menu a{transition:background .15s,transform .15s} .cat-menu a:hover{transform:translateX(2px)}
+.quick a{transition:transform .15s,box-shadow .15s} .quick a:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(31,36,41,.22)}
+/* 상담 카드: 연파랑 바탕, 파란 버튼 */
+.contact-band{background:var(--accent-soft);color:var(--fg)}
+.contact-band .eyebrow{color:var(--accent)}
+.contact-band .btn{border-color:var(--line);background:var(--bg);color:var(--fg)} .contact-band .btn:hover{background:var(--bg)}
+.contact-band .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff} .contact-band .btn.primary:hover{background:#0F4BC0;border-color:#0F4BC0}
+.contact-band #contact{background:var(--bg);color:var(--fg)}
+/* 폼 선택 상태도 같은 파랑 */
+.seg label:has(input:checked){color:var(--accent)}

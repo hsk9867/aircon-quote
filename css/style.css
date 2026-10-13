@@ -395,3 +395,7 @@ h1,h2,h3{letter-spacing:-.02em}
 /* 폼 선택 상태도 같은 파랑 */
 .seg label:has(input:checked){color:var(--accent)}
 html,body{overflow-x:clip}  /* 화면 가득 히어로 띠가 가로 스크롤을 만들지 않게 */
+/* 사진만 보이는 슬라이드 (카드뉴스) */
+.slide.full{padding:0;background:#EEF3FC}
+.slide.full img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
+@media (max-width:599px){.slide.full img{object-fit:cover;object-position:left center}}

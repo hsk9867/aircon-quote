@@ -100,6 +100,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .unit .i{font-weight:800;color:var(--accent);width:26px;text-align:center}
 .unit select{padding:8px 10px;background:var(--bg)}
 .unit .kind{grid-column:2/-1;font-size:.78rem;color:var(--muted)}
+.unit .pl{grid-column:2/-1;display:grid;gap:4px;font-size:.78rem;color:var(--muted)} .unit .pl small{font-weight:400} .unit .pl select{padding:8px 10px;background:var(--bg)}
 @media (max-width:380px){.unit{grid-template-columns:auto 1fr}.unit select:last-of-type{grid-column:2}}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px} @media (max-width:420px){.grid2{grid-template-columns:1fr}}
 .err{color:var(--warn);font-size:.84rem}

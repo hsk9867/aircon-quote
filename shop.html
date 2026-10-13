@@ -104,7 +104,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261014j"></script>
+<script src="js/common.js?v=20261014k"></script>
 <script>
 (function(){
 'use strict';
@@ -161,7 +161,7 @@ function laborFor(inp){
     const C=RATES.ceil;
     inp.units.forEach((u,i)=>{
       items.push({label:(i+1)+'번 '+u.room+' 천장형 실내기 설치', r:C.indoor});
-      items.push({label:(i+1)+'번 천장 점검구·타공, 드레인 배관', r:add(C.hatch,C.drain)});
+      items.push({label:(i+1)+'번 천장 타공, 드레인 배관', r:add(C.hatch,C.drain)});
       if(inp.occupied==='living') items.push({label:(i+1)+'번 집기 이동·천장 작업 보양', r:C.protect});
       if(inp.opts.includes('remove')) items.push({label:(i+1)+'번 기존 에어컨 철거', r:C.remove});
     });

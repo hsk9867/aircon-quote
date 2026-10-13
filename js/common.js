@@ -615,7 +615,7 @@ const SITE_DEFAULT = {
     "paper": "부분 도배 마감",
     "protect": "거주 중 가구 이동·보양",
     "ceilIndoor": "천장형 실내기 설치 (1대)",
-    "ceilHatch": "천장 점검구·타공 + 드레인 배관 (1대)",
+    "ceilHatch": "천장 타공 + 드레인 배관 (1대)",
     "ceilOutdoor": "시스템 실외기 1대 설치 (실내기 공용)",
     "ceilClean": "천장형 분해 청소 (1대)",
     "ceilProtect": "거주 중 천장 작업 보양 (1대)",
@@ -725,6 +725,7 @@ const RENT   = deepMerge(RENT_DEFAULT, isObj(CFG.rent)?CFG.rent:{});
 const SITE   = deepMerge(SITE_DEFAULT, isObj(CFG.site)?CFG.site:{});
 /* 예전 기본값으로 저장된 첫 화면 메뉴 이름은 새 이름으로 읽음 (관리자 페이지에서 다시 저장하면 그 값 우선) */
 if(SITE.home && SITE.home.menu && SITE.home.menu.install && SITE.home.menu.install.title==='설치 견적 내기') SITE.home.menu.install.title='가정용 설치 견적 내기';
+if(SITE.priceLabels && SITE.priceLabels.ceilHatch==='천장 점검구·타공 + 드레인 배관 (1대)') SITE.priceLabels.ceilHatch='천장 타공 + 드레인 배관 (1대)';
 
 /* 시스템 에어컨 실외기 선택: 실내기 냉방 용량 합(평수 × 0.4kW)에 맞는 가장 작은 멀티 실외기. 조합률 130%까지 허용 */
 const kwOfPy = py => Math.round(py*0.4*10)/10;

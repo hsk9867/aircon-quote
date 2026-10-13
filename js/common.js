@@ -781,32 +781,35 @@ const NAV = [['install.html','설치 견적'],['shop.html','상가·사무실'],
 function mountChrome(){
   const here = location.pathname.split('/').pop() || 'index.html';
   const top = document.querySelector('header.top');
-  /* 상단: 흐르는 띠(상호 · 한 줄 소개) + 로고 글씨 이미지 + 바로가기 */
+  /* 상단: 로고 + 카카오톡·전화 아이콘, 아래 줄에 가로로 넘기는 칩 메뉴 */
+  const c = SITE.contact;
+  const kakaoHref = c.kakaoChat || '#', telHref = c.phone ? 'tel:'+String(c.phone).replace(/[^0-9+]/g,'') : '#';
   if(top){
-    const mq = '<span>'+esc(SITE.brand.name)+' <em>·</em> Free air-conditioner quote</span><span>에어컨 설치 <em>·</em> 청소 <em>·</em> 냉매 충전 <em>·</em> 이전 설치</span>';
-    const strip = document.createElement('div'); strip.className='marquee'; strip.setAttribute('aria-hidden','true');
-    strip.innerHTML = '<div class="track">'+mq.repeat(4)+mq.repeat(4)+'</div>';
-    top.insertAdjacentElement('beforebegin', strip);
     top.innerHTML = '<div class="in"><a class="logo" href="index.html"><img src="img/logo-word.png" alt="'+esc(SITE.brand.name)+'" width="862" height="302" decoding="async"></a>'+
-      '<nav class="nav" aria-label="바로가기">'+NAV.filter(([h])=>h!=='prices.html').map(([h,l])=>'<a href="'+h+'"'+(h===here?' aria-current="page"':'')+'>'+l+'</a>').join('')+'</nav></div>';
+      '<div class="acts"><a class="kakao" href="'+esc(kakaoHref)+'"'+(kakaoHref!=='#'?' target="_blank" rel="noopener"':'')+' aria-label="카카오톡 상담"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.8 5.2 4.6 6.6L5.5 21l4.3-2.6c.7.1 1.4.2 2.2.2 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg></a>'+
+      '<a class="tel" href="'+esc(telHref)+'" aria-label="전화 상담"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></a></div></div>'+
+      '<nav class="nav" aria-label="바로가기"><a href="index.html"'+(here==='index.html'?' aria-current="page"':'')+'>홈</a>'+NAV.map(([h,l])=>'<a href="'+h+'"'+(h===here?' aria-current="page"':'')+'>'+l+'</a>').join('')+'</nav>';
   }
   const foot = document.querySelector('footer');
-  const c = SITE.contact;
   if(foot && !foot.innerHTML.trim()) foot.innerHTML =
-    '<div class="f-brand"><em>'+esc(SITE.brand.name)+'</em> · Free air-conditioner quote</div>'+
+    '<div class="f-in"><div class="f-brand">'+esc(SITE.brand.name)+'</div>'+
     '<div class="f-grid">'+
       '<div class="f-biz">'+(bizLine()||'상호, 대표, 사업자등록번호, 통신판매업 신고번호, 주소는 확정 후 표기')+(SITE.biz.footerNote?'<br>'+esc(SITE.biz.footerNote):'')+'</div>'+
       '<div class="f-contact"><b>고객센터 <span class="num">'+esc(c.phone||'')+'</span></b>카카오톡 채널 <span class="k">'+esc(c.kakaoId||'')+'</span>'+(c.bizEmail?'<br>기업 문의 <span class="k">'+esc(c.bizEmail)+'</span>':'')+'</div>'+
       '<div class="links"><a href="index.html">홈</a>'+NAV.map(([h,l])=>'<a href="'+h+'">'+l+'</a>').join('')+'<a href="admin.html">관리자</a></div>'+
     '</div>'+
-    '<div class="copy">Copyright © <em>'+esc(SITE.brand.name)+'</em>. All rights reserved.</div>';
-  /* 오른쪽 아래 빠른 문의 버튼. 카카오톡·전화는 관리자 연락처 값, 시공사례 링크는 SITE.contact.casesUrl (없으면 #) */
-  const q = document.createElement('div'); q.className='quick'; q.setAttribute('aria-label','빠른 문의');
-  const kakaoHref = c.kakaoChat || '#', telHref = c.phone ? 'tel:'+String(c.phone).replace(/[^0-9+]/g,'') : '#', casesHref = c.casesUrl || '#';
-  q.innerHTML = '<a class="kakao" href="'+esc(kakaoHref)+'"'+(kakaoHref!=='#'?' target="_blank" rel="noopener"':'')+' aria-label="카카오톡 상담"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.8 5.2 4.6 6.6L5.5 21l4.3-2.6c.7.1 1.4.2 2.2.2 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg><span>카카오톡</span></a>'+
-    '<a class="tel" href="'+esc(telHref)+'" aria-label="전화 상담"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg><span>전화</span></a>'+
-    '<a class="cases" href="'+esc(casesHref)+'" aria-label="시공사례 보기"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/><circle cx="16" cy="9" r="1.5"/></svg><span>시공사례 보기</span></a>';
-  document.body.appendChild(q);
+    '<div class="copy">Copyright © <em>'+esc(SITE.brand.name)+'</em>. All rights reserved.</div></div>';
+  /* 하단 탭 바: 홈 · 견적 · 단가표 · 카카오톡 · 전화 (링크는 관리자 연락처 값) */
+  const tb = document.createElement('nav'); tb.className='tabbar'; tb.setAttribute('aria-label','하단 메뉴');
+  const cur = h => h===here ? ' aria-current="page"' : '';
+  tb.innerHTML = '<div class="in">'+
+    '<a href="index.html"'+cur('index.html')+'><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>홈</span></a>'+
+    '<a href="install.html"'+cur('install.html')+'><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h3M13 11h3M8 15h3M13 15h3"/></svg><span>견적</span></a>'+
+    '<a href="prices.html"'+cur('prices.html')+'><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>단가표</span></a>'+
+    '<a class="kakao" href="'+esc(kakaoHref)+'"'+(kakaoHref!=='#'?' target="_blank" rel="noopener"':'')+'><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.8 5.2 4.6 6.6L5.5 21l4.3-2.6c.7.1 1.4.2 2.2.2 5.5 0 10-3.6 10-8S17.5 3 12 3z"/></svg><span>카카오톡</span></a>'+
+    '<a class="tel" href="'+esc(telHref)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg><span>전화</span></a>'+
+    '</div>';
+  document.body.appendChild(tb);
   /* 맨 위로 버튼 */
   const up = document.createElement('button'); up.type='button'; up.className='totop'; up.setAttribute('aria-label','맨 위로');
   up.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';

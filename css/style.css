@@ -416,3 +416,5 @@ html,body{overflow-x:clip}  /* 화면 가득 히어로 띠가 가로 스크롤�
 @media (prefers-reduced-motion:reduce){.rv-wrap{overflow-x:auto;scroll-snap-type:x proximity}.rv-track{animation:none}.rv{scroll-snap-align:start}}
 /* 2번 슬라이드(청소) 사진은 오른쪽에 작업 장면이 있어 오른쪽을 기준으로 자름 */
 .slide.s2 .pic img{object-position:88% 45%}
+/* 모바일 보완: 슬라이드 사진이 설명 글과 겹치지 않게 조금 작게, 넘김 버튼은 손가락 크기로 */
+@media (max-width:599px){.slide .pic{width:52%}.promo-ctl{padding:5px 6px 5px 8px}.promo-ctl button{width:30px;height:30px}.promo-ctl button svg{width:16px;height:16px}}

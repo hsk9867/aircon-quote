@@ -255,14 +255,6 @@ footer .copy em{font-style:normal}
 .igrid .bdg{position:absolute;top:-6px;left:50%;transform:translateX(6px);background:var(--accent);color:#fff;font-size:.6rem;font-weight:800;padding:2px 6px;border-radius:999px;line-height:1.3;white-space:nowrap}
 @media (min-width:600px){.igrid .ico{width:64px;height:64px}}
 
-/* 취급 브랜드: 로고 카드 */
-.brow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.bcell{display:grid;justify-items:center;align-content:center;gap:10px;min-height:104px;padding:16px 10px;background:var(--surface);border-radius:var(--radius);text-decoration:none;color:var(--fg);transition:background .15s}
-.bcell:hover{background:var(--surface-2)}
-.bcell .mark{height:40px;display:flex;align-items:center;gap:8px}
-.bcell .mark img{height:34px;width:auto;max-width:130px;object-fit:contain;display:block}
-.bcell .wm{font-size:1.35rem;font-weight:800;letter-spacing:-.01em;line-height:1}
-.bcell .nm{font-size:.8rem;font-weight:600;color:var(--muted)}
 @media (max-width:600px){.sgrid{margin:0 -16px;padding-inline:16px}}
 
 /* 약속 · 절차 */

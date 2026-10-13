@@ -564,8 +564,7 @@ const SITE_DEFAULT = {
      "contact": "전화·카카오톡 상담"
     },
     "promo": [
-     {"title": "에어컨 가격,\n현장에서 바뀌지 않게", "desc": "모델만 고르면 설치까지 예상 총액을 바로 확인할 수 있습니다", "cta": "설치 견적 내기", "href": "install.html", "img": "img/home-bg.jpg", "full": false,
-      "eyebrow": "속시원에어", "features": "투명한 견적|추가비용 걱정 없이;전문 기사 시공|안전하고 꼼꼼하게;빠른 상담|지금 바로, 친절하게", "note": "정확한 견적으로\n시원한 여름을 준비하세요.", "tag": "좋은 바람이 좋은 일상을 만듭니다"},
+     {"title": "에어컨 가격,\n현장에서 바뀌지 않게", "desc": "조건만 고르면 설치까지 총액이 바로 나옵니다", "cta": "설치 견적 내기", "href": "install.html", "img": "img/home-bg.jpg"},
      {"title": "여름 오기 전,\n분해 청소 예약", "desc": "기종과 사용 연수만 고르면 금액이 바로", "cta": "청소 견적 내기", "href": "clean.html", "img": "img/products/samsung-wall.jpg"},
      {"title": "설치비 0원,\n월 렌탈료만", "desc": "약정 기간별 월 렌탈료를 브랜드별로 비교", "cta": "렌탈 상담", "href": "rental.html", "img": "img/products/lg-stand.webp"}
     ],

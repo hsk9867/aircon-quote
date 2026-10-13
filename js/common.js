@@ -1032,20 +1032,22 @@ function planFrom(inp, sys, typeOf){
 
 /* ---------- 로고 ---------- */
 const LOGO_SVG = '<svg viewBox="0 0 48 48" aria-hidden="true"><rect x="2" y="2" width="44" height="44" rx="12" fill="var(--accent)"/><path d="M12 17h18a4 4 0 1 1-3 6.7" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/><path d="M12 25h22a4.5 4.5 0 1 0-3.4-7.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" opacity=".55"/><path d="M12 33h12a3.5 3.5 0 1 1-2.6 5.8" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg>';
-const NAV = [['install.html','설치 견적'],['shop.html','상가·사무실'],['clean.html','청소 견적'],['gas.html','냉매 충전'],['move.html','이전·설치'],['business.html','기업 문의'],['partner.html','설치기사 제휴']];
+const NAV = [['install.html','가정용 설치 견적'],['shop.html','상가·사무실 견적'],['move.html','이전 설치 견적'],['clean.html','분해 청소 견적'],['gas.html','냉매 충전 견적'],['rental.html','에어컨 렌탈'],['business.html','기업 문의'],['prices.html','단가표']];
 function mountChrome(){
   const here = location.pathname.split('/').pop() || 'index.html';
   const top = document.querySelector('header.top');
   /* 상단: 로고 + 카테고리 버튼. 버튼을 누르면 견적 종류 목록이 펼쳐짐 (이름은 관리자 > 첫 화면 > 아이콘 이름) */
   const c = SITE.contact;
   const kakaoHref = c.kakaoChat || '#', telHref = c.phone ? 'tel:'+String(c.phone).replace(/[^0-9+]/g,'') : '#';
-  const CAT = [['install','install.html'],['shop','shop.html'],['move','move.html'],['clean','clean.html'],['gas','gas.html'],['business','business.html']];
+  /* 상단 메뉴는 서비스 안내(services.html)로 먼저 가고, 거기서 견적 페이지로 넘어갑니다 (2026-10-13 피드백) */
+  const CAT = [['install','services.html#install'],['shop','services.html#shop'],['move','services.html#move'],['clean','services.html#clean'],['gas','services.html#gas'],['business','services.html#business']];
+  const cur = h => h.split('#')[0]===here && (!h.includes('#') || location.hash==='#'+h.split('#')[1]);
   const CAT_ICON = {"install":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"9\" rx=\"2\"/><path d=\"M7 14v3M17 14v3M9 10h6\"/></svg>","shop":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 10l1.5-5h15L21 10\"/><path d=\"M3 10a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0\"/><path d=\"M5 12v8h14v-8\"/><path d=\"M10 20v-5h4v5\"/></svg>","move":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 8h8v8H3zM11 11h5l3 3v2h-8\"/><circle cx=\"6.5\" cy=\"18\" r=\"1.5\"/><circle cx=\"16.5\" cy=\"18\" r=\"1.5\"/></svg>","clean":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"2.5\"/><path d=\"M12 9.5c0-4 2-6 4-6 1.5 0 2 1.5 1 3-1 1.2-3 1.8-5 3zM14.5 12c4 0 6 2 6 4 0 1.5-1.5 2-3 1-1.2-1-1.8-3-3-5zM12 14.5c0 4-2 6-4 6-1.5 0-2-1.5-1-3 1-1.2 3-1.8 5-3zM9.5 12c-4 0-6-2-6-4 0-1.5 1.5-2 3-1 1.2 1 1.8 3 3 5z\"/></svg>","gas":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 3h4v3h-4zM8 6h8v13a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2z\"/><path d=\"M8 13h8M12 13v6\"/></svg>","business":"<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 21h18M5 21V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v16M15 9h3a1 1 0 0 1 1 1v11\"/><path d=\"M8 8h2M8 12h2M8 16h2M11 8h1M11 12h1M11 16h1\"/></svg>"};
   if(top){
-    const items = CAT.filter(([k])=>!(SITE.home.menu[k] && SITE.home.menu[k].show===false)).map(([k,h])=>'<a href="'+h+'"'+(h===here?' aria-current="page"':'')+'><span class="ci">'+CAT_ICON[k]+'</span>'+esc((SITE.home.quick||{})[k]||k)+'</a>').join('')+
-      '<a href="partner.html"'+(here==='partner.html'?' aria-current="page"':'')+'><span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 11l2 2 4-4"/></svg></span>설치기사 제휴 문의</a>';
-    const topItems = CAT.filter(([k])=>!(SITE.home.menu[k] && SITE.home.menu[k].show===false)).map(([k,h])=>'<a href="'+h+'"'+(h===here?' aria-current="page"':'')+'>'+esc((SITE.home.quick||{})[k]||k)+'</a>').join('')+
-      '<a href="partner.html" class="pt"'+(here==='partner.html'?' aria-current="page"':'')+'>설치기사 제휴 문의</a>';
+    const items = CAT.filter(([k])=>!(SITE.home.menu[k] && SITE.home.menu[k].show===false)).map(([k,h])=>'<a href="'+h+'"'+(cur(h)?' aria-current="page"':'')+'><span class="ci">'+CAT_ICON[k]+'</span>'+esc((SITE.home.quick||{})[k]||k)+'</a>').join('')+
+      '<a href="partner.html"'+(here==='partner.html'?' aria-current="page"':'')+'><span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 11l2 2 4-4"/></svg></span>파트너 모집 <small>설치기사</small></a>';
+    const topItems = CAT.filter(([k])=>!(SITE.home.menu[k] && SITE.home.menu[k].show===false)).map(([k,h])=>'<a href="'+h+'"'+(cur(h)?' aria-current="page"':'')+'>'+esc((SITE.home.quick||{})[k]||k)+'</a>').join('')+
+      '<a href="partner.html" class="pt"'+(here==='partner.html'?' aria-current="page"':'')+'>파트너 모집</a>';
     top.innerHTML = '<div class="in"><a class="logo" href="index.html"><img src="img/logo-word.png" alt="'+esc(SITE.brand.name)+'" width="862" height="302" decoding="async"></a>'+
       '<nav class="top-nav" aria-label="견적 종류">'+topItems+'</nav><button class="cat-btn" type="button" aria-expanded="false" aria-controls="cat-menu"><span class="ic-open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span><span class="ic-close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span>카테고리</span></button></div>'+
       '<nav class="cat-menu" id="cat-menu" aria-label="견적 종류" hidden><div class="in">'+items+'</div></nav>';
@@ -1061,7 +1063,8 @@ function mountChrome(){
     '<div class="f-grid">'+
       '<div class="f-biz">'+(bizLine()||'상호, 대표, 사업자등록번호, 통신판매업 신고번호, 주소는 확정 후 표기')+(SITE.biz.footerNote?'<br>'+esc(SITE.biz.footerNote):'')+'</div>'+
       '<div class="f-contact"><b>고객센터 <span class="num">'+esc(c.phone||'')+'</span></b>카카오톡 채널 <span class="k">'+esc(c.kakaoId||'')+'</span>'+(c.bizEmail?'<br>기업 문의 <span class="k">'+esc(c.bizEmail)+'</span>':'')+'</div>'+
-      '<div class="links"><a href="index.html">홈</a>'+NAV.map(([h,l])=>'<a href="'+h+'">'+l+'</a>').join('')+'<a href="admin.html">관리자</a></div>'+
+      '<div class="links"><a href="index.html">홈</a><a href="services.html">서비스 안내</a>'+NAV.map(([h,l])=>'<a href="'+h+'">'+l+'</a>').join('')+'</div>'+
+      '<div class="links sub"><a href="partner.html">파트너 모집 (설치기사 제휴)</a><a href="admin.html">관리자</a></div>'+
     '</div>'+
     '<div class="copy">Copyright © <em>'+esc(SITE.brand.name)+'</em>. All rights reserved.</div></div>';
   /* 오른쪽 아래 떠 있는 카카오톡·전화 버튼 (링크는 관리자 연락처 값) */
@@ -1103,17 +1106,17 @@ function sendToServer(action, data){
    Booking.mount({ el: 예약 섹션 요소, getQuote: () => ({svc, summary, items, labor, total, product, models, addr, memo, site}) }) */
 const Booking = {
   mount(opts){
-    const el = opts.el; this.getQuote = opts.getQuote;
+    const el = opts.el; this.getQuote = opts.getQuote; this.sec = el.closest('section'); this.addrLabel = opts.addrLabel || '방문할 주소';
     el.innerHTML =
       '<form class="book" id="book-form" novalidate>'+
         '<div class="summary" id="book-summary"><span class="eyebrow">견적 요약</span><div class="muted">위에서 견적을 먼저 받아 주세요.</div></div>'+
         '<div class="grid2"><div class="fs"><label class="lbl" for="b-name">이름</label><input type="text" id="b-name" autocomplete="name" placeholder="홍길동"></div>'+
         '<div class="fs"><label class="lbl" for="b-phone">연락처</label><input type="tel" id="b-phone" autocomplete="tel" placeholder="010-1234-5678"></div></div>'+
-        '<div class="fs"><label class="lbl" for="b-addr">방문 주소</label><input type="text" id="b-addr" autocomplete="street-address" placeholder="서울시 마포구 성산동 ○○아파트"><span class="hint">기사에게는 수락 전까지 동까지만 공개됩니다.</span></div>'+
+        '<div class="fs"><label class="lbl" for="b-addr">'+esc(this.addrLabel)+'</label><input type="text" id="b-addr" autocomplete="street-address" placeholder="서울시 마포구 성산동 ○○아파트"><span class="hint">기사님에게는 수락 전까지 동까지만 보여요.</span></div>'+
         '<div class="fs"><label class="lbl" for="b-addr2">상세 주소</label><input type="text" id="b-addr2" placeholder="101동 1203호"></div>'+
         '<div class="grid2"><div class="fs"><label class="lbl" for="b-date">희망 일자</label><input type="date" id="b-date"></div>'+
         '<div class="fs"><label class="lbl" for="b-slot">시간대</label><select id="b-slot"><option>오전 (9~12시)</option><option>오후 (13~17시)</option><option>상관없음</option></select></div></div>'+
-        '<div class="fs"><label class="lbl" for="b-memo">요청 사항 <span class="hint">선택</span></label><textarea id="b-memo" placeholder="주차 안내, 반려동물, 사다리차 진입로 등"></textarea></div>'+
+        '<div class="fs"><label class="lbl" for="b-memo">요청 사항 <span class="hint">선택</span></label><textarea id="b-memo" placeholder="주차 안내, 반려동물, 잘 모르는 점 등 편하게 적어 주세요"></textarea></div>'+
         '<label class="consent"><input type="checkbox" id="b-consent"><span>시공 연결을 위해 이름, 연락처, 방문 주소를 배정된 제휴 기사에게 제공하는 데 동의합니다. 보유 기간은 시공 완료 후 1년입니다.</span></label>'+
         '<p class="err" id="b-err" hidden></p>'+
         '<button class="btn primary block" type="submit">예약 신청하기</button>'+
@@ -1124,6 +1127,7 @@ const Booking = {
   },
   refresh(){
     const q = this.getQuote(); const el=$('book-summary'); if(!el) return;
+    if(this.sec) this.sec.hidden = !q;   /* 견적을 고르기 전에는 예약 칸을 보이지 않음 */
     if(!q){ el.innerHTML='<span class="eyebrow">견적 요약</span><div class="muted">위에서 견적을 먼저 받아 주세요.</div>'; return; }
     el.innerHTML='<span class="eyebrow">견적 요약</span><div><b>'+esc(q.summary)+'</b></div><div class="amt num">'+rangeShort(q.total[0],q.total[1])+'</div>'+
       '<div class="small muted">'+(q.models?q.models.map(esc).join(' · '):q.items.map(i=>esc(i.label)).join(' · '))+'</div>';
@@ -1136,10 +1140,10 @@ const Booking = {
     const name=$('b-name').value.trim(), phone=$('b-phone').value.trim(), addr=$('b-addr').value.trim(), date=$('b-date').value;
     if(!name) problems.push('이름');
     if(!/^0\d{1,2}-?\d{3,4}-?\d{4}$/.test(phone)) problems.push('연락처 형식');
-    if(addr.replace(/\s+/g,'').length<4) problems.push('방문 주소');
+    if(addr.replace(/\s+/g,'').length<4) problems.push(this.addrLabel);
     if(!date) problems.push('희망 일자');
     if(!$('b-consent').checked) problems.push('개인정보 제3자 제공 동의');
-    if(problems.length){ err.hidden=false; err.textContent='확인이 필요합니다: '+problems.join(', '); return; }
+    if(problems.length){ err.hidden=false; err.textContent='이것만 확인해 주세요: '+problems.join(', '); return; }
     err.hidden=true;
     const b={
       id:'R'+Date.now().toString(36).toUpperCase().slice(-6), createdAt:new Date().toISOString(),
@@ -1154,20 +1158,31 @@ const Booking = {
     sendToServer('book', {booking:b}).then(r=>{ if(r&&r.ok){ b.server=true; b.id=r.id||b.id; } }).catch(()=>{}).finally(()=>{ this.showDone(b); });
   },
   showDone(b){
+    /* 접수 완료 화면: 견적·입력 칸은 감추고, 접수 내용과 이후 절차만 보여줌 (2026-10-13 피드백) */
     $('book-form').hidden=true; const d=$('book-done'); d.hidden=false;
+    document.querySelectorAll('main > section, main > .page-head').forEach(s=>{ if(!s.contains(d)) s.hidden=true; });
+    if(this.sec){ const h=this.sec.querySelector('.sec-head'); if(h) h.hidden=true; }
+    const c=SITE.contact; const kakao=c.kakaoChat||'';
     const row=(k,v)=>'<div class="row"><span>'+k+'</span><span>'+v+'</span></div>';
     d.innerHTML=
-      '<div class="notice">예약이 접수되었습니다. 접수번호 '+esc(b.id)+' · 담당자가 확인한 뒤 '+esc(b.customer.phone)+'로 연락드립니다.</div>'+
-      '<div class="alarm"><div class="hd"><span>접수 내용</span><span class="tag acc">접수 완료</span></div><div class="bd">'+
+      '<div class="done-head"><span class="eyebrow">접수 완료</span><h2>신청이 접수되었습니다</h2><p>접수번호 <b class="num">'+esc(b.id)+'</b> · 담당자가 확인한 뒤 <b class="num">'+esc(b.customer.phone)+'</b>로 연락드려요. 접수 후 1시간 안에 연락드리는 것을 목표로 합니다.</p></div>'+
+      '<div class="alarm"><div class="hd"><span>신청 내용</span><span class="tag acc">접수 완료</span></div><div class="bd">'+
         row('작업',esc(b.svcLabel)+' · '+esc(b.summary))+
         (b.models.length?row('제품',esc(b.models.join(', '))):'')+
-        row('방문 주소',esc(b.customer.addr)+' '+esc(b.customer.addr2))+
+        row(esc(this.addrLabel),esc(b.customer.addr)+' '+esc(b.customer.addr2))+
         row('희망 일자',fmtDate(b.customer.date)+' '+esc(b.customer.slot))+
         row('예상 금액','<b class="num">'+rangeText(b.total[0],b.total[1])+'</b>')+
         (b.customer.memo?row('요청 사항',esc(b.customer.memo)):'')+
       '</div></div>'+
-      '<p class="small muted">견적에 없던 항목은 현장에서 사유와 금액을 먼저 안내하고 동의 후에만 진행합니다.</p>'+
-      '<a class="btn block" href="index.html">처음으로</a>';
+      '<div class="next"><b>이후 이렇게 진행돼요</b><ol>'+
+        '<li><b>담당자 연락</b> 신청 내용을 확인하고 궁금한 점을 여쭤봐요.</li>'+
+        '<li><b>기사 배정</b> 지역 제휴 기사님을 정하고 방문 일정을 문자로 알려드려요.</li>'+
+        '<li><b>방문 작업</b> 견적에 없던 비용은 사유와 금액을 먼저 안내하고, 동의하신 뒤에만 진행해요.</li>'+
+        '<li><b>결제와 보증</b> 작업이 끝난 뒤 결제하고, 설치 하자는 1년간 보증해요.</li>'+
+      '</ol></div>'+
+      '<p class="small muted">신청 내용을 바꾸거나 확인하고 싶으면 접수번호와 함께 카카오톡 채널 '+esc(c.kakaoId||'')+' 또는 상담 전화 '+esc(c.phone||'')+'로 알려 주세요.</p>'+
+      '<div class="row done-acts">'+(kakao?'<a class="btn primary" href="'+esc(kakao)+'" target="_blank" rel="noopener">카카오톡으로 문의</a>':'')+'<a class="btn" href="index.html">처음으로</a></div>';
+    window.scrollTo({top:0, behavior:'smooth'});
   }
 };
 

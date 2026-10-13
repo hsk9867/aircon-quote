@@ -9,7 +9,7 @@
 <link rel="preload" as="image" href="img/logo-word.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
-<link rel="stylesheet" href="css/style.css?v=20261015w">
+<link rel="stylesheet" href="css/style.css?v=20261016a">
 </head>
 <body>
 <header class="top"></header>
@@ -19,28 +19,21 @@
   <span class="eyebrow" data-t="pages.install.eyebrow">설치 견적 · 구매 + 신규 설치</span>
   <h1 data-t="pages.install.title">설치 조건만 고르면 브랜드별 총액이 바로 나옵니다</h1>
   <p data-t="pages.install.desc">거주 형태, 설치 대수와 평수, 주소, 거주 여부, 추가 옵션을 입력하면 삼성·LG·캐리어 제품으로 설치까지 한 총액을 비교해 드립니다. 3대 이상은 시스템 에어컨(천장형 + 실외기 1대)으로 계산합니다.</p>
+  <a class="svc-link" href="services.html#install">이 서비스가 처음이세요? 서비스 안내 먼저 보기</a>
 </div>
 
 <section id="quote">
   <form class="form" id="qform" novalidate>
+    <p class="form-intro">잘 모르는 항목은 <b>잘 모르겠어요</b>를 고르셔도 돼요. 조건을 고르면 바로 아래에 금액이 나오고, 마음에 드는 브랜드를 고른 뒤 예약하면 끝이에요.</p>
     <div class="fs">
-      <div class="lbl"><span class="n">1</span>거주 형태</div>
+      <div class="lbl"><span class="n"></span>거주 형태</div>
       <div class="seg">
         <label><input type="radio" name="home" value="apt" checked>아파트·오피스텔<small>실외기 베란다·실외기실</small></label>
         <label><input type="radio" name="home" value="house">주택·빌라<small>외벽 앵글 또는 지상 설치</small></label>
       </div>
     </div>
-    <div class="fs" id="pipe-fs">
-      <div class="lbl"><span class="n">2</span>배관 방식 <span class="hint">3대 이상 시스템 에어컨에 적용</span></div>
-      <div class="seg">
-        <label><input type="radio" name="pipe" value="multi">다배관<small>실내기마다 실외기까지 배관</small></label>
-        <label><input type="radio" name="pipe" value="single">단배관<small>배관 1세트 후 분배기로 나눔</small></label>
-        <label><input type="radio" name="pipe" value="unknown" checked>모르겠음<small>다배관으로 추천</small></label>
-      </div>
-      <span class="hint" id="pipe-hint"></span>
-    </div>
     <div class="fs">
-      <div class="lbl"><span class="n">3</span>설치 대수와 평수 <span class="hint">최대 4대</span></div>
+      <div class="lbl"><span class="n"></span>설치 대수와 평수 <span class="hint">최대 4대</span></div>
       <div class="seg" id="count-seg">
         <label><input type="radio" name="count" value="1">1대</label>
         <label><input type="radio" name="count" value="2" checked>2대</label>
@@ -50,20 +43,29 @@
       <div class="units" id="units"></div>
       <span class="hint" id="units-hint"></span>
     </div>
+    <div class="fs" id="pipe-fs">
+      <div class="lbl"><span class="n"></span>배관 방식 <span class="hint">3대 이상 시스템 에어컨만 해당</span></div>
+      <div class="seg">
+        <label><input type="radio" name="pipe" value="multi">다배관<small>실내기마다 실외기까지 배관</small></label>
+        <label><input type="radio" name="pipe" value="single">단배관<small>배관 1세트 후 분배기로 나눔</small></label>
+        <label><input type="radio" name="pipe" value="unknown" checked>잘 모르겠어요<small>상담 후 결정 · 다배관으로 계산</small></label>
+      </div>
+      <span class="hint" id="pipe-hint"></span>
+    </div>
     <div class="fs">
-      <div class="lbl"><span class="n">4</span>거주지 주소</div>
+      <div class="lbl"><span class="n"></span>설치할 주소</div>
       <input type="text" id="addr" autocomplete="street-address" placeholder="서울시 마포구 성산동 ○○아파트 101동">
       <span class="hint" id="addr-hint">아파트 단지·평형을 적어 주시면 더 정확합니다. 부동산 플랫폼 연동 후에는 주소만으로 단지 구조(베란다 위치, 배관 길이)를 자동으로 파악할 예정입니다.</span>
     </div>
     <div class="fs">
-      <div class="lbl"><span class="n">5</span>거주 여부</div>
+      <div class="lbl"><span class="n"></span>거주 여부</div>
       <div class="seg">
         <label><input type="radio" name="occupied" value="empty" checked>공실·입주 전<small>작업이 쉽고 도배 마감 가능</small></label>
         <label><input type="radio" name="occupied" value="living">거주 중<small>가구 이동·보양 포함</small></label>
       </div>
     </div>
     <div class="fs">
-      <div class="lbl"><span class="n">6</span>추가 옵션</div>
+      <div class="lbl"><span class="n"></span>추가 옵션</div>
       <div class="chips">
         <label class="chip"><input type="checkbox" name="opt" value="paper">부분 도배 (배관 자리 마감)</label>
         <label class="chip"><input type="checkbox" name="opt" value="gas">냉매 보충</label>
@@ -71,10 +73,12 @@
         <label class="chip"><input type="checkbox" name="opt" value="remove">기존 에어컨 철거</label>
         <label class="chip"><input type="checkbox" name="opt" value="angle">실외기 앵글</label>
         <label class="chip"><input type="checkbox" name="opt" value="ladder">사다리차</label>
+        <label class="chip consult"><input type="checkbox" name="opt" value="consult">잘 모르겠어요 · 상담 후 결정할게요</label>
       </div>
+      <span class="hint" id="opt-hint" hidden>좋아요. 현장에서 필요한 작업이 보이면 사유와 금액을 먼저 안내하고, 동의하신 뒤에만 진행해요. 아래 견적 금액에는 추가 옵션이 들어 있지 않아요.</span>
     </div>
     <div class="grid2">
-      <div class="fs"><label class="lbl" for="q-date">희망 설치일 <span class="hint">6~8월 성수기 계수</span></label><input type="date" id="q-date"></div>
+      <div class="fs"><label class="lbl" for="q-date">희망 설치일 <span class="hint">6~8월은 성수기 요금</span></label><input type="date" id="q-date"></div>
       <div class="fs"><label class="lbl" for="q-memo">참고 사항 <span class="hint">선택</span></label><input type="text" id="q-memo" placeholder="복층, 확장형 거실, 실외기실 없음 등"></div>
     </div>
     <p class="err" id="q-err" hidden></p>
@@ -94,7 +98,7 @@
   </div>
 </section>
 
-<section id="book">
+<section id="book" hidden>
   <div class="sec-head"><span class="eyebrow">예약 신청</span><h2>희망 일자와 연락처를 남겨 주세요</h2><p class="small muted">접수되면 지역 제휴 기사에게 알림이 가고, 배정이 되면 문자로 안내합니다.</p></div>
   <div id="booking"></div>
 </section>
@@ -102,7 +106,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261015u"></script>
+<script src="js/common.js?v=20261016a"></script>
 <script>
 (function(){
 'use strict';
@@ -113,7 +117,7 @@ const ROOMS = ['거실','안방','작은방','아이방','서재','주방·식�
 const HOME_LABEL = {apt:'아파트·오피스텔', house:'주택·빌라', shop:'상가·사무실'}; const HOME_SHORT = {apt:'아파트', house:'주택', shop:'상가'};
 const DEFAULT_ROOM = ['거실','안방','아이방','작은방'];
 const DEFAULT_PY = [18,6,5,5]; /* 기본 구성: 거실 18평, 안방 6평, 아이방 5평, 작은방 5평 */
-const OPT_LABEL={paper:'부분 도배',gas:'냉매 보충',elec:'전기 작업',remove:'기존 철거',angle:'실외기 앵글',ladder:'사다리차'};
+const OPT_LABEL={paper:'부분 도배',gas:'냉매 보충',elec:'전기 작업',remove:'기존 철거',angle:'실외기 앵글',ladder:'사다리차',consult:'추가 옵션은 상담 후 결정'};
 const PIPE_LABEL = {multi:'다배관', single:'단배관', unknown:'모르겠음 (다배관으로 추천)'};
 const typeOf = py => py<=15 ? 'wall' : 'stand'; /* 15평 이하 벽걸이, 16평 이상 스탠드 */
 const isSystem = units => units.length>=3; /* 3대부터 시스템 에어컨: 천장형 실내기 + 실외기 1대 */
@@ -123,12 +127,12 @@ const PIPE_OPTS=[5,6,7,8,9,10,12,15,20];   /* 배관 길이 선택지 (m). 5m는
 function renderUnits(){
   const n = +radio('count'); const box=$('units'); const prev = readUnits();
   box.innerHTML = Array.from({length:n},(_,i)=>{
-    const py = prev[i]?prev[i].py:DEFAULT_PY[i]; const room = prev[i]?prev[i].room:DEFAULT_ROOM[i]; const pipe = prev[i]?prev[i].pipe:'5';
+    const py = prev[i]?prev[i].py:DEFAULT_PY[i]; const room = prev[i]?prev[i].room:DEFAULT_ROOM[i]; const pipe = prev[i]?prev[i].pipe:'unknown';   /* 기본은 '잘 모르겠어요' (현장 실측 후 안내) */
     return '<div class="unit"><span class="i">'+(i+1)+'</span>'+
       '<select aria-label="'+(i+1)+'번 설치 공간" data-u="room">'+ROOMS.map(r=>'<option'+(r===room?' selected':'')+'>'+r+'</option>').join('')+'</select>'+
       '<select aria-label="'+(i+1)+'번 평수" data-u="py">'+PY.map(p=>'<option value="'+p+'"'+(p===py?' selected':'')+'>'+p+'평'+(p===DEFAULT_PY[i]?' (기본)':'')+'</option>').join('')+'</select>'+
       '<span class="kind"></span>'+
-      '<label class="pl"><span>배관 길이 <small>(실내기~실외기, 5m까지 기본 포함)</small></span><select aria-label="'+(i+1)+'번 배관 길이" data-u="pipe">'+PIPE_OPTS.map(m=>'<option value="'+m+'"'+(String(m)===String(pipe)?' selected':'')+'>'+m+'m'+(m===5?' (기본)':'')+'</option>').join('')+'<option value="unknown"'+(pipe==='unknown'?' selected':'')+'>잘 모르겠음</option></select></label></div>';
+      '<label class="pl"><span>배관 길이 <small>(실내기~실외기, 5m까지 기본 포함)</small></span><select aria-label="'+(i+1)+'번 배관 길이" data-u="pipe">'+PIPE_OPTS.map(m=>'<option value="'+m+'"'+(String(m)===String(pipe)?' selected':'')+'>'+m+'m'+(m===5?' (기본)':'')+'</option>').join('')+'<option value="unknown"'+(pipe==='unknown'?' selected':'')+'>잘 모르겠어요 (현장에서 재서 안내)</option></select></label></div>';
   }).join('');
   updateKinds();
 }
@@ -149,6 +153,14 @@ $('units').addEventListener('change', updateKinds);
 document.querySelectorAll('input[name=home]').forEach(r=>r.addEventListener('change', ()=>{
   const house = radio('home')==='house';
   $('addr-hint').textContent = house ? '주택은 실외기 자리(외벽·지상·옥상)와 배관 길이가 집마다 달라 범위가 넓어집니다. 참고 사항에 실외기 자리를 적어 주시면 좋습니다.' : '아파트 단지·평형을 적어 주시면 더 정확합니다. 부동산 플랫폼 연동 후에는 주소만으로 단지 구조(베란다 위치, 배관 길이)를 자동으로 파악할 예정입니다.';
+}));
+
+/* '잘 모르겠어요 · 상담 후 결정' 칩: 고르면 다른 옵션은 비우고 추가 비용 안내 문구를 보여줌 */
+document.querySelectorAll('input[name=opt]').forEach(c=>c.addEventListener('change', ()=>{
+  const con=document.querySelector('input[name=opt][value=consult]'); if(!con) return;
+  if(c===con && con.checked) document.querySelectorAll('input[name=opt]:not([value=consult])').forEach(x=>{ x.checked=false; });
+  else if(c!==con && c.checked) con.checked=false;
+  $('opt-hint').hidden=!con.checked;
 }));
 
 /* ---------- 견적 엔진 ---------- */
@@ -250,7 +262,7 @@ function renderPlan(plan){
 $('qform').addEventListener('submit', e=>{
   e.preventDefault();
   const inp=readInput(); const err=$('q-err');
-  if(!inp.addr){ err.hidden=false; err.textContent='거주지 주소를 입력해 주세요. 동과 단지명까지면 충분합니다.'; return; }
+  if(!inp.addr){ err.hidden=false; err.textContent='설치할 주소를 적어 주세요. 동과 단지명(또는 건물명)까지면 충분해요.'; return; }
   err.hidden=true;
   result = quoteAll(inp); picked=null;
   $('result').hidden=false; renderResult(); renderPlan(rulePlan(inp)); Booking.refresh();
@@ -258,7 +270,7 @@ $('qform').addEventListener('submit', e=>{
 });
 
 /* ---------- 예약 ---------- */
-Booking.mount({ el: $('booking'), getQuote: ()=>{
+Booking.mount({ el: $('booking'), addrLabel:'설치할 주소', getQuote: ()=>{
   if(!result||!picked) return null;
   const b=result.brands.find(x=>x.id===picked); const inp=result.input;
   return { svc:'구매+설치', summary:b.name+' '+inp.units.length+'대 구매 + 설치'+(isSystem(inp.units)?' (시스템)':''), items:result.items, labor:b.labor, total:b.total, product:b.product,

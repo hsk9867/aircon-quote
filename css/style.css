@@ -463,3 +463,75 @@ html.splash-on body::after{font:400 min(8.6vw,42px)/1 "Cafe24Ssurround","SUIT Va
 .tm .tags{display:flex;flex-wrap:wrap;gap:4px 10px;border-top:1px solid var(--line-soft);padding-top:10px}
 .tm .tags span{display:inline-flex;align-items:center;gap:4px;font-size:.76rem;font-weight:700;color:var(--accent)} .tm .tags svg{width:12px;height:12px}
 @media (max-width:599px){.tm{flex-basis:240px;padding:12px 13px}.tm b{font-size:.95rem}.tm .ph{width:70px;height:84px}.tm .tags span{font-size:.72rem}}
+
+/* ===== 2026-10-13 UX 피드백 반영 =====
+   1) 첫 화면 배너: 모든 슬라이드의 사진 칸을 같은 크기로 고정하고, 넘김 버튼은 배너 아래로 빼서 사진과 겹치지 않게
+   2) 견적 단계 번호는 CSS 카운터 (숨긴 단계는 번호를 건너뜀) · 대수 칸 안의 상자는 선으로만 구분
+   3) 실적 띠 글자 넘침 수정 · 상담 섹션과 푸터 사이 여백 · 글자 크기 통일 · 서비스 안내 페이지 */
+.promo{display:grid;gap:8px;margin-inline:0}
+.promo-track{border-radius:20px}
+.slide{height:300px;min-height:0}
+.slide .txt{max-width:50%;padding:24px 20px 0}
+.slide b{font-size:clamp(1.2rem,5vw,1.6rem)}
+.slide .cta{left:20px;bottom:20px}
+.slide .pic{right:0;bottom:0;top:auto;width:50%;max-width:none;height:70%;aspect-ratio:auto;border-radius:20px 0 0 0}
+.slide .pic img{object-position:center}
+.slide.s2 .pic img,.slide.s3 .pic img{object-position:center}
+.promo-ctl{position:static;justify-self:end;background:var(--surface);color:var(--fg);padding:4px 6px 4px 8px;box-shadow:none}
+.promo-ctl button{color:var(--fg)} .promo-ctl button:hover{background:var(--surface-2)}
+@media (min-width:600px){.slide{height:340px}.slide .txt{padding:32px 28px 0;max-width:52%}.slide .cta{left:28px;bottom:28px}.slide .pic{width:46%;height:100%;border-radius:0}}
+@media (min-width:900px){.promo{margin-inline:0}.promo-track{border-radius:24px}.slide{height:400px}.slide .txt{padding:48px 44px 0;max-width:54%}.slide .cta{left:44px;bottom:40px}.slide .pic{width:44%;height:100%;max-width:none;border-radius:0}.promo-ctl{position:static;right:auto;bottom:auto;background:var(--surface)}}
+/* 실적 띠: 글자가 칸 밖으로 나가지 않게 세로 쌓기 + 글자 크기 유동 */
+.stats .in div{display:grid;justify-items:center;align-content:center;gap:2px;padding:12px 6px;white-space:normal;text-align:center;min-width:0}
+.stats .k{font-size:.76rem;line-height:1.3}
+.stats b{font-size:clamp(1rem,4.2vw,1.5rem);line-height:1.2;word-break:keep-all}
+.stats small{font-size:.72rem}
+@media (min-width:600px){.stats .in div{padding:14px 8px}}
+/* 상담 섹션과 푸터 사이 */
+.home-main{padding-bottom:40px}
+@media (min-width:900px){.home-main{padding-bottom:56px}}
+/* 글자 위계 통일: 섹션 제목 1.2rem/800, 카드 제목 .95rem/800, 설명 .86rem/muted */
+.sec-title h2,.contact-band h2{font-size:1.2rem;font-weight:800;line-height:1.3;letter-spacing:-.02em}
+.pgrid b,.sgrid b{font-size:.95rem;line-height:1.35} .pgrid span,.sgrid span{font-size:.84rem;line-height:1.5}
+.sec-title{align-items:flex-end}
+@media (min-width:900px){.sec-title h2,.contact-band h2{font-size:1.5rem}.pgrid b,.sgrid b{font-size:1.05rem}.pgrid span,.sgrid span{font-size:.9rem}}
+/* 서비스 안내 링크 (첫 화면 아이콘 아래, 견적 페이지 머리말 아래) */
+.svc-link{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:.88rem;font-weight:700;color:var(--accent);text-decoration:none}
+.svc-link::after{content:"→"} .svc-link:hover{text-decoration:underline}
+.page-head .svc-link{margin-top:2px;justify-self:start}
+/* 견적 폼: 단계 번호 카운터, 안내 문구, 대수 칸 단순화 */
+.form{counter-reset:step}
+.fs>.lbl .n::before{counter-increment:step;content:counter(step)}
+.form-intro{margin:-4px 0 -6px;padding:12px 14px;border-radius:var(--r-sm);background:var(--accent-soft);color:var(--fg);font-size:.88rem;line-height:1.55}
+.form-intro b{color:var(--accent)}
+.unit{background:transparent;border-radius:0;padding:10px 0 10px;border-top:1px solid var(--line-soft)}
+.unit:first-child{border-top:0;padding-top:2px}
+.unit select{border:1px solid var(--line)}
+.unit .pl{font-size:.8rem}
+.chip.consult{border-style:dashed}
+.chip.consult:has(input:checked){border-style:solid}
+/* 예약 섹션: 견적을 고르기 전엔 보이지 않음. 접수 완료 화면 */
+.done{display:grid;gap:14px}
+.done-head{display:grid;gap:8px} .done-head h2{font-size:1.4rem} .done-head p{color:var(--muted);font-size:.92rem}
+.next{background:var(--surface);border-radius:var(--radius);padding:16px 18px;display:grid;gap:8px}
+.next>b{font-size:.95rem} .next ol{margin:0;padding-left:20px;display:grid;gap:8px;font-size:.88rem;line-height:1.5;color:var(--muted)} .next li b{color:var(--fg);margin-right:4px}
+.done-acts{margin-top:4px}
+/* 서비스 안내 페이지 */
+.svc-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:4px 0 14px;margin:0 -16px;padding-inline:16px;position:sticky;top:64px;background:var(--bg);z-index:5}
+.svc-tabs::-webkit-scrollbar{display:none}
+.svc-tabs a{flex:0 0 auto;text-decoration:none;color:var(--fg);font-size:.84rem;font-weight:700;padding:7px 13px;border:1px solid var(--line);border-radius:999px;background:var(--bg)}
+.svc-tabs a:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.svc{background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);padding:22px 18px;display:grid;gap:14px;margin-bottom:14px;box-shadow:var(--shadow);scroll-margin-top:120px}
+.svc-head{display:flex;gap:12px;align-items:center} .svc-head .em{font-size:34px;line-height:1;width:56px;height:56px;border-radius:16px;background:var(--surface);display:grid;place-items:center;flex-shrink:0;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+.svc-head h2{font-size:1.2rem;margin-top:2px}
+.svc>p{margin:0;color:var(--fg);font-size:.92rem;line-height:1.65}
+.svc-grid{display:grid;gap:8px}
+.svc-grid div{background:var(--surface);border-radius:var(--r-sm);padding:12px 14px;display:grid;gap:4px} .svc-grid b{font-size:.84rem;color:var(--accent)} .svc-grid span{font-size:.86rem;line-height:1.5;color:var(--muted)}
+.svc-steps{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px;counter-reset:svc}
+.svc-steps li{counter-increment:svc;display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:700;padding:6px 12px 6px 6px;border-radius:999px;background:var(--accent-soft);color:var(--fg)}
+.svc-steps li::before{content:counter(svc);width:20px;height:20px;border-radius:999px;background:var(--accent);color:#fff;font-size:.7rem;display:grid;place-items:center}
+.svc .row{display:flex;flex-wrap:wrap;gap:8px}
+.svc-help{background:var(--accent-soft);border-color:transparent}
+@media (min-width:600px){.svc-grid{grid-template-columns:repeat(3,1fr)}.svc{padding:26px 24px}}
+@media (min-width:900px){.svc-head h2{font-size:1.45rem}.svc>p{font-size:1rem}.svc-tabs{top:64px}}
+footer .links.sub{opacity:.8;font-size:.76rem}

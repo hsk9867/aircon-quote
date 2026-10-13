@@ -9,7 +9,7 @@
 <link rel="preload" as="image" href="img/logo-word.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
-<link rel="stylesheet" href="css/style.css?v=20261015w">
+<link rel="stylesheet" href="css/style.css?v=20261016a">
 </head>
 <body>
 <header class="top"></header>
@@ -19,12 +19,14 @@
   <span class="eyebrow" data-t="pages.move.eyebrow">이전/설치 견적 · 철거 + 운반 + 재설치</span>
   <h1 data-t="pages.move.title">이사할 때 떼고, 새집에 다시 답니다</h1>
   <p data-t="pages.move.desc">기종, 대수, 이동 거리, 도착지 조건을 고르면 철거비·운반비·재설치비가 항목별로 나옵니다. 기존 위치 철거가 기본에 포함되고, 배관은 길이만큼 1m 단위로 계산합니다.</p>
+  <a class="svc-link" href="services.html#move">이 서비스가 처음이세요? 서비스 안내 먼저 보기</a>
 </div>
 
 <section id="quote">
   <form class="form" id="qform" novalidate>
+    <p class="form-intro">떼는 집과 새로 다는 집의 조건만 고르면 금액이 바로 나와요. 예약은 금액을 확인한 다음에 하면 돼요.</p>
     <div class="fs">
-      <div class="lbl"><span class="n">1</span>기종</div>
+      <div class="lbl"><span class="n"></span>기종</div>
       <div class="seg">
         <label><input type="radio" name="type" value="wall" checked>벽걸이</label>
         <label><input type="radio" name="type" value="stand">스탠드</label>
@@ -36,14 +38,14 @@
       <div class="fs"><label class="lbl" for="dist">이동 거리</label><select id="dist"><option value="near">같은 동네 (10km 이내)</option><option value="city">같은 시·군</option><option value="far">다른 시·도</option></select></div>
     </div>
     <div class="fs">
-      <div class="lbl"><span class="n">2</span>도착지</div>
+      <div class="lbl"><span class="n"></span>도착지</div>
       <div class="grid2">
         <div class="fs"><label class="lbl" for="home">거주 형태</label><select id="home"><option value="apt">아파트·오피스텔</option><option value="house">주택·빌라</option></select></div>
         <div class="fs"><label class="lbl" for="floor">층수</label><select id="floor"><option value="low">1~2층</option><option value="mid">3~5층</option><option value="high">6층 이상 (엘리베이터)</option></select></div>
       </div>
     </div>
     <div class="fs">
-      <div class="lbl"><span class="n">3</span>현장 조건</div>
+      <div class="lbl"><span class="n"></span>현장 조건</div>
       <div class="chips">
         <label class="chip"><input type="checkbox" id="remove" checked>기존 위치 철거 포함</label>
         <label class="chip"><input type="checkbox" id="buried">도착지 매립 배관</label>
@@ -54,7 +56,7 @@
       </div>
     </div>
     <div class="grid2">
-      <div class="fs"><label class="lbl" for="q-date">희망 설치일 <span class="hint">6~8월 성수기 계수</span></label><input type="date" id="q-date"></div>
+      <div class="fs"><label class="lbl" for="q-date">희망 설치일 <span class="hint">6~8월은 성수기 요금</span></label><input type="date" id="q-date"></div>
       <div class="fs"><label class="lbl" for="region">지역</label><select id="region"><option value="base">1차 서비스 지역 (기본)</option><option value="out">인접 지역 (출장 가산)</option></select></div>
     </div>
     <button class="btn primary block" type="submit">이전 설치 견적 보기</button>
@@ -72,7 +74,7 @@
   </div>
 </section>
 
-<section id="book">
+<section id="book" hidden>
   <div class="sec-head"><span class="eyebrow">예약 신청</span><h2>도착지 주소와 희망 일자를 남겨 주세요</h2><p class="small muted">방문 주소에는 설치할 새집 주소를 적어 주세요. 출발지는 요청 사항에 적어 주시면 됩니다.</p></div>
   <div id="booking"></div>
 </section>
@@ -80,7 +82,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261015u"></script>
+<script src="js/common.js?v=20261016a"></script>
 <script>
 (function(){
 'use strict';
@@ -116,7 +118,7 @@ function calc(){
 $('qform').addEventListener('submit', e=>{ e.preventDefault(); calc(); $('result').scrollIntoView({behavior:'smooth'}); });
 $('qform').addEventListener('change', ()=>{ if(result) calc(); });
 $('go-book').addEventListener('click', ()=>$('book').scrollIntoView({behavior:'smooth'}));
-Booking.mount({ el: $('booking'), getQuote: ()=>result });
+Booking.mount({ el: $('booking'), addrLabel:'설치할 주소 (새집)', getQuote: ()=>result });
 $('q-date').value = plusDays(7);
 })();
 </script>

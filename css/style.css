@@ -432,4 +432,4 @@ html,body{overflow-x:clip}  /* 화면 가득 히어로 띠가 가로 스크롤�
 .rv-filter button.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .rv-empty{padding:16px;color:var(--muted);font-size:.9rem}
 /* 3번 슬라이드 사진도 오른쪽 작업 장면 기준으로 자름 */
-.slide.s3 .pic img{object-position:88% 45%}
+.slide.s3 .pic img{object-position:72% 40%}

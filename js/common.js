@@ -781,13 +781,12 @@ const NAV = [['install.html','설치 견적'],['shop.html','상가·사무실'],
 function mountChrome(){
   const here = location.pathname.split('/').pop() || 'index.html';
   const top = document.querySelector('header.top');
-  /* 상단: 로고 + 카카오톡·전화 아이콘, 아래 줄에 가로로 넘기는 칩 메뉴 */
+  /* 상단: 로고만 (메뉴는 첫 화면 아이콘, 문의는 오른쪽 아래 버튼) */
   const c = SITE.contact;
   const kakaoHref = c.kakaoChat || '#', telHref = c.phone ? 'tel:'+String(c.phone).replace(/[^0-9+]/g,'') : '#';
   if(top){
     top.innerHTML = '<div class="in"><a class="logo" href="index.html"><img src="img/logo-word.png" alt="'+esc(SITE.brand.name)+'" width="862" height="302" decoding="async"></a>'+
-      '</div>'+
-      '<nav class="nav" aria-label="바로가기"><a href="index.html"'+(here==='index.html'?' aria-current="page"':'')+'>홈</a>'+NAV.map(([h,l])=>'<a href="'+h+'"'+(h===here?' aria-current="page"':'')+'>'+l+'</a>').join('')+'</nav>';
+      '</div>';
   }
   const foot = document.querySelector('footer');
   if(foot && !foot.innerHTML.trim()) foot.innerHTML =

@@ -258,9 +258,9 @@ footer .copy em{font-style:normal}
 .brow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .bcell{display:grid;justify-items:center;align-content:center;gap:10px;min-height:104px;padding:16px 10px;background:var(--surface);border-radius:var(--radius);text-decoration:none;color:var(--fg);transition:background .15s}
 .bcell:hover{background:var(--surface-2)}
-.bcell .mark{height:44px;width:100%;overflow:hidden;display:grid;place-items:center}
-.bcell .mark img{width:128px;height:128px;object-fit:contain;display:block}  /* Simple Icons는 정사각형 안에 글자 로고가 들어 있어 크게 그린 뒤 가운데 44px만 보이게 함 */
-.bcell .wm{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;line-height:1}
+.bcell .mark{height:40px;display:flex;align-items:center;gap:8px}
+.bcell .mark img{height:34px;width:auto;max-width:130px;object-fit:contain;display:block}
+.bcell .wm{font-size:1.35rem;font-weight:800;letter-spacing:-.01em;line-height:1}
 .bcell .nm{font-size:.8rem;font-weight:600;color:var(--muted)}
 @media (max-width:600px){.sgrid{margin:0 -16px;padding-inline:16px}}
 

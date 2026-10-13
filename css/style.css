@@ -440,3 +440,11 @@ html.splash-on body::before{content:"에어컨 모든견적";display:flex;justif
 html.splash-on body::after{content:"하게!!";display:flex;align-items:center;width:auto;height:min(21vw,105px);margin-left:0;margin-top:calc(min(21vw,105px) / -2);left:50%;padding-left:calc(min(60vw,300px) + 10px);background-position:left center;background-size:min(60vw,300px) auto;font:800 min(9vw,44px)/1 var(--display);color:#145CE6;letter-spacing:-.03em;white-space:nowrap;animation:splash-in2 .7s cubic-bezier(.2,.8,.2,1) both,splash-out .55s ease 1.7s forwards}
 @keyframes splash-in2{from{opacity:0;transform:translateX(-50%) scale(.9) translateY(10px)}to{opacity:1;transform:translateX(-50%)}}
 @keyframes splash-text{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+/* 시작 화면 문구 글꼴: 로고와 비슷한 둥근 굵은 글씨(카페24 써라운드) */
+@font-face{font-family:"Cafe24Ssurround";src:url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2105_2@1.0/Cafe24Ssurround.woff") format("woff");font-weight:normal;font-style:normal;font-display:swap}
+html.splash-on body::before{font:400 min(6.6vw,30px)/1.2 "Cafe24Ssurround","SUIT Variable",sans-serif;color:#1E4FB5;letter-spacing:0}
+html.splash-on body::after{font:400 min(8.6vw,42px)/1 "Cafe24Ssurround","SUIT Variable",sans-serif;color:#1E4FB5;letter-spacing:0}
+/* 모바일 카테고리 메뉴: 상단 바 높이(64px) 규칙이 메뉴 안쪽까지 적용돼 내용이 넘치던 문제 수정 */
+.top .cat-menu .in{height:auto;padding:12px 16px 16px}
+.cat-menu a:last-child:nth-child(odd){grid-column:1/-1}
+@media (min-width:600px){.cat-menu a:last-child:nth-child(odd){grid-column:auto}}

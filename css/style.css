@@ -559,3 +559,5 @@ footer .links.sub{opacity:.8;font-size:.76rem}
 /* 모바일 카드뉴스: 위쪽 빈 여백 제거 — 글 묶음을 위에 붙이고 카드 높이를 내용에 맞춤 (PC는 그대로) */
 @media (max-width:599px){.slide{height:auto;min-height:0;align-content:start;padding:20px 18px 22px}.slide .txt{max-width:58%}.slide .cta{margin-top:12px}.slide .pic{height:78%}}
 @media (max-width:599px){.slide.s1,.slide.s2,.slide.s3{min-height:0}}  /* 옛 .slide.s1 규칙의 min-height:340px 가 더 세서 카드가 안 줄어들던 문제 */
+/* 모바일 카드뉴스: 문의 버튼이 사진을 가리지 않게 — 버튼을 작게, 글 칸은 왼쪽 54%, 사진은 오른쪽 46% */
+@media (max-width:599px){.slide .txt{max-width:54%}.slide .cta{padding:10px 14px;font-size:.86rem;gap:5px}.slide .cta svg{width:13px;height:13px}.slide .pic{width:46%}}

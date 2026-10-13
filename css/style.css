@@ -240,8 +240,7 @@ footer .copy em{font-style:normal}
 .slide .cta{position:absolute;left:22px;bottom:22px;z-index:2;display:inline-flex;align-items:center;gap:6px;background:var(--fg);color:var(--bg);font-size:.82rem;font-weight:700;padding:9px 14px;border-radius:999px}
 .slide .cta svg{width:14px;height:14px}
 .promo-ctl{position:absolute;right:12px;bottom:12px;z-index:3;display:flex;align-items:center;gap:4px;background:rgba(23,25,28,.72);color:#fff;border-radius:999px;padding:4px 6px 4px 12px;font-size:.74rem;font-weight:600}
-.promo-ctl .nav-btn{display:none}
-@media (min-width:600px){.promo-ctl{padding-left:6px}.promo-ctl .nav-btn{display:grid}.promo-ctl #promo-pos{padding:0 4px}}
+.promo-ctl{padding-left:6px} .promo-ctl .nav-btn{display:grid} .promo-ctl #promo-pos{padding:0 4px}
 .promo-ctl button{appearance:none;border:0;background:transparent;color:#fff;width:24px;height:24px;display:grid;place-items:center;cursor:pointer;padding:0;border-radius:999px}
 .promo-ctl button svg{width:14px;height:14px}
 @media (min-width:600px){.slide{min-height:320px}.slide .txt{padding:36px 32px 0}.slide .cta{left:32px;bottom:30px}}

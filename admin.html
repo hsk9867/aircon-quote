@@ -119,7 +119,7 @@ table.edit input[type=text]{min-width:120px}
 <script>
 (function(){
 'use strict';
-const S=window.SSW; const {$, esc, load, save, rangeShort, rangeText, fmtDate, deepMerge, getPath, DEFAULTS, TYPE_LABEL}=S;
+const S=window.SSW; const {$, esc, load, save, won, rangeShort, rangeText, fmtDate, deepMerge, getPath, DEFAULTS, TYPE_LABEL}=S;
 const clone=o=>JSON.parse(JSON.stringify(o));
 const isObj=v=>!!v&&typeof v==='object'&&!Array.isArray(v);
 function setPath(o,p,v){ const ks=p.split('.'); let a=o; for(let i=0;i<ks.length-1;i++){ if(a[ks[i]]==null) a[ks[i]]=/^\d+$/.test(ks[i+1])?[]:{}; a=a[ks[i]]; } a[ks[ks.length-1]]=v; }
@@ -224,6 +224,7 @@ const fText=(p,label,hint,ta)=>{ const v=getPath(draft,p); return '<div class="f
 const fNum=(p,label,hint)=>'<div class="f"><label>'+esc(label)+(hint?' <span class="hint">'+esc(hint)+'</span>':'')+'</label><input type="number" step="any" inputmode="decimal" data-p="'+p+'" data-n="1" value="'+esc(getPath(draft,p))+'"></div>';
 const rg=p=>{ const v=getPath(draft,p)||[0,0]; return '<div class="rg"><input type="number" step="any" inputmode="numeric" data-p="'+p+'.0" data-n="1" value="'+v[0]+'"><span>~</span><input type="number" step="any" inputmode="numeric" data-p="'+p+'.1" data-n="1" value="'+v[1]+'"></div>'; };
 const fRange=(p,label,hint)=>'<div class="f"><label>'+esc(label)+(hint?' <span class="hint">'+esc(hint)+'</span>':'')+'</label>'+rg(p)+'</div>';
+const fSelB=(p,label,opts)=>'<div class="f"><label>'+esc(label)+'</label><select data-p="'+p+'">'+Object.keys(opts).map(k=>'<option value="'+k+'"'+((getPath(draft,p)||'won')===k?' selected':'')+'>'+esc(opts[k])+'</option>').join('')+'</select></div>';
 const fBool=(p,label)=>'<label class="chip"><input type="checkbox" data-p="'+p+'" data-b="1"'+(getPath(draft,p)!==false?' checked':'')+'>'+esc(label)+'</label>';
 const card=(title,inner,desc,extra)=>'<div class="acard"><div class="ah"><h3>'+esc(title)+'</h3>'+(extra||'')+(desc?'<p>'+esc(desc)+'</p>':'')+'</div>'+inner+'</div>';
 const del=p=>'<button class="x" type="button" data-del="'+p+'" title="삭제">✕</button>';
@@ -248,7 +249,6 @@ function render(){
       '견적 페이지에서 회원가입(이름·휴대폰)하고 견적을 받으면 쿠폰이 자동 발급되고, 예약 신청 때 자동 적용됩니다. 발급된 쿠폰은 "회원·쿠폰" 탭에서 봅니다.');
     if(!Array.isArray(draft.site.stats.items)) draft.site.stats.items=clone(DEFAULTS.site.stats.items||[]);
     const AUTO={'':'직접 입력', received:'신청 접수 건수', inProgress:'진행 중 건수', done:'시공 완료 건수', techs:'활동 중 기사 수', members:'회원 수'};
-    const fSelB=(p,label,opts)=>'<div class="f"><label>'+esc(label)+'</label><select data-p="'+p+'">'+Object.keys(opts).map(k=>'<option value="'+k+'"'+((getPath(draft,p)||'won')===k?' selected':'')+'>'+esc(opts[k])+'</option>').join('')+'</select></div>';
     const fSel=(p,label,opts)=>'<div class="f"><label>'+esc(label)+'</label><select data-p="'+p+'">'+Object.keys(opts).map(k=>'<option value="'+k+'"'+((getPath(draft,p)||'')===k?' selected':'')+'>'+esc(opts[k])+'</option>').join('')+'</select></div>';
     h+=card('첫 화면 실적 띠', '<div class="g2">'+fBool('site.stats.show','첫 화면에 표시')+'</div>'+draft.site.stats.items.map((it,i)=>'<div class="item"><div class="ih"><span>'+(i+1)+'번 칸</span>'+del('site.stats.items.'+i)+'</div><div class="g2">'+fText('site.stats.items.'+i+'.label','이름','예: 완료된 시공')+fSel('site.stats.items.'+i+'.auto','값 종류',AUTO)+'</div><div class="g3">'+fText('site.stats.items.'+i+'.value','직접 입력값','예: 98%, 1시간 내, 약속')+fNum('site.stats.items.'+i+'.base','기준값','자동 집계에 더해짐')+fText('site.stats.items.'+i+'.unit','단위','예: 건, 명, %')+'</div></div>').join('')+(draft.site.stats.items.length<4?addBtn('site.stats.items',{label:'',auto:'',base:0,value:'',unit:''},'칸 추가'):''), '최대 4칸. "값 종류"를 자동 집계로 두면 접수 내역·제휴 기사 수에 기준값을 더해 보여주고, 직접 입력으로 두면 적은 글자를 그대로 보여줍니다.');
     h+=card('사업자 정보 (하단 표기)', '<div class="g2">'+fText('site.biz.company','상호')+fText('site.biz.ceo','대표자')+fText('site.biz.regNo','사업자등록번호')+fText('site.biz.mailOrderNo','통신판매업 신고번호')+'</div>'+fText('site.biz.address','사업장 주소')+fText('site.biz.footerNote','하단 안내 문구','',true), '비워 두면 "확정 후 표기" 안내가 나옵니다. 통신판매업 신고 후 상호·대표·사업자번호·주소 표기는 의무입니다.');

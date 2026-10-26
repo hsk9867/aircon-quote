@@ -554,6 +554,16 @@ const SITE_DEFAULT = {
     "bizEmail": "biz@sokshiwon.kr",
     "note": "운영 전이라 예시입니다"
    },
+   "coupon": {
+    "enabled": true,
+    "type": "won",
+    "value": 10000,
+    "label": "회원 견적 쿠폰",
+    "validDays": 30,
+    "minTotal": 0,
+    "title": "회원가입하면 이 견적에 쓸 수 있는 쿠폰을 드려요",
+    "desc": "이름과 휴대폰 번호만 남기면 바로 쿠폰이 발급되고, 예약할 때 자동으로 적용됩니다. 견적만 받아 두셔도 유효기간 안에는 언제든 쓸 수 있어요."
+   },
    "biz": {
     "company": "",
     "ceo": "",
@@ -1027,7 +1037,7 @@ function planFrom(inp, sys, typeOf){
   const fill=s=>String(s||'').split('{n}').join(inp.units.length).split('{min}').join(RATES.housePipe[0]).split('{max}').join(RATES.housePipe[1]);
   if(sys){ const q=P.system||{}; return { units: inp.units.map(u=>({room:u.room, kind:'천장형 '+u.py+'평', indoor:fill(q.indoor), outdoor:fill(house?q.outdoorHouse:q.outdoorApt), pipe:fill(q.pipe), caution:fill(living?q.cautionLiving:q.cautionEmpty)})), overall:fill(q.overall), tips:(q.tips||[]).map(fill).filter(Boolean) }; }
   const q=P.normal||{};
-  return { units: inp.units.map(u=>{ const t=typeOf(u.py); return {room:u.room, kind:TYPE_LABEL[t]+' '+u.py+'평', indoor:fill(t==='stand'?q.indoorStand:q.indoorWall), outdoor:fill(house?q.outdoorHouse:(t==='stand'?q.outdoorAptStand:q.outdoorAptWall)), pipe:fill(house?q.pipeHouse:q.pipeApt), caution:fill(living?q.cautionLiving:q.cautionEmpty)}; }), overall:fill(house?q.overallHouse:q.overallApt), tips:(q.tips||[]).map(fill).filter(Boolean) };
+  return { units: inp.units.map((u,i)=>{ const t=typeOf(u.py,i); return {room:u.room, kind:TYPE_LABEL[t]+' '+u.py+'평'+(inp.ptype==='two'?' (2in1 세트)':''), indoor:fill(t==='stand'?q.indoorStand:q.indoorWall), outdoor:fill(house?q.outdoorHouse:(t==='stand'?q.outdoorAptStand:q.outdoorAptWall)), pipe:fill(house?q.pipeHouse:q.pipeApt), caution:fill(living?q.cautionLiving:q.cautionEmpty)}; }), overall:fill(house?q.overallHouse:q.overallApt), tips:(q.tips||[]).map(fill).filter(Boolean) };
 }
 
 /* ---------- 로고 ---------- */
@@ -1102,6 +1112,60 @@ function sendToServer(action, data){
     .then(r=>r.text()).then(t=>{ try{ return JSON.parse(t); }catch(e){ return null; } });
 }
 
+/* ---------- 회원·쿠폰 (모든 견적 페이지 공통) ----------
+   회원가입(이름·휴대폰) → 견적을 받으면 쿠폰 자동 발급 → 예약 신청 때 자동 적용. 서버(admin/api.php)에 저장되고 이 브라우저에는 토큰만 남음 */
+const PAGE_SVC = {'install.html':'구매+설치','shop.html':'상가·사무실 구매+설치','move.html':'이전 설치','clean.html':'분해 청소','gas.html':'냉매 충전','rental.html':'렌탈'};
+const Member = {
+  cfg(){ return Object.assign({enabled:true,type:'won',value:10000,label:'회원 견적 쿠폰',validDays:30,minTotal:0,title:'',desc:''}, SITE.coupon||{}); },
+  get(){ try{ const m=JSON.parse(localStorage.getItem('ssw_member')||'null'); return m&&m.token?m:null; }catch(e){ return null; } },
+  set(m){ try{ if(m) localStorage.setItem('ssw_member', JSON.stringify(m)); else localStorage.removeItem('ssw_member'); }catch(e){} },
+  pageSvc(){ return PAGE_SVC[location.pathname.split('/').pop()||'index.html']||'견적'; },
+  valueText(c){ return c.type==='pct' ? (+c.value)+'% 할인' : won(+c.value)+' 할인'; },
+  /* 쓸 수 있는 쿠폰: 안 썼고 기한 안이면서 이 서비스용 → 없으면 아무 서비스 쿠폰이나 */
+  usable(svc){ const m=this.get(); if(!m||!Array.isArray(m.coupons)) return null; const today=new Date().toISOString().slice(0,10);
+    const ok=m.coupons.filter(c=>c.status==='unused'&&c.expiresAt>=today); return ok.find(c=>c.svc===svc)||ok[0]||null; },
+  discount(c,total){ if(!c||!total) return [0,0]; const v=+c.value||0; return c.type==='pct' ? [Math.round(total[0]*v/100), Math.round(total[1]*v/100)] : [Math.min(total[0],v), Math.min(total[1],v)]; },
+  /* 서버 응답을 로컬에 반영 */
+  absorb(r){ const m=this.get()||{}; if(r.token) m.token=r.token; if(r.member){ m.id=r.member.id; m.name=r.member.name; m.phone=r.member.phone; m.coupons=r.member.coupons||[]; } this.set(m); return m; },
+  sync(){ const m=this.get(); if(!m) return Promise.resolve(null); return sendToServer('member_me',{token:m.token}).then(r=>{ if(r&&r.ok){ this.absorb(r); return this.get(); } if(r&&r.error==='auth'){ this.set(null); } return null; }).catch(()=>null); },
+  join(name, phone){ return sendToServer('member_join',{name, phone, consent:true}).then(r=>{ if(!r) throw new Error('지금은 가입을 처리할 수 없어요. 잠시 후 다시 시도해 주세요.'); if(!r.ok) throw new Error(r.message||r.error||'가입 실패'); this.set(null); this.absorb(r); return r; }); },
+  issue(q){ const m=this.get(); if(!m) return Promise.resolve(null); const svc=(q&&q.svc)||this.pageSvc();
+    return sendToServer('coupon_issue',{token:m.token, svc, summary:q?q.summary:'', total:q?q.total:[], page:location.pathname.split('/').pop()}).then(r=>{ if(r&&r.ok){ this.absorb(r); return r.coupon; } if(r&&r.error==='auth') this.set(null); this.lastErr = r&&r.message||''; return null; }).catch(()=>null); },
+  /* 견적 결과 아래 쿠폰 칸. Booking.refresh() 가 견적을 낼 때마다 부름 */
+  box(){ let b=$('coupon-box'); if(b) return b; const host=$('result')||document.querySelector('#booking'); if(!host) return null; b=document.createElement('div'); b.id='coupon-box'; b.className='coupon-box'; host.appendChild(b); return b; },
+  render(q){
+    const cfg=this.cfg(); const b=this.box(); if(!b) return; if(!cfg.enabled){ b.hidden=true; return; } b.hidden=false;
+    const m=this.get(); const svc=(q&&q.svc)||this.pageSvc();
+    if(!m){
+      b.innerHTML='<div class="cp-head"><span class="eyebrow">회원 쿠폰</span><h3>'+esc(cfg.title||'회원가입하면 쿠폰을 드려요')+'</h3><p>'+esc(cfg.desc||'')+'</p></div>'+
+        '<form class="cp-form" id="cp-join" novalidate><div class="grid2"><div class="fs"><label class="lbl" for="cp-name">이름</label><input type="text" id="cp-name" autocomplete="name" placeholder="홍길동"></div>'+
+        '<div class="fs"><label class="lbl" for="cp-phone">휴대폰 번호</label><input type="tel" id="cp-phone" autocomplete="tel" placeholder="010-1234-5678"></div></div>'+
+        '<label class="consent"><input type="checkbox" id="cp-consent"><span>쿠폰 발급과 견적 안내를 위해 이름·휴대폰 번호를 수집·이용하는 데 동의합니다. 탈퇴 요청 시 바로 삭제합니다.</span></label>'+
+        '<p class="err" id="cp-err" hidden></p><button class="btn primary block" type="submit">가입하고 '+esc(this.valueText(cfg))+' 쿠폰 받기</button></form>';
+      $('cp-join').addEventListener('submit', e=>{ e.preventDefault(); const name=$('cp-name').value.trim(), phone=$('cp-phone').value.trim(), err=$('cp-err'); const problems=[];
+        if(!name) problems.push('이름'); if(!/^01\d-?\d{3,4}-?\d{4}$/.test(phone)) problems.push('휴대폰 번호 형식'); if(!$('cp-consent').checked) problems.push('개인정보 동의');
+        if(problems.length){ err.hidden=false; err.textContent='이것만 확인해 주세요: '+problems.join(', '); return; } err.hidden=true;
+        const btn=e.target.querySelector('button'); btn.disabled=true; btn.textContent='가입 중…';
+        this.join(name, phone).then(()=>this.issue(q)).then(()=>{ this.render(q); Booking.refresh(); }).catch(ex=>{ err.hidden=false; err.textContent=ex.message; btn.disabled=false; btn.textContent='가입하고 쿠폰 받기'; });
+      });
+      return;
+    }
+    const c=this.usable(svc);
+    if(!c){
+      if(this._issuing) { b.innerHTML='<div class="cp-head"><span class="eyebrow">회원 쿠폰</span><p>'+esc(m.name)+'님, 쿠폰을 발급하는 중이에요…</p></div>'; return; }
+      this._issuing=true; this.issue(q).then(()=>{ this._issuing=false; this.render(q); Booking.refresh(); });
+      b.innerHTML='<div class="cp-head"><span class="eyebrow">회원 쿠폰</span><p>'+esc(m.name)+'님, 견적 쿠폰을 발급하는 중이에요…</p></div>';
+      if(this.lastErr) b.innerHTML='<div class="cp-head"><span class="eyebrow">회원 쿠폰</span><p>'+esc(m.name)+'님, '+esc(this.lastErr)+'</p></div>';
+      return;
+    }
+    const d = q ? this.discount(c, q.total) : null;
+    b.innerHTML='<div class="cp-head"><span class="eyebrow">회원 쿠폰</span><h3>'+esc(m.name)+'님, 쿠폰이 준비됐어요</h3></div>'+
+      '<div class="cp-card"><div class="cp-l"><b class="num">'+esc(c.code)+'</b><span>'+esc(c.label)+'</span><small>'+esc(c.expiresAt)+'까지 · 예약 신청 때 자동 적용</small></div><div class="cp-r num">'+esc(this.valueText(c))+(d?'<small>이 견적에서 -'+rangeShort(d[0],d[1])+'</small>':'')+'</div></div>'+
+      '<p class="small muted">다른 번호로 가입하려면 <a href="#" id="cp-logout">여기</a>를 누르세요. 쿠폰은 예약 한 건에 한 장만 쓸 수 있어요.</p>';
+    $('cp-logout').addEventListener('click', e=>{ e.preventDefault(); this.set(null); this.render(q); Booking.refresh(); });
+  }
+};
+
 /* ---------- 예약 접수 (모든 견적 페이지 공통) ----------
    Booking.mount({ el: 예약 섹션 요소, getQuote: () => ({svc, summary, items, labor, total, product, models, addr, memo, site}) }) */
 const Booking = {
@@ -1128,8 +1192,12 @@ const Booking = {
   refresh(){
     const q = this.getQuote(); const el=$('book-summary'); if(!el) return;
     if(this.sec) this.sec.hidden = !q;   /* 견적을 고르기 전에는 예약 칸을 보이지 않음 */
+    Member.render(q);
     if(!q){ el.innerHTML='<span class="eyebrow">견적 요약</span><div class="muted">위에서 견적을 먼저 받아 주세요.</div>'; return; }
-    el.innerHTML='<span class="eyebrow">견적 요약</span><div><b>'+esc(q.summary)+'</b></div><div class="amt num">'+rangeShort(q.total[0],q.total[1])+'</div>'+
+    const cp = Member.cfg().enabled ? Member.usable(q.svc) : null; const dc = cp ? Member.discount(cp, q.total) : null;
+    el.innerHTML='<span class="eyebrow">견적 요약</span><div><b>'+esc(q.summary)+'</b></div>'+
+      (dc ? '<div class="small muted">견적 <span class="num">'+rangeShort(q.total[0],q.total[1])+'</span> · 쿠폰 '+esc(cp.code)+' <span class="num">-'+rangeShort(dc[0],dc[1])+'</span></div><div class="amt num">'+rangeShort(Math.max(0,q.total[0]-dc[0]),Math.max(0,q.total[1]-dc[1]))+' <span class="tag ok">쿠폰 적용</span></div>'
+          : '<div class="amt num">'+rangeShort(q.total[0],q.total[1])+'</div>')+
       '<div class="small muted">'+(q.models?q.models.map(esc).join(' · '):q.items.map(i=>esc(i.label)).join(' · '))+'</div>';
     if(q.addr && !$('b-addr').value) $('b-addr').value=q.addr;
     if(q.date && !$('b-date').value) $('b-date').value=q.date;
@@ -1153,9 +1221,11 @@ const Booking = {
       site:q.site||'', customer:{name, phone, addr, addr2:$('b-addr2').value.trim(), date, slot:$('b-slot').value, memo:$('b-memo').value.trim()},
       status:'알림 발송'
     };
+    const mem=Member.get(); const cp = (mem && Member.cfg().enabled) ? Member.usable(q.svc) : null;
+    if(cp){ const d=Member.discount(cp, q.total); b.coupon={code:cp.code, token:mem.token, label:cp.label, type:cp.type, value:cp.value, discount:d}; b.totalAfter=[Math.max(0,q.total[0]-d[0]), Math.max(0,q.total[1]-d[1])]; }
     const list=load('ssw_bookings'); list.unshift(b); save('ssw_bookings',list);
     const btn=document.querySelector('#book-form button[type=submit]'); if(btn){ btn.disabled=true; btn.textContent='접수 중…'; }
-    sendToServer('book', {booking:b}).then(r=>{ if(r&&r.ok){ b.server=true; b.id=r.id||b.id; } }).catch(()=>{}).finally(()=>{ this.showDone(b); });
+    sendToServer('book', {booking:b}).then(r=>{ if(r&&r.ok){ b.server=true; b.id=r.id||b.id; if(b.coupon){ const m=Member.get(); if(m&&Array.isArray(m.coupons)){ m.coupons.forEach(c=>{ if(c.code===b.coupon.code) c.status='used'; }); Member.set(m); } } } }).catch(()=>{}).finally(()=>{ this.showDone(b); });
   },
   showDone(b){
     /* 접수 완료 화면: 견적·입력 칸은 감추고, 접수 내용과 이후 절차만 보여줌 (2026-10-13 피드백) */
@@ -1171,7 +1241,8 @@ const Booking = {
         (b.models.length?row('제품',esc(b.models.join(', '))):'')+
         row(esc(this.addrLabel),esc(b.customer.addr)+' '+esc(b.customer.addr2))+
         row('희망 일자',fmtDate(b.customer.date)+' '+esc(b.customer.slot))+
-        row('예상 금액','<b class="num">'+rangeText(b.total[0],b.total[1])+'</b>')+
+        (b.coupon?row('쿠폰 할인',esc(b.coupon.code)+' · <b class="num">-'+rangeText(b.coupon.discount[0],b.coupon.discount[1])+'</b>'):'')+
+        row('예상 금액','<b class="num">'+(b.totalAfter?rangeText(b.totalAfter[0],b.totalAfter[1])+'</b> <span class="small muted">(쿠폰 적용 전 '+rangeText(b.total[0],b.total[1])+')':rangeText(b.total[0],b.total[1])+'</b>'))+
         (b.customer.memo?row('요청 사항',esc(b.customer.memo)):'')+
       '</div></div>'+
       '<div class="next"><b>이후 이렇게 진행돼요</b><ol>'+
@@ -1186,8 +1257,9 @@ const Booking = {
   }
 };
 
-window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, sendToServer, planFrom, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, brandLogo, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, linesHtml, Booking, LOGO_SVG};
+window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, sendToServer, planFrom, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, brandLogo, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, linesHtml, Booking, Member, LOGO_SVG};
 document.addEventListener('DOMContentLoaded', mountChrome);
+document.addEventListener('DOMContentLoaded', ()=>{ Member.sync(); });   /* 회원이면 쿠폰 목록을 서버에서 새로 받음 */
 /* 시작 화면은 각 페이지 <head>의 스크립트와 css(html.splash-on)가 처리. 화면을 누르면 바로 닫습니다 */
 document.addEventListener('click', ()=>document.documentElement.classList.remove('splash-on'), {once:true});
 })();

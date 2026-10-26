@@ -145,6 +145,14 @@ img.blogo{width:auto;max-width:72px;object-fit:contain}
 .pu .row{display:grid;grid-template-columns:72px 1fr;gap:8px;font-size:.88rem}
 .pu .row span:first-child{color:var(--muted)}
 .callout{font-size:.88rem;padding:12px 14px;background:var(--accent-soft);color:var(--fg);border-radius:var(--r-sm)}
+/* 회원 쿠폰 칸 (견적 결과 아래) */
+.coupon-box{margin-top:16px;padding:18px 16px;border:1px dashed var(--accent);border-radius:var(--radius);background:var(--bg);display:grid;gap:12px}
+.coupon-box .cp-head{display:grid;gap:4px} .coupon-box .cp-head h3{margin:0;font-size:1.05rem} .coupon-box .cp-head p{margin:0;font-size:.88rem;color:var(--muted);line-height:1.55}
+.coupon-box .cp-form{display:grid;gap:12px}
+.cp-card{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--r-sm);background:var(--accent);color:#fff}
+.cp-card .cp-l{display:grid;gap:2px} .cp-card .cp-l b{font-size:1.05rem;letter-spacing:.04em} .cp-card .cp-l span{font-size:.86rem;opacity:.9} .cp-card .cp-l small{font-size:.74rem;opacity:.75}
+.cp-card .cp-r{text-align:right;font-weight:800;font-size:1.1rem;display:grid;gap:2px} .cp-card .cp-r small{font-size:.74rem;font-weight:500;opacity:.8}
+@media (max-width:420px){.cp-card{flex-direction:column;align-items:flex-start} .cp-card .cp-r{text-align:left}}
 .callout.warn{background:var(--warn-soft);color:var(--warn)}
 .note{font-size:.8rem;color:var(--muted);background:var(--surface);border-radius:var(--r-sm);padding:10px 12px;display:grid;gap:4px}
 
@@ -312,6 +320,7 @@ html.splash-on{overflow:hidden}
 @keyframes splash-out{to{opacity:0;visibility:hidden}}
 
 @media (max-width:420px){.seg label{font-size:.84rem;padding:10px 4px}.seg label small{font-size:.68rem}}
+@media (max-width:560px){#count-seg,#ptype-seg{grid-auto-flow:row;grid-template-columns:repeat(3,1fr)}}
 
 /* ===== PC(900px 이상): 모바일은 그대로 두고 가운데 폭과 글자·카드 크기를 키움 ===== */
 @media (min-width:900px){

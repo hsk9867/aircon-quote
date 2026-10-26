@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
-<link rel="stylesheet" href="css/style.css?v=20261026a">
+<link rel="stylesheet" href="css/style.css?v=20261026b">
 <style>
 .abar{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:6px;margin-bottom:14px;position:sticky;top:56px;z-index:10;background:var(--bg)}
 .quick,.totop{display:none}  /* 관리자에서는 떠 있는 문의 버튼 숨김 */
@@ -115,7 +115,7 @@ table.edit input[type=text]{min-width:120px}
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261026a"></script>
+<script src="js/common.js?v=20261026b"></script>
 <script>
 (function(){
 'use strict';
@@ -124,7 +124,7 @@ const clone=o=>JSON.parse(JSON.stringify(o));
 const isObj=v=>!!v&&typeof v==='object'&&!Array.isArray(v);
 function setPath(o,p,v){ const ks=p.split('.'); let a=o; for(let i=0;i<ks.length-1;i++){ if(a[ks[i]]==null) a[ks[i]]=/^\d+$/.test(ks[i+1])?[]:{}; a=a[ks[i]]; } a[ks[ks.length-1]]=v; }
 let mode='local', st={}, draft=null, tab='basic';
-try{ const h=location.hash.slice(1); if(/^(basic|home|pages|guide|reviews|teams|plan|rates|brands|rent|techs|inbox)$/.test(h)) tab=h; }catch(e){}
+try{ const h=location.hash.slice(1); if(/^(basic|home|pages|guide|reviews|teams|plan|rates|brands|rent|techs|members|inbox)$/.test(h)) tab=h; }catch(e){}
 
 /* ---------- 서버 API ---------- */
 async function api(action,data){
@@ -164,7 +164,24 @@ async function openServer(){
     openEditor();
   }catch(e){ toast('설정을 불러오지 못했습니다: '+e.message, true); }
 }
-function openEditor(){ $('gate').hidden=true; $('editor').hidden=false; renderTabs(); render(); startInboxPolling(); loadTechs(); }
+function openEditor(){ $('gate').hidden=true; $('editor').hidden=false; renderTabs(); render(); startInboxPolling(); loadTechs(); loadMembers(); }
+/* ---------- 회원·쿠폰 ---------- */
+let members=[]; let membersLoaded=false; let membersErr='';
+async function loadMembers(){ if(mode!=='server'){ membersLoaded=true; return; } try{ const r=await api('members'); if(r.ok){ members=r.members||[]; membersErr=''; } else membersErr=r.error||''; }catch(e){ membersErr=e.message; } membersLoaded=true; if(tab==='members') render(); }
+const CP_ST={unused:'미사용', used:'사용함', void:'무효'};
+function renderMembers(){
+  if(mode!=='server') return card('회원·쿠폰', '<div class="empty">회원과 쿠폰은 서버(카페24 주소)에서만 저장됩니다.</div>');
+  const today=new Date().toISOString().slice(0,10);
+  const cpH = c => { const exp = c.status==='unused' && c.expiresAt<today; return '<div class="row" style="display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:.84rem"><b class="num">'+esc(c.code)+'</b><span>'+esc(c.svc||'')+' · '+(c.type==='pct'?(+c.value)+'%':won(+c.value))+'</span><span class="muted">'+esc((c.issuedAt||'').slice(0,10))+' 발급 · '+esc(c.expiresAt||'')+'까지</span><span class="tag '+(c.status==='used'?'ok':exp||c.status==='void'?'':'acc')+'">'+(exp?'기한 지남':CP_ST[c.status]||c.status)+(c.bookingId?' · '+esc(c.bookingId):'')+'</span>'+
+    '<select class="cp-st" data-mem="'+esc(c._mid)+'" data-code="'+esc(c.code)+'">'+Object.keys(CP_ST).map(k=>'<option value="'+k+'"'+(k===c.status?' selected':'')+'>'+CP_ST[k]+'</option>').join('')+'</select><button class="btn sm" type="button" data-cp-del="'+esc(c._mid)+'" data-code="'+esc(c.code)+'">삭제</button></div>'; };
+  const list = members.length ? members.map(m=>{ const cps=(m.coupons||[]).map(c=>Object.assign({_mid:m.id},c)); return '<div class="bk"><div class="h"><span>'+esc(m.id)+' · <b>'+esc(m.name)+'</b> · <a href="tel:'+esc(m.phone)+'">'+esc(m.phone)+'</a></span><span class="muted small">'+fmtWhen(m.joinedAt)+' 가입'+(m.lastSeenAt?' · 최근 '+fmtWhen(m.lastSeenAt):'')+'</span></div>'+
+    (cps.length?cps.map(cpH).join(''):'<div class="muted small">발급된 쿠폰 없음</div>')+
+    '<div style="text-align:right"><button class="btn sm" type="button" data-mem-del="'+esc(m.id)+'">회원 삭제</button></div></div>'; }).join('')
+    : '<div class="empty">'+(membersLoaded?(membersErr?'불러오기 오류: '+esc(membersErr):'아직 가입한 회원이 없습니다.'):'불러오는 중…')+'</div>';
+  const used=members.reduce((a,m)=>a+(m.coupons||[]).filter(c=>c.status==='used').length,0), issued=members.reduce((a,m)=>a+(m.coupons||[]).length,0);
+  return '<div class="kv">회원 '+members.length+'명 · 발급 쿠폰 '+issued+'장 · 사용 '+used+'장 <button class="btn sm" type="button" data-act="members-refresh" style="margin-left:8px">지금 새로고침</button></div>'+
+    card('회원 목록', '<div class="admin">'+list+'</div>', '견적 페이지에서 회원가입한 고객입니다. 쿠폰 상태를 바꾸면 서버에 바로 저장됩니다. 쿠폰 설정은 "기본 정보" 탭의 회원 쿠폰 카드에서 고칩니다.');
+}
 /* 보내기 창 */
 document.addEventListener('click', async e=>{
   const t=e.target.closest('[data-send]'); if(!t||!sendCtx) return;
@@ -198,7 +215,7 @@ $('act-pw').addEventListener('click', async ()=>{ const cur=prompt('현재 비�
   try{ const r=await api('password',{current:cur,password:nw}); toast(r.ok?'비밀번호를 바꿨습니다.':(r.error==='wrong'?'현재 비밀번호가 틀립니다.':'실패: '+r.error), !r.ok); }catch(e){ toast('실패: '+e.message,true); } });
 
 /* ---------- 탭 ---------- */
-const TABS=[['basic','기본 정보'],['home','첫 화면'],['pages','페이지 문구'],['guide','약속·절차·FAQ'],['reviews','후기'],['teams','시공팀'],['plan','설치 플랜'],['rates','단가'],['brands','브랜드·제품'],['rent','렌탈'],['techs','제휴 기사'],['inbox','접수 내역']];
+const TABS=[['basic','기본 정보'],['home','첫 화면'],['pages','페이지 문구'],['guide','약속·절차·FAQ'],['reviews','후기'],['teams','시공팀'],['plan','설치 플랜'],['rates','단가'],['brands','브랜드·제품'],['rent','렌탈'],['techs','제휴 기사'],['members','회원·쿠폰'],['inbox','접수 내역']];
 function renderTabs(){ $('tabs').innerHTML=TABS.map(([k,l])=>'<button type="button" role="tab" data-tab="'+k+'" aria-selected="'+(k===tab)+'">'+l+(k==='inbox'&&lastNewCount?' <span class="badge" style="background:var(--warn);color:#fff">'+lastNewCount+'</span>':'')+'</button>').join(''); }
 $('tabs').addEventListener('click', e=>{ const b=e.target.closest('[data-tab]'); if(!b) return; tab=b.dataset.tab; try{ history.replaceState(null,'','#'+tab); }catch(e){} renderTabs(); render(); window.scrollTo({top:0}); });
 
@@ -226,8 +243,12 @@ function render(){
   if(tab==='basic'){
     h+=card('브랜드', fText('site.brand.name','이름','상단 바, 첫 화면, 하단에 쓰입니다')+fText('site.brand.tagline','첫 화면 한 줄 소개','',true));
     h+=card('상담 연락처', '<div class="g2">'+fText('site.contact.phone','상담 전화')+fText('site.contact.kakaoId','카카오톡 채널 이름','예: @속시원')+'</div>'+fText('site.contact.kakaoChat','카카오톡 채널 채팅 주소','기업 문의 "카카오톡으로 보내기"가 여는 주소. 채널 관리자센터 > 채널 URL')+fText('site.contact.bizEmail','기업 문의 수신 메일')+fText('site.contact.note','연락처 옆 안내 문구','비워 두면 표시되지 않습니다'), '첫 화면의 "전화·카카오톡 상담"과 기업 문의 발송에 쓰입니다.');
+    if(!isObj(draft.site.coupon)) draft.site.coupon=clone(DEFAULTS.site.coupon);
+    h+=card('회원 쿠폰', '<div class="g2">'+fBool('site.coupon.enabled','쿠폰 발급 켜기')+'</div><div class="g3">'+fSelB('site.coupon.type','할인 방식',{won:'원 (정액)',pct:'% (정률)'})+fNum('site.coupon.value','할인 값','원 또는 %')+fNum('site.coupon.validDays','유효기간 (일)')+'</div><div class="g2">'+fText('site.coupon.label','쿠폰 이름','예: 회원 견적 쿠폰')+fNum('site.coupon.minTotal','최소 견적 금액 (원)','0이면 제한 없음')+'</div>'+fText('site.coupon.title','가입 유도 제목')+fText('site.coupon.desc','가입 유도 설명','',true),
+      '견적 페이지에서 회원가입(이름·휴대폰)하고 견적을 받으면 쿠폰이 자동 발급되고, 예약 신청 때 자동 적용됩니다. 발급된 쿠폰은 "회원·쿠폰" 탭에서 봅니다.');
     if(!Array.isArray(draft.site.stats.items)) draft.site.stats.items=clone(DEFAULTS.site.stats.items||[]);
-    const AUTO={'':'직접 입력', received:'신청 접수 건수', inProgress:'진행 중 건수', done:'시공 완료 건수', techs:'활동 중 기사 수'};
+    const AUTO={'':'직접 입력', received:'신청 접수 건수', inProgress:'진행 중 건수', done:'시공 완료 건수', techs:'활동 중 기사 수', members:'회원 수'};
+    const fSelB=(p,label,opts)=>'<div class="f"><label>'+esc(label)+'</label><select data-p="'+p+'">'+Object.keys(opts).map(k=>'<option value="'+k+'"'+((getPath(draft,p)||'won')===k?' selected':'')+'>'+esc(opts[k])+'</option>').join('')+'</select></div>';
     const fSel=(p,label,opts)=>'<div class="f"><label>'+esc(label)+'</label><select data-p="'+p+'">'+Object.keys(opts).map(k=>'<option value="'+k+'"'+((getPath(draft,p)||'')===k?' selected':'')+'>'+esc(opts[k])+'</option>').join('')+'</select></div>';
     h+=card('첫 화면 실적 띠', '<div class="g2">'+fBool('site.stats.show','첫 화면에 표시')+'</div>'+draft.site.stats.items.map((it,i)=>'<div class="item"><div class="ih"><span>'+(i+1)+'번 칸</span>'+del('site.stats.items.'+i)+'</div><div class="g2">'+fText('site.stats.items.'+i+'.label','이름','예: 완료된 시공')+fSel('site.stats.items.'+i+'.auto','값 종류',AUTO)+'</div><div class="g3">'+fText('site.stats.items.'+i+'.value','직접 입력값','예: 98%, 1시간 내, 약속')+fNum('site.stats.items.'+i+'.base','기준값','자동 집계에 더해짐')+fText('site.stats.items.'+i+'.unit','단위','예: 건, 명, %')+'</div></div>').join('')+(draft.site.stats.items.length<4?addBtn('site.stats.items',{label:'',auto:'',base:0,value:'',unit:''},'칸 추가'):''), '최대 4칸. "값 종류"를 자동 집계로 두면 접수 내역·제휴 기사 수에 기준값을 더해 보여주고, 직접 입력으로 두면 적은 글자를 그대로 보여줍니다.');
     h+=card('사업자 정보 (하단 표기)', '<div class="g2">'+fText('site.biz.company','상호')+fText('site.biz.ceo','대표자')+fText('site.biz.regNo','사업자등록번호')+fText('site.biz.mailOrderNo','통신판매업 신고번호')+'</div>'+fText('site.biz.address','사업장 주소')+fText('site.biz.footerNote','하단 안내 문구','',true), '비워 두면 "확정 후 표기" 안내가 나옵니다. 통신판매업 신고 후 상호·대표·사업자번호·주소 표기는 의무입니다.');
@@ -293,6 +314,7 @@ function render(){
     h+=card('설치 환경별 추가 설치비 (렌탈료에 분할)', '<div class="g3">'+fRange('rent.installExtra.apt','아파트·오피스텔')+fRange('rent.installExtra.house','주택·빌라')+fRange('rent.installExtra.biz','매장·사무실')+'</div>');
   }
   if(tab==='techs') h+=renderTechs();
+  if(tab==='members') h+=renderMembers();
   if(tab==='inbox') h+= (mode==='server' ? renderInboxServer() : renderInbox());
   P.innerHTML=h;
 }
@@ -367,6 +389,7 @@ function renderInboxServer(){
     '<div><b>'+esc(c.name||'')+'</b> · <a href="tel:'+esc(c.phone||'')+'">'+esc(c.phone||'')+'</a> · '+esc(c.addr||'')+' '+esc(c.addr2||'')+'</div>'+
     '<div class="muted">희망 '+fmtDate(c.date)+' '+esc(c.slot||'')+(b.payout?' · 기사 정산 <span class="num">'+rangeText(b.payout[0],b.payout[1])+'</span>':'')+'</div>'+
     (b.site||c.memo?'<div class="muted small">'+esc([b.site,c.memo].filter(Boolean).join(' · '))+'</div>':'')+
+    (b.coupon?'<div class="small" style="color:var(--ok)">쿠폰 '+esc(b.coupon.code)+(b.coupon.memberName?' ('+esc(b.coupon.memberName)+')':'')+' · -'+rangeText(b.coupon.discount[0],b.coupon.discount[1])+(b.totalAfter?' → <b class="num">'+rangeText(b.totalAfter[0],b.totalAfter[1])+'</b>':'')+'</div>':'')+(b.couponFailed?'<div class="small" style="color:var(--warn)">쿠폰 '+esc(b.couponFailed)+' 적용 실패 (이미 사용·기한 만료·코드 불일치) · 할인 없이 접수</div>':'')+
     (b.tech?'<div class="small" style="color:var(--accent-ink)">기사 알림: '+esc(b.tech)+(b.notifiedAt?' · '+fmtWhen(b.notifiedAt):'')+'</div>':'')+'<div class="g2" style="margin-top:6px;align-items:center"><div>'+statusSel('booking',b.id,b.status||'신규',STATUS_BK)+'</div><div style="text-align:right;display:flex;gap:6px;justify-content:flex-end"><button class="btn primary sm" type="button" data-send-rec="'+esc(b.id)+'">기사에게 보내기</button><button class="btn sm" type="button" data-del-rec="booking" data-id="'+esc(b.id)+'">삭제</button></div></div></div>'; }).join('')
     : '<div class="empty">'+(inbox.loaded?'아직 접수된 예약이 없습니다.':'불러오는 중…')+'</div>';
   const tcH = tc.length ? tc.map(t=>'<div class="bk"><div class="h"><span>'+esc(t.id)+' · '+esc(t.company||'')+' · '+esc(t.kind||'')+' <span class="muted small">'+fmtWhen(t.receivedAt||t.at)+'</span></span><span class="tag '+stTag(t.status)+'">'+esc(t.status||'신규')+'</span></div>'+
@@ -394,12 +417,17 @@ function renderInbox(){
 }
 
 /* ---------- 입력 반영 ---------- */
-$('panel').addEventListener('change', e=>{ const el=e.target; if(!el.classList.contains('st')) return; api('inbox_update',{type:el.dataset.type,id:el.dataset.id,status:el.value}).then(r=>{ if(r.ok){ toast('상태를 "'+el.value+'"(으)로 바꿨습니다.'); loadInbox(false); } else toast('저장 실패: '+r.error,true); }).catch(ex=>toast('저장 실패: '+ex.message,true)); });
+$('panel').addEventListener('change', e=>{ const el=e.target;
+  if(el.classList.contains('cp-st')){ api('member_update',{id:el.dataset.mem,couponCode:el.dataset.code,couponStatus:el.value}).then(r=>{ if(r.ok){ toast('쿠폰 상태를 바꿨습니다.'); loadMembers(); } else toast('저장 실패: '+r.error,true); }).catch(ex=>toast('저장 실패: '+ex.message,true)); return; }
+  if(!el.classList.contains('st')) return; api('inbox_update',{type:el.dataset.type,id:el.dataset.id,status:el.value}).then(r=>{ if(r.ok){ toast('상태를 "'+el.value+'"(으)로 바꿨습니다.'); loadInbox(false); } else toast('저장 실패: '+r.error,true); }).catch(ex=>toast('저장 실패: '+ex.message,true)); });
 $('panel').addEventListener('input', e=>{ const el=e.target; if(el.dataset.tp){ const [i,k]=el.dataset.tp.split('.'); if(techs[+i]) techs[+i][k]= el.type==='checkbox'?el.checked:el.value; return; } const p=el.dataset.p; if(!p) return;
   let v; if(el.dataset.b) v=el.checked; else if(el.dataset.n){ v=el.value===''?0:Number(el.value); if(Number.isNaN(v)) return; } else v=el.value;
   setPath(draft,p,v); keepLocal(); });
 $('panel').addEventListener('click', e=>{
-  const a=e.target.closest('[data-add],[data-del],[data-act],[data-send-rec],[data-tech-del],[data-del-rec]'); if(!a) return;
+  const a=e.target.closest('[data-add],[data-del],[data-act],[data-send-rec],[data-tech-del],[data-del-rec],[data-mem-del],[data-cp-del]'); if(!a) return;
+  if(a.dataset.act==='members-refresh'){ loadMembers(); return; }
+  if(a.dataset.memDel){ if(!confirm('이 회원과 쿠폰을 모두 삭제할까요? 되돌릴 수 없습니다.')) return; api('member_update',{id:a.dataset.memDel,delete:true}).then(r=>{ if(r.ok){ toast('삭제했습니다.'); loadMembers(); } else toast('삭제 실패: '+r.error,true); }).catch(ex=>toast('삭제 실패: '+ex.message,true)); return; }
+  if(a.dataset.cpDel){ if(!confirm('이 쿠폰을 삭제할까요?')) return; api('member_update',{id:a.dataset.cpDel,couponCode:a.dataset.code,couponStatus:'void',couponDelete:true}).then(r=>{ if(r.ok){ toast('쿠폰을 삭제했습니다.'); loadMembers(); } else toast('삭제 실패: '+r.error,true); }).catch(ex=>toast('삭제 실패: '+ex.message,true)); return; }
   if(a.dataset.add){ const arr=getPath(draft,a.dataset.add); arr.push(JSON.parse(a.dataset.tpl)); keepLocal(); render(); return; }
   if(a.dataset.del){ const ks=a.dataset.del.split('.'); const idx=+ks.pop(); const arr=getPath(draft,ks.join('.')); if(!confirm('이 항목을 삭제할까요?')) return; arr.splice(idx,1); keepLocal(); render(); return; }
   if(a.dataset.act==='refresh'){ loadInbox(false); return; }

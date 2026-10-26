@@ -25,6 +25,7 @@ $jsFile   = $root . '/data/config.js';
 $storeDir = __DIR__ . '/store';                 // 접수 저장소 (admin/store/.htaccess 로 외부 접근 차단)
 $bookFile = $storeDir . '/bookings.json';       // 예약·렌탈 상담
 $inqFile  = $storeDir . '/inquiries.json';      // 기업 전용 문의
+$memFile  = $storeDir . '/members.json';        // 회원 (이름·연락처) + 발급 쿠폰
 
 function readList(string $file): array {
     if (!is_file($file)) return [];
@@ -76,6 +77,39 @@ function saveAuth(string $file, string $pw): bool {
 function lockState(string $file): array {
     $d = is_file($file) ? json_decode((string)@file_get_contents($file), true) : null;
     return is_array($d) ? $d + ['fails' => 0, 'until' => 0] : ['fails' => 0, 'until' => 0];
+}
+
+/* ---------- 회원·쿠폰 ---------- */
+function phoneKey(string $p): string { return preg_replace('/\D+/', '', $p); }
+/* 쿠폰 설정은 관리자 > 기본 정보 > 회원 쿠폰 (data/config.json 의 site.coupon). 없으면 기본값 */
+function couponCfg(string $jsonFile): array {
+    $def = ['enabled' => true, 'type' => 'won', 'value' => 10000, 'label' => '회원 견적 쿠폰', 'validDays' => 30, 'minTotal' => 0];
+    $cfg = is_file($jsonFile) ? json_decode((string)@file_get_contents($jsonFile), true) : null;
+    $c = (is_array($cfg) && isset($cfg['site']['coupon']) && is_array($cfg['site']['coupon'])) ? $cfg['site']['coupon'] : [];
+    $c = $c + $def;
+    $c['type'] = ($c['type'] ?? '') === 'pct' ? 'pct' : 'won';
+    $c['value'] = max(0, (float)$c['value']); $c['validDays'] = max(1, (int)$c['validDays']); $c['minTotal'] = max(0, (int)$c['minTotal']);
+    $c['enabled'] = !empty($c['enabled']) && $c['value'] > 0; $c['label'] = cleanStr($c['label'], 60);
+    return $c;
+}
+function memberByToken(array $list, string $token): ?int {
+    if (strlen($token) < 16) return null;
+    foreach ($list as $i => $m) { if (hash_equals((string)($m['token'] ?? ''), $token)) return $i; }
+    return null;
+}
+function publicCoupon(array $c): array { unset($c['quote']); return $c; }
+function publicMember(array $m): array {
+    return ['id' => (string)($m['id'] ?? ''), 'name' => (string)($m['name'] ?? ''), 'phone' => (string)($m['phone'] ?? ''), 'joinedAt' => (string)($m['joinedAt'] ?? ''),
+            'coupons' => array_values(array_map('publicCoupon', is_array($m['coupons'] ?? null) ? $m['coupons'] : []))];
+}
+function couponDiscount(array $c, array $total): array {
+    $t0 = (float)($total[0] ?? 0); $t1 = (float)($total[1] ?? $t0); $v = (float)($c['value'] ?? 0);
+    if (($c['type'] ?? 'won') === 'pct') return [round($t0 * $v / 100), round($t1 * $v / 100)];
+    return [min($t0, $v), min($t1, $v)];
+}
+function ensureStore(string $storeDir): void {
+    if (!is_dir($storeDir) && !@mkdir($storeDir, 0755, true)) fail('write', 'admin/store 폴더를 만들 수 없습니다.');
+    if (!is_file($storeDir . '/.htaccess')) @file_put_contents($storeDir . '/.htaccess', "Require all denied\n<IfModule !mod_authz_core.c>\nOrder allow,deny\nDeny from all\n</IfModule>\n");
 }
 
 $action = isset($_GET['action']) ? (string)$_GET['action'] : '';
@@ -162,6 +196,29 @@ switch ($action) {
             if ($c['name'] === '' || $c['phone'] === '') fail('bad_record', '이름과 연락처가 필요합니다.');
             $rec['customer'] = $c;
             foreach (['svcLabel','summary','site'] as $k) $rec[$k] = cleanStr($rec[$k] ?? '', 300);
+            $cp = is_array($rec['coupon'] ?? null) ? $rec['coupon'] : null; unset($rec['coupon'], $rec['totalAfter']);
+            if ($cp) {
+                $code = strtoupper(cleanStr($cp['code'] ?? '', 20)); $token = cleanStr($cp['token'] ?? '', 64); $applied = null;
+                if ($code !== '' && $token !== '') {
+                    $mfp = fopen($memFile . '.lock', 'c'); if ($mfp) flock($mfp, LOCK_EX);
+                    $ml = readList($memFile); $mi = memberByToken($ml, $token);
+                    if ($mi !== null && is_array($ml[$mi]['coupons'] ?? null)) {
+                        foreach ($ml[$mi]['coupons'] as $ci => $cc) {
+                            if (($cc['code'] ?? '') === $code && ($cc['status'] ?? '') === 'unused' && ($cc['expiresAt'] ?? '') >= gmdate('Y-m-d')) {
+                                $ml[$mi]['coupons'][$ci]['status'] = 'used'; $ml[$mi]['coupons'][$ci]['usedAt'] = gmdate('c'); $ml[$mi]['coupons'][$ci]['bookingId'] = $id;
+                                $applied = ['code' => $code, 'label' => (string)$cc['label'], 'type' => (string)$cc['type'], 'value' => $cc['value'], 'memberId' => (string)$ml[$mi]['id'], 'memberName' => (string)$ml[$mi]['name']];
+                                writeList($memFile, $ml); break;
+                            }
+                        }
+                    }
+                    if ($mfp) { flock($mfp, LOCK_UN); fclose($mfp); }
+                }
+                if ($applied && is_array($rec['total'] ?? null) && count($rec['total']) === 2) {
+                    $d = couponDiscount($applied, $rec['total']); $applied['discount'] = $d;
+                    $rec['totalAfter'] = [max(0, (float)$rec['total'][0] - $d[0]), max(0, (float)$rec['total'][1] - $d[1])];
+                    $rec['coupon'] = $applied;
+                } elseif ($cp) { $rec['couponFailed'] = $code; }   /* 코드가 안 맞거나 이미 쓴 쿠폰: 할인 없이 접수, 관리자에게 표시 */
+            }
         } else {
             foreach (['company','name','phone','email','kind','state','addr','date','brand','memo','via','text'] as $k) if (isset($rec[$k])) $rec[$k] = cleanStr($rec[$k], $k === 'text' ? 4000 : 300);
             if (($rec['company'] ?? '') === '' || ($rec['phone'] ?? '') === '') fail('bad_record', '회사와 연락처가 필요합니다.');
@@ -172,6 +229,104 @@ switch ($action) {
         if ($fp) { flock($fp, LOCK_UN); fclose($fp); }
         if (!$ok) fail('write', '접수 파일을 쓸 수 없습니다. FTP에서 admin 폴더 권한을 707로 바꿔 주세요.');
         out(['ok' => true, 'id' => $id, 'receivedAt' => $rec['receivedAt']]);
+
+    /* ---------- 공개: 회원가입 (이름·휴대폰). 같은 번호면 기존 회원으로 이어서 사용 ---------- */
+    case 'member_join':
+        if ($method !== 'POST') fail('bad_request');
+        $b = body();
+        $name = cleanStr($b['name'] ?? '', 40); $phone = cleanStr($b['phone'] ?? '', 20); $key = phoneKey($phone);
+        if ($name === '' || !preg_match('/^01\d{8,9}$/', $key)) fail('bad_record', '이름과 휴대폰 번호를 확인해 주세요.');
+        if (empty($b['consent'])) fail('consent', '개인정보 수집·이용에 동의해 주세요.');
+        $ipHash = substr(hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '') . '|ssw'), 0, 16);
+        ensureStore($storeDir);
+        $fp = fopen($memFile . '.lock', 'c'); if ($fp) flock($fp, LOCK_EX);
+        $list = readList($memFile); $idx = null;
+        foreach ($list as $i => $m) { if (($m['phoneKey'] ?? '') === $key) { $idx = $i; break; } }
+        $new = ($idx === null);
+        if ($new) {
+            if (tooMany($list, $ipHash)) { if ($fp) { flock($fp, LOCK_UN); fclose($fp); } fail('rate_limited', '가입 요청이 너무 잦습니다. 잠시 후 다시 시도해 주세요.'); }
+            $m = ['id' => 'M' . strtoupper(base_convert((string)time(), 10, 36)) . strtoupper(substr(bin2hex(random_bytes(1)), 0, 2)), 'name' => $name, 'phone' => $phone, 'phoneKey' => $key,
+                  'joinedAt' => gmdate('c'), 'receivedAt' => gmdate('c'), 'ipHash' => $ipHash, 'token' => bin2hex(random_bytes(16)), 'coupons' => [], 'ua' => cleanStr($_SERVER['HTTP_USER_AGENT'] ?? '', 120)];
+            array_unshift($list, $m); $idx = 0;
+        } else {
+            $list[$idx]['token'] = bin2hex(random_bytes(16)); $list[$idx]['lastSeenAt'] = gmdate('c');
+            if (empty($list[$idx]['name'])) $list[$idx]['name'] = $name;
+        }
+        if (count($list) > 5000) $list = array_slice($list, 0, 5000);
+        $ok = writeList($memFile, $list);
+        if ($fp) { flock($fp, LOCK_UN); fclose($fp); }
+        if (!$ok) fail('write', '회원 정보를 저장할 수 없습니다.');
+        out(['ok' => true, 'new' => $new, 'token' => $list[$idx]['token'], 'member' => publicMember($list[$idx]), 'coupon' => couponCfg($jsonFile)]);
+
+    /* ---------- 공개: 내 정보·쿠폰 (토큰) ---------- */
+    case 'member_me':
+        if ($method !== 'POST') fail('bad_request');
+        $b = body(); $token = cleanStr($b['token'] ?? '', 64);
+        $list = readList($memFile); $mi = memberByToken($list, $token);
+        if ($mi === null) fail('auth', '다시 가입해 주세요.');
+        out(['ok' => true, 'member' => publicMember($list[$mi]), 'coupon' => couponCfg($jsonFile)]);
+
+    /* ---------- 공개: 견적 후 쿠폰 발급. 같은 서비스의 안 쓴 쿠폰이 있으면 그 쿠폰을 그대로 돌려줌 ---------- */
+    case 'coupon_issue':
+        if ($method !== 'POST') fail('bad_request');
+        $b = body(); $token = cleanStr($b['token'] ?? '', 64);
+        $cfg = couponCfg($jsonFile);
+        if (!$cfg['enabled']) fail('disabled', '지금은 쿠폰을 발급하지 않습니다.');
+        $svc = cleanStr($b['svc'] ?? '', 40); if ($svc === '') $svc = '견적';
+        $summary = cleanStr($b['summary'] ?? '', 200); $total = is_array($b['total'] ?? null) ? array_slice(array_map('floatval', $b['total']), 0, 2) : [];
+        if ($cfg['minTotal'] > 0 && count($total) === 2 && $total[1] < $cfg['minTotal']) fail('min_total', number_format($cfg['minTotal']) . '원 이상 견적부터 쿠폰이 나갑니다.');
+        $fp = fopen($memFile . '.lock', 'c'); if ($fp) flock($fp, LOCK_EX);
+        $list = readList($memFile); $mi = memberByToken($list, $token);
+        if ($mi === null) { if ($fp) { flock($fp, LOCK_UN); fclose($fp); } fail('auth', '다시 가입해 주세요.'); }
+        $today = gmdate('Y-m-d'); $cps = is_array($list[$mi]['coupons'] ?? null) ? $list[$mi]['coupons'] : []; $found = null;
+        foreach ($cps as $c) { if (($c['status'] ?? '') === 'unused' && ($c['svc'] ?? '') === $svc && ($c['expiresAt'] ?? '') >= $today) { $found = $c; break; } }
+        $issued = false;
+        if (!$found) {
+            $code = 'SS-' . strtoupper(substr(bin2hex(random_bytes(2)), 0, 4)) . '-' . strtoupper(substr(bin2hex(random_bytes(2)), 0, 4));
+            $found = ['code' => $code, 'svc' => $svc, 'type' => $cfg['type'], 'value' => $cfg['value'], 'label' => $cfg['label'], 'issuedAt' => gmdate('c'),
+                      'expiresAt' => gmdate('Y-m-d', time() + $cfg['validDays'] * 86400), 'status' => 'unused', 'quote' => ['summary' => $summary, 'total' => $total, 'page' => cleanStr($b['page'] ?? '', 40)]];
+            array_unshift($cps, $found); $issued = true;
+            if (count($cps) > 30) $cps = array_slice($cps, 0, 30);
+            $list[$mi]['coupons'] = $cps;
+            $ok = writeList($memFile, $list);
+            if ($fp) { flock($fp, LOCK_UN); fclose($fp); }
+            if (!$ok) fail('write', '쿠폰을 저장할 수 없습니다.');
+        } else { if ($fp) { flock($fp, LOCK_UN); fclose($fp); } }
+        out(['ok' => true, 'issued' => $issued, 'coupon' => publicCoupon($found), 'member' => publicMember($list[$mi])]);
+
+    /* ---------- 관리자: 회원·쿠폰 목록 ---------- */
+    case 'members':
+        if (!$logged) fail('auth');
+        $ml = readList($memFile); foreach ($ml as &$m) { unset($m['token'], $m['ipHash'], $m['ua'], $m['phoneKey']); } unset($m);
+        out(['ok' => true, 'members' => $ml, 'coupon' => couponCfg($jsonFile)]);
+
+    case 'member_update':
+        if ($method !== 'POST') fail('bad_request');
+        if (!$logged) fail('auth');
+        $b = body(); $id = cleanStr($b['id'] ?? '', 40); if ($id === '') fail('bad_request');
+        $fp = fopen($memFile . '.lock', 'c'); if ($fp) flock($fp, LOCK_EX);
+        $list = readList($memFile); $found = false;
+        foreach ($list as $i => $m) {
+            if (($m['id'] ?? '') !== $id) continue;
+            $found = true;
+            if (!empty($b['delete'])) { unset($list[$i]); break; }
+            if (isset($b['note'])) $list[$i]['adminNote'] = cleanStr($b['note'], 300);
+            if (isset($b['couponCode'], $b['couponStatus']) && is_array($list[$i]['coupons'] ?? null)) {
+                foreach ($list[$i]['coupons'] as $ci => $cc) {
+                    if (($cc['code'] ?? '') === strtoupper(cleanStr($b['couponCode'], 20))) {
+                        if (!empty($b['couponDelete'])) { array_splice($list[$i]['coupons'], $ci, 1); break; }
+                        $list[$i]['coupons'][$ci]['status'] = in_array($b['couponStatus'], ['unused', 'used', 'void'], true) ? $b['couponStatus'] : 'unused';
+                        $list[$i]['coupons'][$ci]['updatedAt'] = gmdate('c'); break;
+                    }
+                }
+            }
+            break;
+        }
+        $ok = $found ? writeList($memFile, $list) : false;
+        if ($fp) { flock($fp, LOCK_UN); fclose($fp); }
+        if (!$found) fail('not_found');
+        if (!$ok) fail('write');
+        out(['ok' => true]);
 
     /* ---------- 관리자: 접수 목록 ---------- */
     case 'inbox':
@@ -209,7 +364,7 @@ switch ($action) {
     case 'stats':
         $bk = readList($bookFile); $iq = readList($inqFile); $tq = readList($storeDir . '/techs.json');
         $prog = ['기사 알림', '연락 완료', '기사 배정', '회신 완료', '견적 발송', '계약'];
-        $n = ['received' => count($bk) + count($iq), 'inProgress' => 0, 'done' => 0, 'techs' => 0];
+        $n = ['received' => count($bk) + count($iq), 'inProgress' => 0, 'done' => 0, 'techs' => 0, 'members' => count(readList($memFile))];
         foreach (array_merge($bk, $iq) as $r) { $st = (string)($r['status'] ?? ''); if (in_array($st, $prog, true)) $n['inProgress']++; if ($st === '시공 완료') $n['done']++; }
         foreach ($tq as $t) { if (!empty($t['active']) || !isset($t['active'])) $n['techs']++; }
         out(['ok' => true] + $n);

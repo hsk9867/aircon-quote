@@ -111,7 +111,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261026b"></script>
+<script src="js/common.js?v=20261026c"></script>
 <script>
 (function(){
 'use strict';
@@ -199,14 +199,15 @@ function readInput(){
 function laborFor(inp){
   const items=[]; const house = inp.home==='house'; const n=inp.units.length; const typeOf=typeFor(inp.ptype);
   if(isSystem(inp.units, inp.ptype)){
-    const C=RATES.ceil;
+    const C=RATES.ceil; const setR = C.set && C.set[n];   /* 대수별 설치 단가가 있으면 그걸로, 없으면 실내기 1대 × N + 실외기 */
+    if(setR && setR[1]) items.push({label:'시스템 에어컨 '+n+'대 설치 (천장형 실내기 '+n+'대 + 실외기 1대)', r:setR});
     inp.units.forEach((u,i)=>{
-      items.push({label:(i+1)+'번 '+u.room+' 천장형 실내기 설치', r:C.indoor});
+      if(!(setR && setR[1])) items.push({label:(i+1)+'번 '+u.room+' 천장형 실내기 설치', r:C.indoor});
       items.push({label:(i+1)+'번 천장 타공, 드레인 배관', r:add(C.hatch,C.drain)});
       if(inp.occupied==='living') items.push({label:(i+1)+'번 가구 이동·천장 작업 보양', r:C.protect});
       if(inp.opts.includes('remove')) items.push({label:(i+1)+'번 기존 에어컨 철거', r:C.remove});
     });
-    const odLabel = n>=2 ? '실외기 1대 설치 (시스템 멀티, '+n+'대 공용)' : '실외기 1대 설치 (천장형 실내기용)'; items.push(C.outdoor&&C.outdoor[1] ? {label:odLabel, r:C.outdoor} : {label:odLabel, r:[0,0], info:'실내기 가격에 포함'});
+    if(!(setR && setR[1])){ const odLabel = n>=2 ? '실외기 1대 설치 (시스템 멀티, '+n+'대 공용)' : '실외기 1대 설치 (천장형 실내기용)'; items.push(C.outdoor&&C.outdoor[1] ? {label:odLabel, r:C.outdoor} : {label:odLabel, r:[0,0], info:'실내기 가격에 포함'}); }
     if(!inp.opts.includes('interior')) items.push({label:'실크 도배 마감 (천장 작업 후 필수, 전체 1회)', r:C.paper}); /* 시스템 에어컨은 도배 마감 포함. 인테리어 중이면 인테리어 쪽 도배라 제외 */
     if(house){
       items.push({label:'외벽 타공 1곳', r:RATES.hole});

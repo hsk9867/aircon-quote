@@ -115,7 +115,7 @@ table.edit input[type=text]{min-width:120px}
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261026b"></script>
+<script src="js/common.js?v=20261026c"></script>
 <script>
 (function(){
 'use strict';
@@ -290,7 +290,10 @@ function render(){
     h+=card('기종별 단가', '<div class="tbl-wrap"><table class="edit"><thead><tr><th>항목</th><th>벽걸이 (원)</th><th>스탠드</th><th>2in1</th></tr></thead><tbody>'+
       Object.keys(RL).map(k=>'<tr><td>'+esc(plabel(k,RL[k]))+'</td>'+TYPES.map(t=>'<td>'+rg('rates.'+k+'.'+t)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>',
       '최소~최대 범위로 적습니다. 같은 값을 넣으면 고정가로 표시됩니다. 금액은 원 단위, 부가세 별도 기준. 기본 설치에 배관은 들어가지 않고 1m당 단가로 따로 계산합니다.');
-    h+=card('시스템 에어컨 (3대 이상)', '<div class="g2">'+Object.keys(RCEIL).map(k=>fRange('rates.ceil.'+k, plabel(CEIL_LBL[k]||'', RCEIL[k]))).join('')+'</div>');
+    if(!isObj(draft.rates.ceil.set)) draft.rates.ceil.set=clone(DEFAULTS.rates.ceil.set);
+    h+=card('시스템 에어컨 (천장형) · 대수별 설치 단가', '<div class="g3">'+[1,2,3,4,5,6].map(n=>fRange('rates.ceil.set.'+n, n+'대 설치 (실내기 '+n+'대 + 실외기 1대)')).join('')+'</div>',
+      '천장형 실내기 N대와 실외기 1대를 설치하는 인건비입니다. 견적에서 "시스템 에어컨 N대 설치" 한 줄로 나가고, 천장 타공·드레인·도배 마감 등은 아래 항목으로 따로 더해집니다. 0으로 두면 아래 "실내기 설치 1대 × N + 실외기 설치"로 계산합니다.');
+    h+=card('시스템 에어컨 (천장형) · 부가 항목', '<div class="g2">'+Object.keys(RCEIL).map(k=>fRange('rates.ceil.'+k, plabel(CEIL_LBL[k]||'', RCEIL[k]))).join('')+'</div>');
     h+=card('공통 항목', '<div class="g2">'+Object.keys(RC).map(k=>fRange('rates.'+k, plabel(k,RC[k]))).join('')+'</div>');
     h+=card('단가표 항목 이름', '<div class="g2">'+Object.keys(DEFAULTS.site.priceLabels||{}).map(k=>fText('site.priceLabels.'+k, DEFAULTS.site.priceLabels[k])).join('')+'</div>', '고객이 보는 단가표 페이지와 위 표의 항목 이름입니다. 비우면 기본 이름으로 돌아갑니다. 견적 내역의 문구는 각 견적 페이지 코드에서 정해집니다.');
     h+=card('계수·할인', '<div class="g3">'+fNum('rates.multiDiscount','동시 설치 할인율','0.1 = 10%')+fNum('rates.seasonFactor','성수기 계수 (6~8월)','1.1 = 10% 가산')+fNum('rates.commission','기사 중개 수수료율','0.05 = 5%')+'</div>'+

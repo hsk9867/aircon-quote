@@ -28,7 +28,7 @@
 </section>
 
 <section>
-  <div class="sec-head"><h2>시스템 에어컨 (3대 이상)</h2><p class="small muted">천장형 실내기를 실외기 1대에 묶는 구성입니다.</p></div>
+  <div class="sec-head"><h2>시스템 에어컨 (천장형)</h2><p class="small muted">천장형 실내기를 실외기 1대에 묶는 구성입니다.</p></div>
   <div class="tbl-wrap"><table id="t-sys"><thead><tr><th>항목</th><th class="r">금액</th></tr></thead><tbody></tbody></table></div>
 </section>
 
@@ -55,7 +55,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261026b"></script>
+<script src="js/common.js?v=20261026c"></script>
 <script>
 (function(){
 'use strict';
@@ -66,14 +66,15 @@ $('faq').innerHTML=SITE.faq.map(f=>'<details><summary>'+esc(f.q)+'</summary><p>'
 const rt = r => (!r || (!r[0] && !r[1])) ? 'X' : r[0]===r[1] ? manWon(r[0]) : manWon(r[0])+'~'+manWon(r[1]); /* 0원 항목은 X (해당 없음) */
 const row3 = (l,r) => '<tr><td>'+l+'</td><td class="r num">'+rt(r.wall)+'</td><td class="r num">'+rt(r.stand)+'</td><td class="r num">'+rt(r.two)+'</td></tr>';
 const row1 = (l,r,s) => '<tr><td>'+l+'</td><td class="r num">'+(r?rt(r):esc(String(s||'').replace(/^(가정|기준)[^·]*·\s*/,'').replace(/\s*\((가정|기준)\)$/,'')))+'</td></tr>';
-const L = k => (SITE.priceLabels && SITE.priceLabels[k]) || k;
+const L = k => { const m=/^ceilSet([1-6])$/.exec(k); if(m) return '시스템 에어컨 '+m[1]+'대 설치'; return (SITE.priceLabels && SITE.priceLabels[k]) || k; };
 document.querySelector('#t-type tbody').innerHTML = [
   ['base',RATES.base],['moveBase',RATES.moveBase],['remove',RATES.remove],['pipePerM',RATES.pipePerM],['pipeReplace',RATES.pipeReplace],['angle',RATES.angle],
   ['clean',RATES.clean],['fan',RATES.fan],['gasFill',RATES.gasFill],['gas',RATES.gas],['paper',RATES.paper],['protect',RATES.protect]
 ].map(([k,r])=>row3(L(k),r)).join('');
 const C=RATES.ceil;
 document.querySelector('#t-sys tbody').innerHTML = [
-  ['ceilIndoor',C.indoor,''],['ceilHatch',add(C.hatch,C.drain),''],['ceilOutdoor',(C.outdoor&&C.outdoor[1])?C.outdoor:null,'실내기 가격에 포함'],
+  ...[1,2,3,4,5,6].filter(n=>C.set&&C.set[n]&&C.set[n][1]).map(n=>['ceilSet'+n,C.set[n],'실내기 '+n+'대 + 실외기 1대']),
+  ['ceilIndoor',C.indoor,'대수별 단가가 없을 때'],['ceilHatch',add(C.hatch,C.drain),''],['ceilOutdoor',(C.outdoor&&C.outdoor[1])?C.outdoor:null,'실내기 가격에 포함'],
   ['ceilClean',C.clean,''],['ceilProtect',C.protect,''],['ceilPaper',C.paper,''],['ceilGas',C.gas,'']
 ].map(([k,r,s])=>row1(L(k),r,s)).join('');
 document.querySelector('#t-common tbody').innerHTML = [

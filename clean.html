@@ -9,7 +9,7 @@
 <link rel="preload" as="image" href="img/logo-word.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
-<link rel="stylesheet" href="css/style.css?v=20261016h">
+<link rel="stylesheet" href="css/style.css?v=20261026a">
 </head>
 <body>
 <header class="top"></header>
@@ -18,7 +18,7 @@
 <div class="page-head">
   <span class="eyebrow" data-t="pages.clean.eyebrow">청소 견적 · 분해 세척</span>
   <h1 data-t="pages.clean.title">기종과 대수를 고르면 청소 금액이 바로 나옵니다</h1>
-  <p data-t="pages.clean.desc">냄새·곰팡이, 여름 전 정기 세척. 실내기 완전 분해 세척 기준이고 실외기 세척과 송풍팬 분해는 옵션으로 더합니다. 3대부터 10% 할인입니다.</p>
+  <p data-t="pages.clean.desc">냄새·곰팡이, 여름 전 정기 세척. 실내기 완전 분해 세척 기준이고 실외기 세척과 송풍팬 분해는 옵션으로 더합니다.</p>
   <a class="svc-link" href="services.html#clean">이 서비스가 처음이세요? 서비스 안내 먼저 보기</a>
 </div>
 
@@ -35,7 +35,7 @@
       </div>
     </div>
     <div class="grid2">
-      <div class="fs"><label class="lbl" for="count">실내기 대수 <span class="hint">3대부터 10% 할인</span></label><select id="count"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+      <div class="fs"><label class="lbl" for="count">실내기 대수</label><select id="count"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
       <div class="fs"><label class="lbl" for="outdoor-count">실외기 대수 <span class="hint">실외기 청소를 원하면 선택</span></label><select id="outdoor-count"><option value="0">0대</option><option value="1">1대</option><option value="2">2대</option><option value="3">3대</option><option value="4">4대</option><option value="5">5대</option><option value="6">6대</option></select></div>
       <div class="fs"><label class="lbl" for="years">사용 연수</label><select id="years"><option value="0">1년 미만</option><option value="1">1~3년</option><option value="2">3년 이상 또는 청소한 적 없음</option></select></div>
     </div>
@@ -78,7 +78,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261016a"></script>
+<script src="js/common.js?v=20261026a"></script>
 <script>
 (function(){
 'use strict';
@@ -94,7 +94,6 @@ function calc(){
   if(radio('height')==='high') items.push({label:'고소 작업 (3m 이상)', r:RATES.highMount});
   const o=+$('outdoor-count').value; if(o>0) items.push({label:'실외기 청소'+(o>1?' × '+o+'대':''), r:mul(RATES.outdoorClean,o)});
   if($('fan').checked) items.push({label:'송풍팬 완전 분해'+(n>1?' × '+n+'대':''), r:mul(t==='ceil'?FAN_CEIL:RATES.fan[t],n)});
-  if(n>=3){ const sub=items.reduce((a,i)=>add(a,i.r),[0,0]); items.push({label:'다량 할인 10% ('+n+'대)', r:mul(sub,-0.1)}); }
   if($('region').value==='out') items.push({label:'인접 지역 출장 가산', r:RATES.regionOut});
   const total = applySeason(items, date);
   result = {svc:'분해 청소', summary:TYPE_LABEL[t]+' '+n+'대'+(o>0?' + 실외기 '+o+'대':'')+' 분해 청소', items, labor:total, total, date, site:'사용 '+$('years').options[$('years').selectedIndex].text};

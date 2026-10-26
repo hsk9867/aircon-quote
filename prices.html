@@ -10,7 +10,7 @@
 <link rel="preload" as="image" href="img/logo-word.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
-<link rel="stylesheet" href="css/style.css?v=20261016h">
+<link rel="stylesheet" href="css/style.css?v=20261026a">
 </head>
 <body>
 <header class="top"></header>
@@ -55,7 +55,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261016a"></script>
+<script src="js/common.js?v=20261026a"></script>
 <script>
 (function(){
 'use strict';
@@ -77,10 +77,10 @@ document.querySelector('#t-sys tbody').innerHTML = [
   ['ceilClean',C.clean,''],['ceilProtect',C.protect,''],['ceilPaper',C.paper,''],['ceilGas',C.gas,'']
 ].map(([k,r,s])=>row1(L(k),r,s)).join('');
 document.querySelector('#t-common tbody').innerHTML = [
-  ['hole',RATES.hole,''],['elec',null,'기본 '+rt(RATES.elecBase)+' + 대당 '+rt(RATES.elecPer)],['ladder',RATES.ladder,''],
+  ['hole',RATES.hole,''],['elec',null,'기본 '+rt(RATES.elecBase)+' + 대당 '+rt(RATES.elecPer)],['ladder',RATES.ladder,''],['interior',RATES.interior,'도배 마감 후 재방문'],
   ['outdoorClean',RATES.outdoorClean,''],['visit',RATES.visit,''],['leakCheck',RATES.leakCheck||[0,80000],'필요 시'],['oldPart',RATES.oldPart,''],
   ['regionOut',RATES.regionOut,''],['dist',null,rt(RATES.distCity)+' / '+rt(RATES.distFar)],['floor',null,rt(RATES.floorMid)+' / '+rt(RATES.floorHigh)],
-  ['multiDiscount',null,'2대째부터 기본 설치비 '+Math.round(RATES.multiDiscount*100)+'%'],['cleanDiscount',null,'3대부터 10%'],['housePipe',null,'외벽·지상 경로 '+RATES.housePipe[0]+'~'+RATES.housePipe[1]+'m 가산'],['seasonFactor',null,'시공비 × '+RATES.seasonFactor],
+  ['multiDiscount',null,'2대째부터 기본 설치비 '+Math.round(RATES.multiDiscount*100)+'%'],['housePipe',null,'외벽·지상 경로 '+RATES.housePipe[0]+'~'+RATES.housePipe[1]+'m 가산'],['seasonFactor',null,'시공비 × '+RATES.seasonFactor],
   ['gasFactor',null,'R410A ×1 · R32 ×1.1~1.2 · R22 ×1.3~1.6 · 모름 ×1~1.2']
 ].map(([k,r,s])=>row1(L(k),r,s)).join('');
 })();

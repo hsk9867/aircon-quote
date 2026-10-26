@@ -501,7 +501,7 @@ html.splash-on body::after{font:400 min(8.6vw,42px)/1 "Cafe24Ssurround","SUIT Va
 .page-head .svc-link{margin-top:2px;justify-self:start}
 /* 견적 폼: 단계 번호 카운터, 안내 문구, 대수 칸 단순화 */
 .form{counter-reset:step}
-.fs>.lbl .n::before{counter-increment:step;content:counter(step)}
+.fs>.lbl .n::before{counter-increment:step;content:counter(step)} .fs>.lbl .n:not(:empty)::before{content:none}
 .form-intro{margin:-4px 0 -6px;padding:12px 14px;border-radius:var(--r-sm);background:var(--accent-soft);color:var(--fg);font-size:.88rem;line-height:1.55}
 .form-intro b{color:var(--accent)}
 .unit{background:transparent;border-radius:0;padding:10px 0 10px;border-top:1px solid var(--line-soft)}

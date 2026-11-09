@@ -4,7 +4,7 @@ Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
 $local = Join-Path $PSScriptRoot 'cafe24.local.ps1'
-$user = 'hsk9867'; $ftpHost = '183.110.224.226'; $dir = 'www'; $adminPass = ''
+$user = 'hsk9867'; $ftpHost = '183.110.224.226'; $dir = ''; $adminPass = ''
 if (Test-Path $local) {
   $t = Get-Content $local -Raw
   if ($t -match "CAFE24_FTP_USER\s*=\s*'([^']*)'") { $user = $Matches[1] }

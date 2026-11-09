@@ -78,11 +78,11 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261109b"></script>
+<script src="js/common.js?v=20261109c"></script>
 <script>
 (function(){
 'use strict';
-const {TYPE_LABEL, RATES, $, mul, add, radio, isPeak, plusDays, applySeason, linesHtml, rangeShort, Booking} = window.SSW;
+const {TYPE_LABEL, RATES, $, mul, add, radio, isPeak, plusDays, applySeason, withVat, linesHtml, rangeShort, Booking} = window.SSW;
 const CLEAN_CEIL=RATES.ceil.clean, FAN_CEIL=RATES.ceil.fan; /* 천장형 청소 (가정) */
 let result=null;
 function calc(){
@@ -95,8 +95,8 @@ function calc(){
   const o=+$('outdoor-count').value; if(o>0) items.push({label:'실외기 청소'+(o>1?' × '+o+'대':''), r:mul(RATES.outdoorClean,o)});
   if($('fan').checked) items.push({label:'송풍팬 완전 분해'+(n>1?' × '+n+'대':''), r:mul(t==='ceil'?FAN_CEIL:RATES.fan[t],n)});
   if($('region').value==='out') items.push({label:'인접 지역 출장 가산', r:RATES.regionOut});
-  const total = applySeason(items, date);
-  result = {svc:'분해 청소', summary:TYPE_LABEL[t]+' '+n+'대'+(o>0?' + 실외기 '+o+'대':'')+' 분해 청소', items, labor:total, total, date, site:'사용 '+$('years').options[$('years').selectedIndex].text};
+  const labor = applySeason(items, date); const total = withVat(items, labor); /* 총액은 부가세 포함, labor 는 기사 정산용 공급가 */
+  result = {svc:'분해 청소', summary:TYPE_LABEL[t]+' '+n+'대'+(o>0?' + 실외기 '+o+'대':'')+' 분해 청소', items, labor, total, date, site:'사용 '+$('years').options[$('years').selectedIndex].text};
   $('r-total').textContent = rangeShort(total[0],total[1]);
   $('r-season').textContent = isPeak(date)?'성수기 (6~8월)':'비수기'; $('r-season').className='tag '+(isPeak(date)?'warn':'ok');
   $('r-lines').innerHTML = linesHtml(items, total, '총액');

@@ -111,11 +111,11 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261109b"></script>
+<script src="js/common.js?v=20261109c"></script>
 <script>
 (function(){
 'use strict';
-const {TYPE_LABEL, RATES, BRANDS, $, won, manWon, rangeText, rangeShort, mul, add, radio, esc, isPeak, plusDays, applySeason, linesHtml, Booking, pickOutdoor, kwOfPy, brandLogo} = window.SSW;
+const {TYPE_LABEL, RATES, BRANDS, $, won, manWon, rangeText, rangeShort, mul, add, radio, esc, isPeak, plusDays, applySeason, vatOf, vatLabel, linesHtml, Booking, pickOutdoor, kwOfPy, brandLogo} = window.SSW;
 
 const PY = [5,6,7,8,9,10,11,13,15,16,17,18,19,23,30,40];
 const ROOMS = ['거실','안방','작은방','아이방','서재','주방·식당','사무실'];
@@ -267,7 +267,8 @@ function quoteAll(inp){
                        : inp.units.map((u,i)=>Object.assign({room:u.room}, pickModel(b,u.py, sys?ceilKey(b):typeOf(u.py,i), typeOf)));
     if(sys){ const od=pickOutdoor(b, inp.units.map(u=>u.py), odKey(b)); if(od) models.push({room:'실외기', name:od.name+(od.kw?' · 실내기 합 '+inp.units.reduce((a,u)=>a+kwOfPy(u.py),0).toFixed(1)+'kW':''), price:od.price, type:'outdoor', outdoor:true}); }
     const prod = models.reduce((a,m)=>a+m.price,0);
-    return {id:b.id, name:b.name, line:b.line, note:b.note, logo:b.logo, models, product:prod, labor:L.labor, total:[prod+L.labor[0], prod+L.labor[1]]};
+    const supply=[prod+L.labor[0], prod+L.labor[1]], vat=vatOf(supply); /* 총액 = 제품 + 설치 + 부가세 */
+    return {id:b.id, name:b.name, line:b.line, note:b.note, logo:b.logo, models, product:prod, labor:L.labor, supply, vat, total:add(supply, vat)};
   }).sort((a,b)=>a.total[0]-b.total[0]);
   return {input:inp, items:L.items, labor:L.labor, brands, peak:isPeak(inp.date)};
 }
@@ -288,7 +289,7 @@ function renderResult(){
       '<div class="hd"><h3>'+brandLogo(b)+esc(b.name)+(i===0?'<span class="tag ok">최저가</span>':'')+'</h3><div class="amt num">'+rangeShort(b.total[0],b.total[1])+'</div>'+
       '</div>'+
       '<div class="models">'+b.models.map(m=>'<div><span>'+(m.outdoor?'<b>실외기</b> · ':esc(m.room)+' · ')+esc(m.name)+'</span><span class="num">'+won(m.price)+'</span></div>').join('')+'</div>'+
-      '<div class="split"><div><span>제품 금액 ('+b.models.length+'개)</span><b class="num">'+won(b.product)+'</b></div><div><span>설치비</span><b class="num">'+rangeText(b.labor[0],b.labor[1])+'</b></div><div class="t"><span>총액 (제품 + 설치)</span><b class="num">'+rangeText(b.total[0],b.total[1])+'</b></div></div>'+
+      '<div class="split"><div><span>제품 금액 ('+b.models.length+'개)</span><b class="num">'+won(b.product)+'</b></div><div><span>설치비</span><b class="num">'+rangeText(b.labor[0],b.labor[1])+'</b></div>'+(b.vat[1]?'<div><span>'+vatLabel()+'</span><b class="num">'+rangeText(b.vat[0],b.vat[1])+'</b></div>':'')+'<div class="t"><span>총액 (제품 + 설치'+(b.vat[1]?' + 부가세':'')+')</span><b class="num">'+rangeText(b.total[0],b.total[1])+'</b></div></div>'+
       '<details><summary>설치비 내역 보기</summary>'+linesHtml(result.items, b.labor, '설치비 합계')+'<div style="height:12px"></div></details>'+
       '<div class="ft"><button class="btn '+(picked===b.id?'primary':'')+' block" type="button" data-pick="'+b.id+'">'+(picked===b.id?'선택됨 · 아래에서 예약':esc(b.name)+'으로 예약 신청')+'</button></div>'+
     '</div>').join('');

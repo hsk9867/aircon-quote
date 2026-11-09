@@ -80,11 +80,11 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261109b"></script>
+<script src="js/common.js?v=20261109c"></script>
 <script>
 (function(){
 'use strict';
-const {TYPE_LABEL, RATES, $, mul, radio, isPeak, plusDays, applySeason, linesHtml, rangeShort, Booking} = window.SSW;
+const {TYPE_LABEL, RATES, $, mul, radio, isPeak, plusDays, applySeason, withVat, linesHtml, rangeShort, Booking} = window.SSW;
 const GAS_LABEL={unknown:'종류 모름',r410:'R410A',r32:'R32',r22:'R22 (구형)'};
 const ADVICE={
   weak:'냉매가 조금 부족한 상태가 흔합니다. 충전 후 압력을 확인하고, 누설 흔적이 있으면 부위를 안내해 드립니다.',
@@ -104,9 +104,9 @@ function calc(){
   if($('clean').checked) items.push({label:TYPE_LABEL[t]+' 분해 청소 (동시 방문 10% 할인)', r:mul(RATES.clean[t],0.9)});
   if($('outdoor').checked) items.push({label:'실외기 세척', r:RATES.outdoorClean});
   if($('region').value==='out') items.push({label:'인접 지역 출장 가산', r:RATES.regionOut});
-  const total = applySeason(items, date);
+  const labor = applySeason(items, date); const total = withVat(items, labor); /* 총액은 부가세 포함, labor 는 기사 정산용 공급가 */
   const sym=$('symptom').options[$('symptom').selectedIndex].text;
-  result = {svc:'냉매 충전', summary:TYPE_LABEL[t]+' 냉매 충전 · '+sym, items, labor:total, total, date, site:GAS_LABEL[g]+' · '+$('year').options[$('year').selectedIndex].text};
+  result = {svc:'냉매 충전', summary:TYPE_LABEL[t]+' 냉매 충전 · '+sym, items, labor, total, date, site:GAS_LABEL[g]+' · '+$('year').options[$('year').selectedIndex].text};
   $('r-total').textContent = rangeShort(total[0],total[1]);
   $('r-season').textContent = isPeak(date)?'성수기 (6~8월)':'비수기'; $('r-season').className='tag '+(isPeak(date)?'warn':'ok');
   $('r-lines').innerHTML = linesHtml(items, total, '총액');

@@ -22,7 +22,7 @@ const RATES_DEFAULT = {
   floorMid:[0,20000], floorHigh:[0,30000], distCity:[20000,40000], distFar:[50000,100000],
   dirt:[[0,0],[0,10000],[10000,20000]], highMount:[10000,20000],
   gasFactor:{unknown:[1,1.2], r410:[1,1], r32:[1.1,1.2], r22:[1.3,1.6]}, leakCheck:[0,30000], oldPart:[20000,50000],
-  housePipe:[3,8], multiDiscount:0.1, seasonFactor:1.1, commission:0.05,
+  housePipe:[3,8], multiDiscount:0.1, seasonFactor:1.1, commission:0.05, vat:0.1,   /* 부가세율: 모든 견적 총액에 포함 (0이면 미포함) */
   /* 3대 이상: 시스템 에어컨 (천장형 실내기 + 실외기 1대) */
   ceil:{ base:[0,0],   /* 시스템 에어컨 기본 설치비 (현장 1회, 대수와 무관). 0이면 견적에서 빠짐. 관리자에서 입력 */
          set:{1:[450000,650000], 2:[700000,1000000], 3:[950000,1350000], 4:[1200000,1700000], 5:[1450000,2050000], 6:[1700000,2400000]},   /* 대수별 설치 단가 (실내기 N대 + 실외기 1대). 0이면 아래 indoor×N + outdoor 로 계산 */
@@ -854,7 +854,7 @@ const SITE_DEFAULT = {
     "prices": {
      "eyebrow": "가격 안내",
      "title": "설치·청소·충전 단가표 전체 공개",
-     "desc": "모든 견적 페이지는 아래 단가로 계산합니다. 부가세 별도 참고가이며, 현장 조건에 따라 범위 안에서 확정됩니다. 배관은 1m 단위로 계산합니다."
+     "desc": "모든 견적 페이지는 아래 단가로 계산합니다. 아래 단가는 부가세 별도이며, 견적 총액에는 부가세 10%가 포함됩니다. 금액은 현장 조건에 따라 범위 안에서 확정됩니다. 배관은 1m 단위로 계산합니다."
     }
    },
    "priceLabels": {
@@ -985,6 +985,8 @@ const SITE   = deepMerge(SITE_DEFAULT, isObj(CFG.site)?CFG.site:{});
 if(SITE.home && SITE.home.menu && SITE.home.menu.install && SITE.home.menu.install.title==='설치 견적 내기') SITE.home.menu.install.title='가정용 설치 견적 내기';
 if(SITE.priceLabels && SITE.priceLabels.ceilHatch==='천장 점검구·타공 + 드레인 배관 (1대)') SITE.priceLabels.ceilHatch='천장 타공 + 드레인 배관 (1대)';
 if(SITE.priceLabels && SITE.priceLabels.base==='신규 설치 기본 (배관 별도)') SITE.priceLabels.base='신규 설치 기본 (배관 5m 포함)';
+/* 예전 단가표 안내(부가세 별도 참고가)는 부가세 포함 견적 안내로 바꿔 읽음 */
+if(SITE.pages && SITE.pages.prices && typeof SITE.pages.prices.desc==='string' && SITE.pages.prices.desc.includes('모든 견적 페이지는 아래 단가로 계산합니다. 부가세 별도 참고가이며,')) SITE.pages.prices.desc=SITE.pages.prices.desc.replace('모든 견적 페이지는 아래 단가로 계산합니다. 부가세 별도 참고가이며,','모든 견적 페이지는 아래 단가로 계산합니다. 아래 단가는 부가세 별도이며, 견적 총액에는 부가세 10%가 포함됩니다. 금액은');
 if(SITE.priceLabels && SITE.priceLabels.outdoorClean==='실외기 세척 (1대)') SITE.priceLabels.outdoorClean='실외기 청소 (대당)';
 
 /* 시스템 에어컨 실외기 선택: 실내기 냉방 용량 합(평수 × 0.4kW)에 맞는 가장 작은 멀티 실외기. 조합률 130%까지 허용 */
@@ -1030,6 +1032,11 @@ function applySeason(items, date){
   if(isPeak(date)){ const ex=mul(labor, RATES.seasonFactor-1); items.push({label:'성수기 계수 ×'+RATES.seasonFactor+' (6~8월 시공비)', r:ex}); labor=add(labor,ex); }
   return labor;
 }
+/* 부가세: 공급가 범위 → 부가세 범위 (원 단위 반올림). withVat 는 내역에 '부가세' 줄을 넣고 부가세 포함 합계를 돌려줌 */
+const vatRate = () => (typeof RATES.vat==='number' && RATES.vat>0) ? RATES.vat : 0;
+const vatOf = r => [Math.round(r[0]*vatRate()), Math.round(r[1]*vatRate())];
+const vatLabel = () => '부가세 ('+Math.round(vatRate()*100)+'%)';
+function withVat(items, base){ const v=vatOf(base); if(!v[1]) return base; items.push({label:vatLabel(), r:v}); return add(base, v); }
 function linesHtml(items, total, totalLabel){
   return '<div class="lines">'+items.map(it=>'<div class="line"><span class="k">'+esc(it.label)+'</span><span class="v num">'+(it.info?esc(it.info):rangeText(it.r[0],it.r[1]))+'</span></div>').join('')+
     (total?'<div class="line tot"><span class="k">'+esc(totalLabel||'총액')+'</span><span class="v num">'+rangeText(total[0],total[1])+'</span></div>':'')+'</div>';
@@ -1269,7 +1276,7 @@ const Booking = {
   document.addEventListener('click', ev=>{ const a=ev.target&&ev.target.closest?ev.target.closest('a'):null; if(!a) return; const h=a.getAttribute('href')||''; const n=h.indexOf('tel:')===0?'tel':h.indexOf('sms:')===0?'sms':/kakao/.test(h)?'kakao':''; if(n) send(n); }, true);
 }catch(e){} })();
 
-window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, sendToServer, planFrom, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, brandLogo, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, linesHtml, Booking, Member, LOGO_SVG};
+window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, sendToServer, planFrom, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, brandLogo, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, withVat, vatOf, vatLabel, linesHtml, Booking, Member, LOGO_SVG};
 document.addEventListener('DOMContentLoaded', mountChrome);
 document.addEventListener('DOMContentLoaded', ()=>{ Member.sync(); });   /* 회원이면 쿠폰 목록을 서버에서 새로 받음 */
 /* 시작 화면은 각 페이지 <head>의 스크립트와 css(html.splash-on)가 처리. 화면을 누르면 바로 닫습니다 */

@@ -146,7 +146,7 @@ table.edit input[type=text]{min-width:120px}
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261109b"></script>
+<script src="js/common.js?v=20261109c"></script>
 <script>
 (function(){
 'use strict';
@@ -327,7 +327,7 @@ function render(){
     h+=card('시스템 에어컨 (천장형) · 부가 항목', '<div class="g2">'+Object.keys(RCEIL).map(k=>fRange('rates.ceil.'+k, plabel(CEIL_LBL[k]||'', RCEIL[k]))).join('')+'</div>');
     h+=card('공통 항목', '<div class="g2">'+Object.keys(RC).map(k=>fRange('rates.'+k, plabel(k,RC[k]))).join('')+'</div>');
     h+=card('단가표 항목 이름', '<div class="g2">'+Object.keys(DEFAULTS.site.priceLabels||{}).map(k=>fText('site.priceLabels.'+k, DEFAULTS.site.priceLabels[k])).join('')+'</div>', '고객이 보는 단가표 페이지와 위 표의 항목 이름입니다. 비우면 기본 이름으로 돌아갑니다. 견적 내역의 문구는 각 견적 페이지 코드에서 정해집니다.');
-    h+=card('계수·할인', '<div class="g3">'+fNum('rates.multiDiscount','동시 설치 할인율','0.1 = 10%')+fNum('rates.seasonFactor','성수기 계수 (6~8월)','1.1 = 10% 가산')+fNum('rates.commission','기사 중개 수수료율','0.05 = 5%')+'</div>'+
+    h+=card('계수·할인', '<div class="g3">'+fNum('rates.multiDiscount','동시 설치 할인율','0.1 = 10%')+fNum('rates.seasonFactor','성수기 계수 (6~8월)','1.1 = 10% 가산')+fNum('rates.commission','기사 중개 수수료율','0.05 = 5%')+fNum('rates.vat','부가세율 (모든 견적 총액에 포함)','0.1 = 10% · 0이면 미포함')+'</div>'+
       '<div class="g2">'+fRange('rates.housePipe','주택 추가 배관 (m)','외벽·지상 경로 가산 길이')+fRange('rates.dirt.1','청소 오염 가산 · 5~9년')+fRange('rates.dirt.2','청소 오염 가산 · 10년 이상')+Object.keys(GASF).map(k=>fRange('rates.gasFactor.'+k,'냉매 계수 · '+GASF[k])).join('')+'</div>');
   }
   if(tab==='brands'){

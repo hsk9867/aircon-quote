@@ -16,6 +16,37 @@
 .abar button{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:inherit;font-size:.85rem;font-weight:600;padding:8px 12px;border-radius:999px;white-space:nowrap;cursor:pointer}
 .abar button[aria-selected=true]{background:var(--accent);border-color:var(--accent);color:#fff}
 .panel{display:grid;gap:14px}
+/* 방문 통계 */
+.vz-range{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.vz-range button{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:inherit;font-size:.82rem;font-weight:600;padding:6px 11px;border-radius:999px;cursor:pointer}
+.vz-range button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.vz-range input{font-size:.82rem;padding:5px 8px;width:auto}
+.vz-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px}
+.vz-kpi{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface-2)}
+.vz-kpi span{display:block;font-size:.78rem;color:var(--muted);font-weight:600}
+.vz-kpi b{display:block;font-size:1.5rem;margin-top:4px;font-variant-numeric:tabular-nums}
+.vz-kpi small{font-size:.75rem;font-weight:700}
+.vz-up{color:#16a34a}.vz-down{color:#dc2626}.vz-flat{color:var(--muted)}
+.vz-chart{display:flex;align-items:flex-end;gap:3px;height:150px;padding-top:8px}
+.vz-chart .col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-width:0;height:100%}
+.vz-chart .bar{width:100%;max-width:28px;background:var(--accent);border-radius:4px 4px 0 0;min-height:2px;opacity:.85}
+.vz-chart .col:hover .bar{opacity:1}
+.vz-chart .lb{font-size:.66rem;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;max-width:100%}
+.vz-chart.hours .bar{background:#94a3b8}
+.vz-tbl{width:100%;border-collapse:collapse;font-size:.86rem}
+.vz-tbl th{font-size:.75rem;color:var(--muted);text-align:left;font-weight:600;padding:6px 4px;border-bottom:1px solid var(--line)}
+.vz-tbl td{padding:7px 4px;border-bottom:1px solid var(--line);vertical-align:middle}
+.vz-tbl td.n,.vz-tbl th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.vz-tbl .bg{position:relative}
+.vz-tbl .bg i{position:absolute;left:0;top:3px;bottom:3px;background:var(--accent);opacity:.12;border-radius:4px}
+.vz-tbl .bg span{position:relative;word-break:break-all}
+.vz-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.panel,.panel>*,.vz-2>*{min-width:0}
+.panel .acard{grid-template-columns:minmax(0,1fr)}
+.vz-tbl{table-layout:fixed;min-width:0!important;width:100%}.vz-tbl th.n,.vz-tbl td.n{width:64px}
+@media (max-width:760px){.vz-2{grid-template-columns:1fr}}
+.vz-live{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:600;color:#16a34a}
+.vz-live::before{content:"";width:8px;height:8px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.2)}
 .acard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:12px}
 .acard .ah{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .acard .ah p{font-size:.82rem;color:var(--muted);flex-basis:100%}
@@ -115,7 +146,7 @@ table.edit input[type=text]{min-width:120px}
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261026c"></script>
+<script src="js/common.js?v=20261109a"></script>
 <script>
 (function(){
 'use strict';
@@ -123,8 +154,8 @@ const S=window.SSW; const {$, esc, load, save, won, rangeShort, rangeText, fmtDa
 const clone=o=>JSON.parse(JSON.stringify(o));
 const isObj=v=>!!v&&typeof v==='object'&&!Array.isArray(v);
 function setPath(o,p,v){ const ks=p.split('.'); let a=o; for(let i=0;i<ks.length-1;i++){ if(a[ks[i]]==null) a[ks[i]]=/^\d+$/.test(ks[i+1])?[]:{}; a=a[ks[i]]; } a[ks[ks.length-1]]=v; }
-let mode='local', st={}, draft=null, tab='basic';
-try{ const h=location.hash.slice(1); if(/^(basic|home|pages|guide|reviews|teams|plan|rates|brands|rent|techs|members|inbox)$/.test(h)) tab=h; }catch(e){}
+let mode='local', st={}, draft=null, tab='visits';
+try{ const h=location.hash.slice(1); if(/^(visits|basic|home|pages|guide|reviews|teams|plan|rates|brands|rent|techs|members|inbox)$/.test(h)) tab=h; }catch(e){}
 
 /* ---------- 서버 API ---------- */
 async function api(action,data){
@@ -215,7 +246,7 @@ $('act-pw').addEventListener('click', async ()=>{ const cur=prompt('현재 비�
   try{ const r=await api('password',{current:cur,password:nw}); toast(r.ok?'비밀번호를 바꿨습니다.':(r.error==='wrong'?'현재 비밀번호가 틀립니다.':'실패: '+r.error), !r.ok); }catch(e){ toast('실패: '+e.message,true); } });
 
 /* ---------- 탭 ---------- */
-const TABS=[['basic','기본 정보'],['home','첫 화면'],['pages','페이지 문구'],['guide','약속·절차·FAQ'],['reviews','후기'],['teams','시공팀'],['plan','설치 플랜'],['rates','단가'],['brands','브랜드·제품'],['rent','렌탈'],['techs','제휴 기사'],['members','회원·쿠폰'],['inbox','접수 내역']];
+const TABS=[['visits','방문 통계'],['basic','기본 정보'],['home','첫 화면'],['pages','페이지 문구'],['guide','약속·절차·FAQ'],['reviews','후기'],['teams','시공팀'],['plan','설치 플랜'],['rates','단가'],['brands','브랜드·제품'],['rent','렌탈'],['techs','제휴 기사'],['members','회원·쿠폰'],['inbox','접수 내역']];
 function renderTabs(){ $('tabs').innerHTML=TABS.map(([k,l])=>'<button type="button" role="tab" data-tab="'+k+'" aria-selected="'+(k===tab)+'">'+l+(k==='inbox'&&lastNewCount?' <span class="badge" style="background:var(--warn);color:#fff">'+lastNewCount+'</span>':'')+'</button>').join(''); }
 $('tabs').addEventListener('click', e=>{ const b=e.target.closest('[data-tab]'); if(!b) return; tab=b.dataset.tab; try{ history.replaceState(null,'','#'+tab); }catch(e){} renderTabs(); render(); window.scrollTo({top:0}); });
 
@@ -316,6 +347,7 @@ function render(){
     h+=card('월 부가 항목 (원/월)', '<div class="g3">'+fRange('rent.care.1','연 1회 청소 관리')+fRange('rent.care.2','연 2회 청소 관리')+fRange('rent.warranty','보증·보험')+'</div>'+'<div class="g3">'+fNum('rent.multiDiscount','2대 이상 할인율','0.05 = 5%')+'</div>');
     h+=card('설치 환경별 추가 설치비 (렌탈료에 분할)', '<div class="g3">'+fRange('rent.installExtra.apt','아파트·오피스텔')+fRange('rent.installExtra.house','주택·빌라')+fRange('rent.installExtra.biz','매장·사무실')+'</div>');
   }
+  if(tab==='visits') h+=renderVisits();
   if(tab==='techs') h+=renderTechs();
   if(tab==='members') h+=renderMembers();
   if(tab==='inbox') h+= (mode==='server' ? renderInboxServer() : renderInbox());
@@ -323,6 +355,56 @@ function render(){
 }
 /* ---------- 제휴 기사 ---------- */
 let techs=[]; let techsLoaded=false;
+/* ---------- 방문 통계 ---------- */
+const VZ_PAGES={'/':'첫 화면','/install.html':'설치 견적','/shop.html':'상가·사무실 설치','/clean.html':'청소 견적','/gas.html':'냉매 충전','/move.html':'이전·설치','/rental.html':'렌탈','/business.html':'기업 문의','/partner.html':'설치기사 제휴','/prices.html':'단가표','/services.html':'서비스'};
+const VZ_EVENTS={tel:'전화 걸기',sms:'문자 보내기',kakao:'카카오톡 상담',book:'예약 신청 접수',inquiry:'기업 문의 접수'};
+let vz={data:null,err:'',loading:false,preset:7,from:'',to:''};
+const vzDay=(d)=>{ const t=new Date(Date.now()+9*3600e3); t.setUTCDate(t.getUTCDate()-d); return t.toISOString().slice(0,10); };
+async function loadVisits(){
+  if(mode!=='server'||vz.loading) return;
+  vz.loading=true;
+  if(vz.preset){ vz.to=vzDay(0); vz.from=vzDay(vz.preset-1); }
+  try{ const r=await fetch('admin/api.php?action=visits&from='+vz.from+'&to='+vz.to+'&_='+Date.now(),{credentials:'same-origin',headers:{'X-Requested-With':'SSW'}}); const j=JSON.parse(await r.text()); if(j.ok){ vz.data=j; vz.err=''; } else vz.err=j.error||'오류'; }catch(e){ vz.err=e.message; }
+  vz.loading=false; if(tab==='visits') render();
+}
+function vzDelta(a,b){ if(!b) return a?'<small class="vz-up">새로 집계</small>':'<small class="vz-flat">-</small>'; const p=Math.round((a-b)/b*100); return '<small class="'+(p>0?'vz-up':p<0?'vz-down':'vz-flat')+'">'+(p>0?'▲ ':p<0?'▼ ':'')+Math.abs(p)+'% <span style="color:var(--muted);font-weight:500">지난 기간 대비</span></small>'; }
+function vzTable(rows,label,map){
+  if(!rows||!rows.length) return '<div class="empty">아직 기록이 없습니다.</div>';
+  const mx=Math.max(...rows.map(r=>r.uv))||1;
+  return '<table class="vz-tbl"><tr><th>'+esc(label)+'</th><th class="n">방문자</th><th class="n">조회</th></tr>'+rows.map(r=>'<tr><td class="bg"><i style="width:'+Math.round(r.uv/mx*100)+'%"></i><span>'+esc(map?(map[r.k]||r.k):r.k)+'</span></td><td class="n">'+r.uv.toLocaleString()+'</td><td class="n">'+r.pv.toLocaleString()+'</td></tr>').join('')+'</table>';
+}
+function renderVisits(){
+  if(mode!=='server') return card('방문 통계','<div class="empty">방문 통계는 실제 서비스 주소(soksiwon-air.com)에서만 집계됩니다.</div>');
+  if(!vz.data&&!vz.err){ loadVisits(); return card('방문 통계','<div class="empty">불러오는 중…</div>'); }
+  const presets=[[1,'오늘'],[7,'최근 7일'],[30,'최근 30일'],[90,'최근 90일']];
+  const bar='<div class="vz-range">'+presets.map(([d,l])=>'<button type="button" data-vz-preset="'+d+'" class="'+(vz.preset===d?'on':'')+'">'+l+'</button>').join('')+'<input type="date" data-vz="from" value="'+esc(vz.from)+'"> ~ <input type="date" data-vz="to" value="'+esc(vz.to)+'"><button type="button" data-vz-reload>새로고침</button></div>';
+  if(vz.err) return card('방문 통계',bar+'<div class="empty">불러오지 못했습니다: '+esc(vz.err)+'</div>');
+  const d=vz.data, t=d.totals, p=d.prev;
+  const kp=(l,a,b)=>'<div class="vz-kpi"><span>'+l+'</span><b>'+a.toLocaleString()+'</b>'+vzDelta(a,b)+'</div>';
+  let h=card('방문 통계', bar+'<div class="vz-kpis">'+kp('방문자',t.uv,p.uv)+kp('방문 수',t.visits,p.visits)+kp('페이지 조회',t.pv,p.pv)+kp('신규 방문자',t.newUsers,p.newUsers)+kp('전화·카톡·접수',t.events,p.events)+'</div>',
+    d.range.from+' ~ '+d.range.to+' ('+d.range.days+'일) · 지난 기간 '+d.range.prevFrom+' ~ '+d.range.prevTo+' · 관리자로 로그인한 브라우저와 검색 로봇은 집계하지 않습니다.',
+    '<span class="vz-live">지금 접속 '+d.live+'명</span>');
+  const mx=Math.max(1,...d.daily.map(x=>x.uv));
+  const step=Math.ceil(d.daily.length/15);
+  h+=card('날짜별 방문자','<div class="vz-chart">'+d.daily.map((x,i)=>'<div class="col" title="'+x.day+' · 방문자 '+x.uv+' · 조회 '+x.pv+' · 클릭/접수 '+x.ev+'"><div class="bar" style="height:'+Math.round(x.uv/mx*100)+'%"></div><div class="lb">'+(i%step===0?x.day.slice(5).replace('-','/'):'&nbsp;')+'</div></div>').join('')+'</div>','막대에 마우스를 올리면 그날 숫자가 보입니다.');
+  const hm=Math.max(1,...d.hourly);
+  h+=card('시간대별 조회','<div class="vz-chart hours">'+d.hourly.map((v,i)=>'<div class="col" title="'+i+'시 · 조회 '+v+'"><div class="bar" style="height:'+Math.round(v/hm*100)+'%"></div><div class="lb">'+(i%3===0?i+'시':'&nbsp;')+'</div></div>').join('')+'</div>','한국 시간 기준');
+  h+='<div class="vz-2">'+card('유입 경로',vzTable(d.sources,'어디서 왔나'),'네이버·구글 검색, 카카오톡, 직접 입력 등')+card('많이 본 페이지',vzTable(d.pages,'페이지',VZ_PAGES))+'</div>';
+  h+='<div class="vz-2">'+card('전화·카톡·접수',vzTable(d.events,'행동',VZ_EVENTS),'버튼을 누른 횟수와 실제 접수 건수')+card('들어온 링크',vzTable(d.referrers,'주소'),'다른 사이트의 어떤 글·페이지에서 넘어왔는지')+'</div>';
+  h+='<div class="vz-2">'+card('기기',vzTable(d.devices,'기기'))+card('브라우저',vzTable(d.browsers,'브라우저'))+'</div>';
+  if(d.campaigns&&d.campaigns.length) h+=card('캠페인 (utm)',vzTable(d.campaigns,'출처 / 매체 / 캠페인'),'링크 뒤에 ?utm_source=... 를 붙여 홍보하면 여기에 따로 집계됩니다.');
+  h+=card('최근 기록',d.recent.length?'<table class="vz-tbl"><tr><th>시각</th><th>내용</th><th>기기</th></tr>'+d.recent.map(r=>{ const tm=new Date((r.ts+9*3600)*1000).toISOString().slice(5,16).replace('T',' '); const what=r.t==='e'?'<b style="color:var(--accent)">'+esc(VZ_EVENTS[r.n]||r.n)+'</b>':esc(VZ_PAGES[r.p]||r.p)+' <small style="color:var(--muted)">← '+esc(r.s)+(r.rh?' · '+esc(r.rh):'')+'</small>'; return '<tr><td class="n" style="text-align:left">'+tm+'</td><td>'+what+'</td><td>'+esc((r.dev||'')+' '+(r.br||''))+'</td></tr>'; }).join('')+'</table>':'<div class="empty">아직 기록이 없습니다.</div>');
+  return h;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-vz-preset]'); if(b){ vz.preset=+b.dataset.vzPreset; vz.data=null; render(); return; }
+  if(e.target.closest('[data-vz-reload]')){ vz.data=null; render(); }
+});
+document.addEventListener('change',e=>{
+  const i=e.target.closest('[data-vz]'); if(!i||!i.value) return;
+  vz[i.dataset.vz]=i.value; vz.preset=0; vz.data=null; render();
+});
+
 async function loadTechs(){ if(mode==='server'){ try{ const r=await api('techs'); if(r.ok){ techs=r.techs||[]; } }catch(e){} } else { try{ techs=JSON.parse(localStorage.getItem('ssw_techs')||'[]'); }catch(e){ techs=[]; } } techsLoaded=true; if(tab==='techs') render(); }
 async function saveTechs(){ techs=techs.filter(t=>(t.name||t.phone)); if(mode==='server'){ try{ const r=await api('techs_save',{techs}); if(r.ok){ techs=r.techs; toast('기사 목록을 저장했습니다.'); } else toast('저장 실패: '+r.error,true); }catch(e){ toast('저장 실패: '+e.message,true); } } else { try{ localStorage.setItem('ssw_techs',JSON.stringify(techs)); toast('이 브라우저에 저장했습니다.'); }catch(e){} } render(); }
 function renderTechs(){

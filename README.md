@@ -36,6 +36,11 @@
 - 미리보기: 저장 전 초안을 새 탭에서 봅니다 (그 탭에만 적용, 하단에 주황색 표시줄).
 - 비밀번호를 잊으면 서버의 `admin/auth.php` 를 지우고 다시 설정하거나, `deploy/cafe24.local.ps1` 에 `CAFE24_ADMIN_PASS` 를 적고 `-ResetAdminPassword` 로 배포합니다.
 
+## 방문 통계 (관리자 첫 탭)
+- 주소: soksiwon-air.com/admin (→ admin.html). 첫 탭 "방문 통계"에서 방문자·방문 수·페이지 조회·신규 방문자·전화/카톡/접수 클릭, 날짜별·시간대별, 유입 경로(네이버 검색·척척박사 홈페이지 등), 많이 본 견적 페이지, 들어온 링크, 기기·브라우저, 최근 기록을 봅니다.
+- js/common.js 가 페이지마다 admin/api.php?action=hit 로 기록하고, 예약·기업 문의 접수는 서버가 직접 기록합니다. 저장 위치는 admin/store/hits/YYYY-MM.jsonl (외부 접근 차단). 관리자로 로그인한 브라우저, 검색 로봇, GitHub Pages 주소는 집계하지 않습니다.
+- 홍보 링크에 ?utm_source=blog 처럼 붙이면 유입 경로가 따로 잡힙니다.
+
 ## 접수함 (예약·기업 문의)
 - 고객이 예약 신청을 누르면 `admin/api.php?action=book` 으로 서버에 저장되고(`admin/store/bookings.json`), 기업 문의는 `inquiry` 로 저장됩니다(`inquiries.json`). 두 파일은 `.htaccess` 로 외부 접근이 막혀 있고 관리자 로그인 후 API로만 읽습니다.
 - 관리자 페이지 "접수 내역" 탭이 20초마다 자동 갱신되며 새 접수가 오면 알림이 뜹니다. 상태(신규·연락 완료·기사 배정·시공 완료·취소)와 삭제는 서버에 저장됩니다.

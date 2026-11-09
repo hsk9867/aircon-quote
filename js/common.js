@@ -1259,6 +1259,14 @@ const Booking = {
   }
 };
 
+/* 방문 통계: 페이지 열람과 전화·문자·카카오톡 클릭을 admin/api.php 에 기록 (관리자 페이지·미리보기·PHP 없는 주소는 제외) */
+(function(){ try{
+  if(navigator.webdriver || PREVIEW || location.protocol==='file:' || /admin\.html$/.test(location.pathname) || /github\.io$/.test(location.hostname)) return;
+  const send=(e)=>{ try{ fetch('admin/api.php?action=hit',{method:'POST',credentials:'same-origin',keepalive:true,headers:{'X-Requested-With':'SSW','Content-Type':'application/json'},body:JSON.stringify({p:location.pathname,r:document.referrer||'',q:location.search||'',e:e||''})}).catch(()=>{}); }catch(err){} };
+  send();
+  document.addEventListener('click', ev=>{ const a=ev.target&&ev.target.closest?ev.target.closest('a'):null; if(!a) return; const h=a.getAttribute('href')||''; const n=h.indexOf('tel:')===0?'tel':h.indexOf('sms:')===0?'sms':/kakao/.test(h)?'kakao':''; if(n) send(n); }, true);
+}catch(e){} })();
+
 window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, sendToServer, planFrom, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, brandLogo, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, linesHtml, Booking, Member, LOGO_SVG};
 document.addEventListener('DOMContentLoaded', mountChrome);
 document.addEventListener('DOMContentLoaded', ()=>{ Member.sync(); });   /* 회원이면 쿠폰 목록을 서버에서 새로 받음 */

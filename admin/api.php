@@ -112,6 +112,60 @@ function ensureStore(string $storeDir): void {
     if (!is_file($storeDir . '/.htaccess')) @file_put_contents($storeDir . '/.htaccess', "Require all denied\n<IfModule !mod_authz_core.c>\nOrder allow,deny\nDeny from all\n</IfModule>\n");
 }
 
+/* ---------- 방문 통계 (월별 jsonl: admin/store/hits/YYYY-MM.jsonl) ---------- */
+$hitDir = $storeDir . '/hits';
+function kstNow(): array { $t = time() + 9 * 3600; return ['ts' => time(), 'day' => gmdate('Y-m-d', $t), 'hour' => (int)gmdate('G', $t), 'month' => gmdate('Y-m', $t)]; }
+function isBot(string $ua): bool { return $ua === '' || (bool)preg_match('/bot|crawl|spider|slurp|yeti|daumoa|kakaotalk-scrap|facebookexternalhit|headless|lighthouse|pagespeed|preview|monitor|python|curl\/|wget|httpclient|go-http|java\/|okhttp|scrapy|phantom|puppeteer|playwright|gptbot|claudebot|perplexitybot|bytespider|petalbot|semrush|ahrefs|mj12|dataforseo/i', $ua); }
+function uaInfo(string $ua): array {
+    $dev = preg_match('/iPad|Tablet|SM-T\d/i', $ua) ? '태블릿' : (preg_match('/Mobi|Android|iPhone/i', $ua) ? '모바일' : 'PC');
+    $os = preg_match('/Windows/i', $ua) ? 'Windows' : (preg_match('/iPhone|iPad|iPod/i', $ua) ? 'iOS' : (preg_match('/Android/i', $ua) ? 'Android' : (preg_match('/Mac OS/i', $ua) ? 'macOS' : '기타')));
+    $br = preg_match('/KAKAOTALK/i', $ua) ? '카카오톡 인앱' : (preg_match('/Instagram/i', $ua) ? '인스타그램 인앱' : (preg_match('/NAVER\(inapp/i', $ua) ? '네이버 앱' : (preg_match('/Whale\//', $ua) ? '웨일' : (preg_match('/SamsungBrowser/', $ua) ? '삼성 인터넷' : (preg_match('/Edg\//', $ua) ? 'Edge' : (preg_match('/Chrome\/|CriOS/', $ua) ? 'Chrome' : (preg_match('/Safari\//', $ua) ? 'Safari' : '기타')))))));
+    return [$dev, $os, $br];
+}
+function classifySrc(string $host, string $utm, string $ua): string {
+    $names = ['naver' => '네이버', 'google' => '구글', 'kakao' => '카카오톡', 'instagram' => '인스타그램', 'blog' => '블로그', 'sms' => '문자', 'qr' => 'QR코드', 'daangn' => '당근', 'cheokcheok' => '척척박사 홈페이지'];
+    if ($utm !== '') return $names[strtolower($utm)] ?? mb_substr($utm, 0, 40);
+    if ($host === '') {
+        if (preg_match('/KAKAOTALK/i', $ua)) return '카카오톡';
+        if (preg_match('/Instagram/i', $ua)) return '인스타그램';
+        if (preg_match('/NAVER\(inapp/i', $ua)) return '네이버 앱';
+        return '직접 유입';
+    }
+    $rules = [
+        '/(^|\.)search\.naver\.com$/' => '네이버 검색', '/(^|\.)map\.naver\.com$/' => '네이버 지도', '/(^|\.)place\.naver\.com$/' => '네이버 플레이스',
+        '/(^|\.)blog\.naver\.com$/' => '네이버 블로그', '/(^|\.)cafe\.naver\.com$/' => '네이버 카페', '/(^|\.)(naver\.com|naver\.me)$/' => '네이버',
+        '/(^|\.)google\./' => '구글', '/(^|\.)daum\.net$/' => '다음', '/(^|\.)bing\.com$/' => 'Bing', '/(^|\.)kakao\.com$/' => '카카오톡',
+        '/(^|\.)daangn\.com$/' => '당근', '/instagram\.com$/' => '인스타그램', '/(^|\.)(youtube\.com|youtu\.be)$/' => '유튜브',
+        '/(chatgpt\.com|openai\.com)$/' => 'ChatGPT', '/xn--bh3b07fhxbng33k1e399ba934cm9g\.com$|cheokcheok-aircon/' => '척척박사 홈페이지',
+    ];
+    foreach ($rules as $re => $name) if (preg_match($re, $host)) return $name;
+    return '기타 사이트';
+}
+function visitorId(bool $issue): string {
+    $v = (string)($_COOKIE['ssw_vid'] ?? '');
+    if (preg_match('/^[a-f0-9]{16}$/', $v)) return $v;
+    $v = bin2hex(random_bytes(8));
+    if ($issue) setcookie('ssw_vid', $v, ['expires' => time() + 400 * 86400, 'path' => '/', 'httponly' => true, 'samesite' => 'Lax', 'secure' => !empty($GLOBALS['secure'])]);
+    return $v;
+}
+function hitLog(string $dir, string $type, string $name, string $path, string $ref, string $query, bool $issueVid): void {
+    $ua = (string)($_SERVER['HTTP_USER_AGENT'] ?? '');
+    if (isBot($ua)) return;
+    $n = kstNow();
+    if (!is_dir($dir) && !@mkdir($dir, 0755, true)) return;
+    $f = $dir . '/' . $n['month'] . '.jsonl';
+    if (is_file($f) && filesize($f) > 60 * 1024 * 1024) return;
+    $rh = ''; $ru = '';
+    if ($ref !== '') { $u = parse_url($ref); $h = strtolower((string)($u['host'] ?? '')); $self = strtolower((string)($_SERVER['HTTP_HOST'] ?? ''));
+        if ($h !== '' && $h !== $self && $h !== 'www.' . $self && 'www.' . $h !== $self) { $rh = preg_replace('/^www\./', '', $h); $ru = mb_substr(($u['scheme'] ?? 'http') . '://' . $h . ($u['path'] ?? '') . (isset($u['query']) ? '?' . $u['query'] : ''), 0, 300); } }
+    parse_str(ltrim($query, '?'), $q);
+    $utm = cleanStr($q['utm_source'] ?? '', 60);
+    [$dev, $os, $br] = uaInfo($ua);
+    $row = ['ts' => $n['ts'], 'd' => $n['day'], 'h' => $n['hour'], 't' => $type, 'n' => $name, 'p' => $path, 's' => classifySrc($rh, $utm, $ua), 'rh' => $rh, 'ru' => $ru,
+            'm' => cleanStr($q['utm_medium'] ?? '', 60), 'c' => cleanStr($q['utm_campaign'] ?? '', 80), 'dev' => $dev, 'os' => $os, 'br' => $br, 'v' => visitorId($issueVid)];
+    @file_put_contents($f, json_encode($row, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n", FILE_APPEND | LOCK_EX);
+}
+
 $action = isset($_GET['action']) ? (string)$_GET['action'] : '';
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method === 'POST' && (($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') !== 'SSW')) fail('bad_request');
@@ -228,6 +282,7 @@ switch ($action) {
         $ok = writeList($file, $list);
         if ($fp) { flock($fp, LOCK_UN); fclose($fp); }
         if (!$ok) fail('write', '접수 파일을 쓸 수 없습니다. FTP에서 admin 폴더 권한을 707로 바꿔 주세요.');
+        if (empty($_SESSION['ssw_admin'])) hitLog($hitDir, 'e', $isBook ? 'book' : 'inquiry', '', '', '', false);
         out(['ok' => true, 'id' => $id, 'receivedAt' => $rec['receivedAt']]);
 
     /* ---------- 공개: 회원가입 (이름·휴대폰). 같은 번호면 기존 회원으로 이어서 사용 ---------- */
@@ -412,6 +467,69 @@ switch ($action) {
             fail('write', 'data 폴더에 쓸 수 없습니다. FTP에서 data 폴더와 config.js 권한을 707/666으로 바꿔 주세요.');
         }
         out(['ok' => true, 'savedAt' => $cfg['savedAt']]);
+
+    /* ---------- 공개: 방문 기록 (js/common.js 가 페이지마다 보냄) ---------- */
+    case 'hit':
+        if ($method !== 'POST') fail('bad_request');
+        if ($logged) out(['ok' => true]);                       /* 관리자 브라우저는 집계 제외 */
+        $raw = file_get_contents('php://input');
+        if ($raw === false || strlen($raw) > 4096) out(['ok' => true]);
+        $b = json_decode($raw, true); if (!is_array($b)) out(['ok' => true]);
+        $p = (string)($b['p'] ?? ''); $p = explode('?', $p)[0];
+        if ($p === '' || $p[0] !== '/' || strlen($p) > 120 || strpos($p, '/admin') === 0) out(['ok' => true]);
+        if ($p === '/index.html') $p = '/';
+        $e = cleanStr($b['e'] ?? '', 30);
+        if ($e !== '' && !preg_match('/^[a-z_]+$/', $e)) out(['ok' => true]);
+        hitLog($hitDir, $e !== '' ? 'e' : 'v', $e, $p, cleanStr($b['r'] ?? '', 500), cleanStr($b['q'] ?? '', 300), true);
+        out(['ok' => true]);
+
+    /* ---------- 관리자: 방문 통계 ---------- */
+    case 'visits':
+        if (!$logged) fail('auth');
+        $today = kstNow()['day'];
+        $vd = function ($s) { return is_string($s) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $s) && strtotime($s . ' 00:00:00 UTC') !== false; };
+        $to = (string)($_GET['to'] ?? ''); if (!$vd($to)) $to = $today;
+        $from = (string)($_GET['from'] ?? ''); if (!$vd($from)) $from = gmdate('Y-m-d', strtotime($to . ' UTC') - 6 * 86400);
+        if ($from > $to) { $x = $from; $from = $to; $to = $x; }
+        $days = (int)round((strtotime($to . ' UTC') - strtotime($from . ' UTC')) / 86400) + 1;
+        if ($days > 400) { $from = gmdate('Y-m-d', strtotime($to . ' UTC') - 399 * 86400); $days = 400; }
+        $pFrom = gmdate('Y-m-d', strtotime($from . ' UTC') - $days * 86400); $pTo = gmdate('Y-m-d', strtotime($from . ' UTC') - 86400);
+        $agg = function () { return ['pv' => 0, 'uv' => [], 'visits' => [], 'ev' => 0]; };
+        $cur = $agg(); $prev = $agg(); $daily = []; $hourly = array_fill(0, 24, 0); $src = []; $pages = []; $refs = []; $dev = []; $br = []; $os = []; $evs = []; $camp = []; $recent = []; $live = []; $firstDay = [];
+        for ($i = 0; $i < $days; $i++) { $dd = gmdate('Y-m-d', strtotime($from . ' UTC') + $i * 86400); $daily[$dd] = ['day' => $dd, 'pv' => 0, 'uv' => [], 'ev' => 0]; }
+        $files = is_dir($hitDir) ? glob($hitDir . '/*.jsonl') : [];
+        sort($files);
+        $now = time();
+        $add = function (array &$m, string $k, string $v) { if (!isset($m[$k])) $m[$k] = ['pv' => 0, 'uv' => []]; $m[$k]['pv']++; $m[$k]['uv'][$v] = 1; };
+        foreach ($files as $f) {
+            $fh = @fopen($f, 'r'); if (!$fh) continue;
+            while (($line = fgets($fh)) !== false) {
+                $r = json_decode($line, true); if (!is_array($r)) continue;
+                $d = (string)$r['d']; $v = (string)$r['v']; $isV = ($r['t'] === 'v');
+                if ($isV && (!isset($firstDay[$v]) || $d < $firstDay[$v])) $firstDay[$v] = $d;
+                if ($r['ts'] > $now - 1800) $live[$v] = 1;
+                if ($d >= $pFrom && $d <= $pTo) { if ($isV) { $prev['pv']++; $prev['uv'][$v] = 1; $prev['visits'][$d . $v] = 1; } else $prev['ev']++; }
+                if ($d < $from || $d > $to) continue;
+                $recent[] = $r; if (count($recent) > 400) $recent = array_slice($recent, -200);
+                if (!$isV) { $cur['ev']++; $daily[$d]['ev']++; $add($evs, (string)$r['n'], $v); continue; }
+                $cur['pv']++; $cur['uv'][$v] = 1; $cur['visits'][$d . $v] = 1;
+                $daily[$d]['pv']++; $daily[$d]['uv'][$v] = 1; $hourly[(int)$r['h']]++;
+                $add($src, (string)$r['s'], $v); $add($pages, (string)$r['p'], $v); $add($dev, (string)$r['dev'], $v); $add($br, (string)$r['br'], $v); $add($os, (string)$r['os'], $v);
+                if ($r['ru'] !== '') $add($refs, (string)$r['ru'], $v);
+                if ($r['m'] !== '' || $r['c'] !== '') $add($camp, $r['s'] . ' / ' . $r['m'] . ' / ' . $r['c'], $v);
+            }
+            fclose($fh);
+        }
+        $fin = function (array $m, int $lim = 30) { $o = []; foreach ($m as $k => $x) $o[] = ['k' => (string)$k, 'pv' => $x['pv'], 'uv' => count($x['uv'])]; usort($o, function ($a, $b) { return [$b['uv'], $b['pv']] <=> [$a['uv'], $a['pv']]; }); return array_slice($o, 0, $lim); };
+        $newCur = 0; $newPrev = 0; foreach ($firstDay as $fd) { if ($fd >= $from && $fd <= $to) $newCur++; elseif ($fd >= $pFrom && $fd <= $pTo) $newPrev++; }
+        $recent = array_reverse(array_slice($recent, -40));
+        foreach ($recent as &$rr) { unset($rr['v'], $rr['ru']); } unset($rr);
+        out(['ok' => true, 'range' => ['from' => $from, 'to' => $to, 'days' => $days, 'prevFrom' => $pFrom, 'prevTo' => $pTo, 'today' => $today],
+            'totals' => ['pv' => $cur['pv'], 'uv' => count($cur['uv']), 'visits' => count($cur['visits']), 'events' => $cur['ev'], 'newUsers' => $newCur],
+            'prev' => ['pv' => $prev['pv'], 'uv' => count($prev['uv']), 'visits' => count($prev['visits']), 'events' => $prev['ev'], 'newUsers' => $newPrev],
+            'daily' => array_values(array_map(function ($x) { return ['day' => $x['day'], 'pv' => $x['pv'], 'uv' => count($x['uv']), 'ev' => $x['ev']]; }, $daily)),
+            'hourly' => $hourly, 'sources' => $fin($src), 'pages' => $fin($pages), 'referrers' => $fin($refs), 'campaigns' => $fin($camp),
+            'devices' => $fin($dev), 'browsers' => $fin($br), 'os' => $fin($os), 'events' => $fin($evs), 'live' => count($live), 'recent' => $recent]);
 
     default:
         fail('unknown_action');

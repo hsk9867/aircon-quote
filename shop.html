@@ -99,7 +99,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261109a"></script>
+<script src="js/common.js?v=20261109b"></script>
 <script>
 (function(){
 'use strict';
@@ -161,6 +161,7 @@ function laborFor(inp){
   const items=[]; const house = inp.home==='house'; const n=inp.units.length;
   if(isSystem(inp.units)){
     const C=RATES.ceil; const setR = C.set && C.set[n];   /* 대수별 설치 단가가 있으면 그걸로, 없으면 실내기 1대 × N + 실외기 */
+    if(C.base && C.base[1]) items.push({label:'시스템 에어컨 기본 설치비 (현장 1회)', r:C.base});
     if(setR && setR[1]) items.push({label:'시스템 에어컨 '+n+'대 설치 (천장형 실내기 '+n+'대 + 실외기 1대)', r:setR});
     inp.units.forEach((u,i)=>{
       if(!(setR && setR[1])) items.push({label:(i+1)+'번 '+u.room+' 천장형 실내기 설치', r:C.indoor});

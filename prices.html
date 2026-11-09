@@ -55,7 +55,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261109a"></script>
+<script src="js/common.js?v=20261109b"></script>
 <script>
 (function(){
 'use strict';
@@ -73,6 +73,7 @@ document.querySelector('#t-type tbody').innerHTML = [
 ].map(([k,r])=>row3(L(k),r)).join('');
 const C=RATES.ceil;
 document.querySelector('#t-sys tbody').innerHTML = [
+  ['ceilBase',C.base,''],
   ...[1,2,3,4,5,6].filter(n=>C.set&&C.set[n]&&C.set[n][1]).map(n=>['ceilSet'+n,C.set[n],'실내기 '+n+'대 + 실외기 1대']),
   ['ceilIndoor',C.indoor,'대수별 단가가 없을 때'],['ceilHatch',add(C.hatch,C.drain),''],['ceilOutdoor',(C.outdoor&&C.outdoor[1])?C.outdoor:null,'실내기 가격에 포함'],
   ['ceilClean',C.clean,''],['ceilProtect',C.protect,''],['ceilPaper',C.paper,''],['ceilGas',C.gas,'']

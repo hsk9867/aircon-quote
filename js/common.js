@@ -38,6 +38,8 @@ const BRANDS_DEFAULT = [
   "line": "무풍·Q9000",
   "note": "2026-10-06 단가표 기준 (배송 포함가) · 판매가 = 원가·도매가 + 플랫폼 마진 10% (천 원 단위 반올림)",
   "models": {
+   "ceilMulti": {"5":["",0,0],"6":["",0,0],"8":["",0,0],"10":["",0,0],"13":["",0,0],"15":["",0,0]},
+   "outdoorsMulti": [],
    "wall": {
     "6": [
      "벽걸이 6평 AR06D1150HZS",
@@ -922,7 +924,19 @@ try{
 let CFG = isObj(window.SSW_CONFIG) ? window.SSW_CONFIG : {};
 if(PREVIEW){ try{ const d=JSON.parse(localStorage.getItem('ssw_preview_cfg')||'null'); if(isObj(d)) CFG=d; }catch(e){} }
 const RATES  = deepMerge(RATES_DEFAULT, isObj(CFG.rates)?CFG.rates:{});
-const BRANDS = (Array.isArray(CFG.brands) && CFG.brands.length) ? CFG.brands : BRANDS_DEFAULT;
+const BRANDS_RAW = (Array.isArray(CFG.brands) && CFG.brands.length) ? CFG.brands : BRANDS_DEFAULT;
+/* 견적 계산에는 채워진 칸만 씀: 모델명이 비었거나 판매가가 0 이하인 칸(관리자에서 자리만 만들어 둔 칸)은 빼고 복사 */
+const BRANDS = BRANDS_RAW.map(b=>{
+  const models={};
+  Object.keys((b&&b.models)||{}).forEach(k=>{
+    const v=b.models[k];
+    if(k==='outdoor'){ models[k]=v; return; }
+    if(Array.isArray(v)) models[k]=v.filter(o=>o && String(o.name||'').trim() && +o.price>0);
+    else if(v && typeof v==='object'){ const t={}; Object.keys(v).forEach(py=>{ const r=v[py]; if(Array.isArray(r) && String(r[0]||'').trim() && +r[1]>0) t[py]=r; }); models[k]=t; }
+    else models[k]=v;
+  });
+  return Object.assign({}, b, {models});
+});
 const RENT   = deepMerge(RENT_DEFAULT, isObj(CFG.rent)?CFG.rent:{});
 const SITE   = deepMerge(SITE_DEFAULT, isObj(CFG.site)?CFG.site:{});
 /* 예전 기본값으로 저장된 첫 화면 메뉴 이름은 새 이름으로 읽음 (관리자 페이지에서 다시 저장하면 그 값 우선) */

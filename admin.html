@@ -146,7 +146,7 @@ table.edit input[type=text]{min-width:120px}
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261113b"></script>
+<script src="js/common.js?v=20261113c"></script>
 <script>
 (function(){
 'use strict';
@@ -167,7 +167,9 @@ async function api(action,data){
 function toast(msg,bad){ const t=$('toast'); t.textContent=msg; t.className='toast'+(bad?' bad':''); t.hidden=false; clearTimeout(toast.h); toast.h=setTimeout(()=>{t.hidden=true;},3500); }
 function fromConfig(cfg){ cfg=isObj(cfg)?cfg:{}; return {
   site:deepMerge(DEFAULTS.site, isObj(cfg.site)?cfg.site:{}), rates:deepMerge(DEFAULTS.rates, isObj(cfg.rates)?cfg.rates:{}),
-  brands:(Array.isArray(cfg.brands)&&cfg.brands.length)?clone(cfg.brands):clone(DEFAULTS.brands), rent:deepMerge(DEFAULTS.rent, isObj(cfg.rent)?cfg.rent:{}) }; }
+  brands:withSamsungMulti((Array.isArray(cfg.brands)&&cfg.brands.length)?clone(cfg.brands):clone(DEFAULTS.brands)), rent:deepMerge(DEFAULTS.rent, isObj(cfg.rent)?cfg.rent:{}) }; }
+/* 삼성 다배관(천장형 실내기 6칸·실외기 목록)이 아직 없으면 빈 칸으로 추가. 모델명·판매가를 채운 칸만 견적에 쓰입니다 */
+function withSamsungMulti(list){ list.forEach(b=>{ if(!b||b.id!=='samsung'||!isObj(b.models)) return; if(!isObj(b.models.ceilMulti)||!Object.keys(b.models.ceilMulti).length) b.models.ceilMulti={"5":["",0,0],"6":["",0,0],"8":["",0,0],"10":["",0,0],"13":["",0,0],"15":["",0,0]}; if(!Array.isArray(b.models.outdoorsMulti)) b.models.outdoorsMulti=[]; }); return list; }
 function toConfig(){ return {site:draft.site, rates:draft.rates, brands:draft.brands, rent:draft.rent, savedAt:new Date().toISOString()}; }
 function keepLocal(){ if(mode==='local'){ try{ localStorage.setItem('ssw_cfg_draft', JSON.stringify(toConfig())); }catch(e){} } }
 
@@ -332,7 +334,7 @@ function render(){
       const tbl=(t,label)=>{ const m=b.models[t]||{}; const keys=Object.keys(m).sort((a,c)=>a-c); if(!keys.length) return ''; const hasCost=keys.some(k=>m[k].length>2); return '<div class="tbl-wrap"><table class="edit"><thead><tr><th>'+label+'</th><th>모델명</th><th>판매가 (원, 부가세 별도)</th>'+(hasCost?'<th>원가·도매 (원, 부가세 별도)</th>':'')+'</tr></thead><tbody>'+keys.map(k=>'<tr><td>'+k+'평</td><td><input type="text" data-p="'+pre+'.models.'+t+'.'+k+'.0" value="'+esc(m[k][0])+'"></td><td><input type="number" step="1000" data-n="1" data-p="'+pre+'.models.'+t+'.'+k+'.1" value="'+m[k][1]+'"></td>'+(hasCost?'<td><input type="number" step="1000" data-n="1" data-p="'+pre+'.models.'+t+'.'+k+'.2" value="'+(m[k][2]||0)+'"></td>':'')+'</tr>').join('')+'</tbody></table></div>'; };
       const odTbl=(key,label)=>{ key=key||'outdoors'; label=label||'멀티 실외기'; const od=b.models[key]; if(!Array.isArray(od)) return ''; return '<div class="tbl-wrap"><table class="edit"><thead><tr><th>'+label+'</th><th>마력</th><th>냉방 kW</th><th>모델명</th><th>판매가 (원, 부가세 별도)</th><th>원가·도매 (원, 부가세 별도)</th><th></th></tr></thead><tbody>'+od.map((o,j)=>'<tr><td>'+(j+1)+'</td><td><input type="number" step="0.5" data-n="1" data-p="'+pre+'.models.'+key+'.'+j+'.hp" value="'+o.hp+'"></td><td><input type="number" step="0.1" data-n="1" data-p="'+pre+'.models.'+key+'.'+j+'.kw" value="'+o.kw+'"></td><td><input type="text" data-p="'+pre+'.models.'+key+'.'+j+'.name" value="'+esc(o.name)+'"></td><td><input type="number" step="1000" data-n="1" data-p="'+pre+'.models.'+key+'.'+j+'.price" value="'+o.price+'"></td><td><input type="number" step="1000" data-n="1" data-p="'+pre+'.models.'+key+'.'+j+'.cost" value="'+(o.cost||0)+'"></td><td>'+del(pre+'.models.'+key+'.'+j)+'</td></tr>').join('')+'</tbody></table></div><p class="kv">3대 이상 시스템 견적에서 실내기 평수 합 × 0.4kW 를 냉방 kW × 1.3 안에 넣을 수 있는 가장 작은 실외기를 자동으로 고릅니다.</p>'+addBtn(pre+'.models.'+key,{hp:3,kw:8,name:'',price:0,cost:0},'실외기 추가'); };
       h+=card(b.name||'브랜드 '+(i+1), '<div class="g3">'+fText(pre+'.name','브랜드 이름')+fText(pre+'.line','라인업 (내부 메모)')+fText(pre+'.note','메모 (고객에게 안 보임)')+'</div>'+fText(pre+'.logo','로고 이미지 주소','비워 두면 브랜드 색 글자 배지가 나옵니다. 예: img/samsung.png')+
-        tbl('wall','벽걸이')+tbl('stand','스탠드')+tbl('two','2in1 (투인원)')+tbl('ceil','천장형 · 단배관')+odTbl('outdoors','멀티 실외기 · 단배관')+tbl('ceilMulti','천장형 · 다배관')+odTbl('outdoorsMulti','멀티 실외기 · 다배관')+
+        tbl('wall','벽걸이')+tbl('stand','스탠드')+tbl('two','2in1 (투인원)')+tbl('ceil','천장형 · 단배관')+odTbl('outdoors','멀티 실외기 · 단배관')+tbl('ceilMulti','천장형 · 다배관')+(b.models.ceilMulti?'<p class="kv">다배관 칸은 모델명과 판매가를 둘 다 채운 칸만 견적에 쓰입니다. 비워 두면 다배관 견적에서 단배관 제품으로 계산합니다.</p>':'')+odTbl('outdoorsMulti','멀티 실외기 · 다배관')+
         (Array.isArray(b.models.outdoors)?'':'<div class="g2">'+fText(pre+'.models.outdoor.0','시스템 실외기 모델명')+fNum(pre+'.models.outdoor.1','시스템 실외기 가격 (원, 부가세 별도)')+'</div>'),
         '', draft.brands.length>1?del(pre):'');
     });

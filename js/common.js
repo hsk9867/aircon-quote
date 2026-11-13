@@ -553,6 +553,7 @@ const SITE_DEFAULT = {
     "phone": "010-0000-0000",
     "kakaoId": "@속시원",
     "kakaoChat": "https://pf.kakao.com/_sokshiwon/chat",
+    "kakaoJsKey": "",
     "bizEmail": "biz@sokshiwon.kr",
     "note": "운영 전이라 예시입니다"
    },
@@ -1120,6 +1121,69 @@ const Member = {
   }
 };
 
+/* ---------- 견적 공유 (예약 신청 위) ----------
+   카카오 JavaScript 키가 있으면 카카오톡 공유(카드형 메시지)로 보내고,
+   없거나 SDK를 못 불러오면 휴대폰 공유 창(카카오톡 선택 가능) → 그것도 없으면 견적 내용을 복사합니다.
+   카카오 개발자 콘솔 > 앱 > 플랫폼 > Web 에 사이트 도메인을 등록해야 카카오톡 공유가 동작합니다. */
+const Share = {
+  sdk: null,
+  key(){ return String((SITE.contact||{}).kakaoJsKey||'').trim(); },
+  loadSdk(){
+    if(this.sdk) return this.sdk;
+    const key=this.key(); if(!key) return (this.sdk=Promise.reject(new Error('no key')));
+    this.sdk=new Promise((ok,no)=>{
+      const done=()=>{ try{ if(!window.Kakao) return no(new Error('sdk')); if(!Kakao.isInitialized()) Kakao.init(key); ok(window.Kakao); }catch(ex){ no(ex); } };
+      if(window.Kakao) return done();
+      const sc=document.createElement('script'); sc.src='https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js'; sc.crossOrigin='anonymous';
+      sc.onload=done; sc.onerror=()=>no(new Error('sdk load')); document.head.appendChild(sc);
+    });
+    this.sdk.catch(()=>{ this.sdk=null; });
+    return this.sdk;
+  },
+  text(q){
+    const brand=(SITE.brand||{}).name||'속시원';
+    const detail=q.models&&q.models.length ? q.models.join(' · ') : (q.items||[]).map(i=>i.label).join(' · ');
+    return { title: brand+' 견적 · '+q.svc, desc: q.summary+'\n예상 '+rangeShort(q.total[0],q.total[1])+(detail?'\n'+detail:''), url: location.origin+location.pathname };
+  },
+  mount(beforeEl){
+    const box=document.createElement('section'); box.className='share-sec'; box.id='share-sec'; box.hidden=true; box.setAttribute('aria-label','견적 공유');
+    box.innerHTML='<div class="share-band"><div class="share-txt"><b>이 견적, 가족과 함께 보세요</b><span class="small muted">카카오톡으로 견적 내용을 보내 드려요.</span></div>'+
+      '<div class="share-btns"><button type="button" class="btn-kakao" id="share-kakao"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3.5c-5.08 0-9.2 3.24-9.2 7.24 0 2.58 1.72 4.85 4.32 6.13l-.88 3.22c-.08.29.25.52.5.36l3.84-2.54c.47.05.94.08 1.42.08 5.08 0 9.2-3.24 9.2-7.25S17.08 3.5 12 3.5z"/></svg>카카오톡으로 공유하기</button>'+
+      '<button type="button" class="btn" id="share-copy">견적 복사</button></div>'+
+      '<p class="small share-msg" id="share-msg" role="status" hidden></p></div>';
+    beforeEl.parentNode.insertBefore(box, beforeEl);
+    this.box=box;
+    $('share-kakao').addEventListener('click', ()=>this.kakao());
+    $('share-copy').addEventListener('click', ()=>this.copy());
+    if(this.key()) this.loadSdk().catch(()=>{});   /* 미리 불러 두면 버튼을 누를 때 바로 열림 */
+  },
+  show(q){ if(this.box) this.box.hidden=!q; this.q=q; if(this.box && !q) this.say(''); },
+  say(m){ const el=$('share-msg'); if(!el) return; el.textContent=m; el.hidden=!m; },
+  kakao(){
+    const q=this.q; if(!q) return; const t=this.text(q);
+    this.loadSdk().then(K=>{
+      const link={ mobileWebUrl:t.url, webUrl:t.url };
+      K.Share.sendDefault({ objectType:'feed',
+        content:{ title:t.title, description:t.desc, imageUrl:location.origin+'/img/home-slide1.jpg', imageWidth:800, imageHeight:400, link },
+        buttons:[{ title:'나도 견적 받아보기', link }] });
+    }).catch(()=>this.fallback(t));
+  },
+  fallback(t){
+    if(navigator.share){ navigator.share({ title:t.title, text:t.title+'\n'+t.desc, url:t.url }).catch(()=>{}); return; }
+    this.copy('카카오톡 공유를 쓸 수 없어 견적 내용을 복사했어요. 카카오톡 대화창에 붙여 넣어 주세요.');
+  },
+  copy(msg){
+    const q=this.q; if(!q) return; const t=this.text(q); const body=t.title+'\n'+t.desc+'\n'+t.url;
+    const ok=()=>this.say(msg||'견적 내용을 복사했어요. 카카오톡 대화창에 붙여 넣어 주세요.');
+    if(navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(body).then(ok, ()=>this.copyOld(body, ok));
+    else this.copyOld(body, ok);
+  },
+  copyOld(body, ok){
+    const ta=document.createElement('textarea'); ta.value=body; ta.setAttribute('readonly',''); ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); ok(); }catch(e){ this.say('복사하지 못했어요. 화면을 길게 눌러 직접 복사해 주세요.'); } ta.remove();
+  }
+};
+
 /* ---------- 예약 접수 (모든 견적 페이지 공통) ----------
    Booking.mount({ el: 예약 섹션 요소, getQuote: () => ({svc, summary, items, labor, total, product, models, addr, memo, site}) }) */
 const Booking = {
@@ -1141,11 +1205,13 @@ const Booking = {
       '</form><div class="done" id="book-done" hidden></div>';
     $('b-date').min = plusDays(0);
     $('book-form').addEventListener('submit', e=>{ e.preventDefault(); this.submit(); });
+    if(this.sec) Share.mount(this.sec);
     this.refresh();
   },
   refresh(){
     const q = this.getQuote(); const el=$('book-summary'); if(!el) return;
     if(this.sec) this.sec.hidden = !q;   /* 견적을 고르기 전에는 예약 칸을 보이지 않음 */
+    Share.show(q);
     Member.render(q);
     if(!q){ el.innerHTML='<span class="eyebrow">견적 요약</span><div class="muted">위에서 견적을 먼저 받아 주세요.</div>'; return; }
     const cp = Member.cfg().enabled ? Member.usable(q.svc) : null; const dc = cp ? Member.discount(cp, q.total) : null;

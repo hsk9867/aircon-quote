@@ -555,3 +555,14 @@ footer .links.sub{opacity:.8;font-size:.76rem}
 @media (max-width:599px){.slide.s1,.slide.s2,.slide.s3{min-height:0}}  /* 옛 .slide.s1 규칙의 min-height:340px 가 더 세서 카드가 안 줄어들던 문제 */
 /* 모바일 카드뉴스: 문의 버튼이 사진을 가리지 않게 — 버튼을 작게, 글 칸은 왼쪽 54%, 사진은 오른쪽 46% */
 @media (max-width:599px){.slide .txt{max-width:54%}.slide .cta{padding:10px 14px;font-size:.86rem;gap:5px}.slide .cta svg{width:13px;height:13px}.slide .pic{width:46%}}
+
+/* 견적 공유 (예약 신청 위) */
+.share-sec{margin-top:24px}
+.share-band{display:grid;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 18px}
+.share-txt{display:grid;gap:2px}.share-txt b{font-size:1.02rem;font-weight:800;letter-spacing:-.02em}
+.share-btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn-kakao{display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:1 1 auto;min-height:48px;padding:0 18px;border:0;border-radius:12px;background:#FEE500;color:rgba(0,0,0,.85);font:inherit;font-weight:800;font-size:.95rem;cursor:pointer}
+.btn-kakao:hover{background:#F5DC00}.btn-kakao svg{width:20px;height:20px;color:#191919}
+.share-btns .btn{min-height:48px}
+.share-msg{grid-column:1/-1;margin:0;color:var(--accent);font-weight:700}
+@media (min-width:600px){.share-band{grid-template-columns:1fr auto;padding:20px 24px}.btn-kakao{flex:0 0 auto}}

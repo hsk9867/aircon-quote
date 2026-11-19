@@ -127,6 +127,7 @@ const BRANDS_DEFAULT = [
     ]
    },
    "ceil": {
+    "5": ["", 0, 0],
     "6": [
      "천장형 1WAY 6평 AC023CS1DBC1SY",
      814000,

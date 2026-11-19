@@ -146,7 +146,7 @@ table.edit input[type=text]{min-width:120px}
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261119f"></script>
+<script src="js/common.js?v=20261119g"></script>
 <script>
 (function(){
 'use strict';
@@ -169,7 +169,7 @@ function fromConfig(cfg){ cfg=isObj(cfg)?cfg:{}; return {
   site:deepMerge(DEFAULTS.site, isObj(cfg.site)?cfg.site:{}), rates:deepMerge(DEFAULTS.rates, isObj(cfg.rates)?cfg.rates:{}),
   brands:withWallHeat(withSamsungMulti((Array.isArray(cfg.brands)&&cfg.brands.length)?clone(cfg.brands):clone(DEFAULTS.brands))), rent:deepMerge(DEFAULTS.rent, isObj(cfg.rent)?cfg.rent:{}) }; }
 /* 삼성 다배관(천장형 실내기 6칸·실외기 목록)이 아직 없으면 빈 칸으로 추가. 모델명·판매가를 채운 칸만 견적에 쓰입니다 */
-function withSamsungMulti(list){ list.forEach(b=>{ if(!b||b.id!=='samsung'||!isObj(b.models)) return; if(!isObj(b.models.ceilMulti)||!Object.keys(b.models.ceilMulti).length) b.models.ceilMulti={"5":["",0,0],"6":["",0,0],"8":["",0,0],"10":["",0,0],"13":["",0,0],"15":["",0,0],"18":["",0,0]}; else if(!b.models.ceilMulti["18"]) b.models.ceilMulti["18"]=["",0,0]; /* 18평 칸 추가(이미 저장된 설정에도) */ if(!Array.isArray(b.models.outdoorsMulti)) b.models.outdoorsMulti=[]; }); return list; }
+function withSamsungMulti(list){ list.forEach(b=>{ if(!b||b.id!=='samsung'||!isObj(b.models)) return; if(!isObj(b.models.ceilMulti)||!Object.keys(b.models.ceilMulti).length) b.models.ceilMulti={"5":["",0,0],"6":["",0,0],"8":["",0,0],"10":["",0,0],"13":["",0,0],"15":["",0,0],"18":["",0,0]}; else if(!b.models.ceilMulti["18"]) b.models.ceilMulti["18"]=["",0,0]; /* 18평 칸 추가(이미 저장된 설정에도) */ if(!Array.isArray(b.models.outdoorsMulti)) b.models.outdoorsMulti=[]; if(isObj(b.models.ceil) && !b.models.ceil["5"]) b.models.ceil["5"]=["",0,0]; /* 천장형 1WAY 5평 칸 추가(이미 저장된 설정에도) */ }); return list; }
 /* LG 벽걸이 냉난방 겸용(wallHeat) 표가 없으면 LG 냉방 전용 벽걸이와 같은 평수로 빈 칸을 만듦. 모델명·판매가를 채운 칸만 견적에 쓰입니다 */
 function withWallHeat(list){ list.forEach(b=>{ if(!b||b.id!=='lg'||!isObj(b.models)) return; if(isObj(b.models.wallHeat)&&Object.keys(b.models.wallHeat).length) return; const keys=Object.keys(isObj(b.models.wall)?b.models.wall:{}); const t={}; (keys.length?keys:['6','9','10','11','13','16']).forEach(k=>{ t[k]=['',0,0]; }); b.models.wallHeat=t; }); return list; }
 function toConfig(){ return {site:draft.site, rates:draft.rates, brands:draft.brands, rent:draft.rent, savedAt:new Date().toISOString()}; }

@@ -36,6 +36,9 @@ a{color:var(--fg)}
 .muted{color:var(--muted)} .small{font-size:.85rem}
 .tag{display:inline-block;font-size:.7rem;font-weight:700;padding:3px 9px;border:1px solid var(--line);border-radius:999px;color:var(--muted);letter-spacing:.02em;vertical-align:middle}
 .tag.ok{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)} .tag.warn{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)} .tag.acc{border-color:var(--accent-soft);color:var(--accent);background:var(--accent-soft)}
+.tag.rec{border:0;color:#fff;background:var(--accent);font-size:.8rem;font-weight:800;padding:5px 12px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.bcard.rec{border:2px solid var(--accent);box-shadow:0 6px 20px rgba(0,0,0,.08)}
+.bcard.rec .hd{background:var(--accent-soft)}
 
 /* 로고 */
 .logo{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--fg);font-family:var(--display);font-weight:800;letter-spacing:-.02em;white-space:nowrap;flex-shrink:0}

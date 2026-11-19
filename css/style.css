@@ -51,7 +51,7 @@ a{color:var(--fg)}
 .top .acts a svg{width:20px;height:20px}
 .top .acts a.kakao{background:#FAE100;color:#1B1616}
 /* 카테고리 버튼과 펼침 메뉴 */
-.cat-btn{appearance:none;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;font-weight:700;font-size:.86rem;height:38px;padding:0 14px 0 10px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.cat-btn{appearance:none;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;font-weight:700;font-size:.86rem;height:38px;width:38px;padding:0;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer}
 .cat-btn svg{width:20px;height:20px} .cat-btn .ic-close{display:none}
 .top.cat-open .cat-btn{background:var(--fg);border-color:var(--fg);color:var(--bg)} .top.cat-open .cat-btn .ic-open{display:none} .top.cat-open .cat-btn .ic-close{display:inline}
 .cat-menu{position:absolute;left:0;right:0;top:100%;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 12px 28px rgba(23,25,28,.1)}

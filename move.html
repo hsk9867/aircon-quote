@@ -9,7 +9,7 @@
 <link rel="preload" as="image" href="img/logo-word.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/sunn-us/SUIT@2/fonts/variable/woff2/SUIT-Variable.css">
-<link rel="stylesheet" href="css/style.css?v=20261113b">
+<link rel="stylesheet" href="css/style.css?v=20261119c">
 </head>
 <body>
 <header class="top"></header>
@@ -82,11 +82,11 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261119b"></script>
+<script src="js/common.js?v=20261119c"></script>
 <script>
 (function(){
 'use strict';
-const {TYPE_LABEL, RATES, $, mul, add, isPeak, plusDays, applySeason, withVat, linesHtml, rangeShort, rangeText, radio, Booking} = window.SSW;
+const {TYPE_LABEL, RATES, $, mul, add, isPeak, plusDays, applySeason, withVat, linesHtml, rangeShort, rangeText, radio, Booking, exVatHtml} = window.SSW;
 let result=null;
 function calc(){
   const t=radio('type'), n=+$('count').value, date=$('q-date').value, house=$('home').value==='house'; const items=[];
@@ -109,7 +109,7 @@ function calc(){
   const labor = applySeason(items, date); const total = withVat(items, labor); /* 총액은 부가세 포함, labor 는 기사 정산용 공급가 */
   result = {svc:'이전 설치', summary:TYPE_LABEL[t]+' '+n+'대 이전 설치', items, labor, total, date,
     site:(house?'주택':'아파트')+' '+$('floor').options[$('floor').selectedIndex].text+' · '+$('dist').options[$('dist').selectedIndex].text};
-  $('r-total').textContent = rangeShort(total[0],total[1]);
+  $('r-total').innerHTML = rangeShort(total[0],total[1])+exVatHtml(labor);
   $('r-season').textContent = isPeak(date)?'성수기 (6~8월)':'비수기'; $('r-season').className='tag '+(isPeak(date)?'warn':'ok');
   $('r-lines').innerHTML = linesHtml(items, total, '총액');
   $('r-advice').textContent = (house ? '주택 도착지는 외벽 타공과 배관 커버 마감이 들어가고, 실외기를 앵글에 올리면 앵글 비용이 추가됩니다. ' : '아파트는 세대 배관 구조가 비슷해 기본 범위 안에서 대부분 마무리됩니다. ')+(house ? '외벽 경로는 배관이 길어져 냉매 보충이 필요할 수 있어 옵션을 함께 켜 두는 것이 안전합니다.' : '기존 배관을 재사용할 수 있으면 배관 비용이 줄어듭니다.');

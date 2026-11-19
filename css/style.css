@@ -567,6 +567,6 @@ footer .links.sub{opacity:.8;font-size:.76rem}
 .share-msg{grid-column:1/-1;margin:0;color:var(--accent);font-weight:700}
 @media (min-width:600px){.share-band{grid-template-columns:1fr auto;padding:20px 24px}.btn-kakao{flex:0 0 auto}}
 
-/* 총액 아래 부가세 별도 금액 */
-.exvat{display:block;margin-top:2px;font-family:inherit;font-size:.78rem;font-weight:500;letter-spacing:0;color:var(--muted);white-space:nowrap}
-.total .exvat{font-size:.85rem}
+/* 총액 아래 VAT 포함 표시 */
+.vatinc{display:block;margin-top:2px;font-family:inherit;font-size:.78rem;font-weight:500;letter-spacing:0;color:var(--muted);white-space:nowrap}
+.total .vatinc{font-size:.85rem}

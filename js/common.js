@@ -1004,9 +1004,9 @@ function applySeason(items, date){
 const vatRate = () => (typeof RATES.vat==='number' && RATES.vat>0) ? RATES.vat : 0;
 const vatOf = r => [Math.round(r[0]*vatRate()), Math.round(r[1]*vatRate())];
 const vatLabel = () => '부가세 ('+Math.round(vatRate()*100)+'%)';
-function withVat(items, base){ const v=vatOf(base); if(!v[1]) return base; items.push({label:'합계 (부가세 별도)', r:base, sub:true}); items.push({label:vatLabel(), r:v}); return add(base, v); }
-/* 총액 옆에 붙이는 '부가세 별도' 금액 (부가세를 안 받는 설정이면 빈 문자열) */
-function exVatHtml(base){ if(!base || !vatOf(base)[1]) return ''; return '<small class="exvat">부가세 별도 '+rangeShort(base[0],base[1])+'</small>'; }
+function withVat(items, base){ const v=vatOf(base); if(!v[1]) return base; items.push({label:vatLabel(), r:v}); return add(base, v); }
+/* 총액 아래 'VAT 포함' 표시 (부가세를 안 받는 설정이면 빈 문자열) */
+function vatIncHtml(){ return vatRate() ? '<small class="vatinc">VAT 포함</small>' : ''; }
 function linesHtml(items, total, totalLabel){
   return '<div class="lines">'+items.map(it=>'<div class="line"><span class="k">'+esc(it.label)+'</span><span class="v num">'+(it.info?esc(it.info):rangeText(it.r[0],it.r[1]))+'</span></div>').join('')+
     (total?'<div class="line tot"><span class="k">'+esc(totalLabel||'총액')+'</span><span class="v num">'+rangeText(total[0],total[1])+'</span></div>':'')+'</div>';
@@ -1311,7 +1311,7 @@ const Booking = {
   document.addEventListener('click', ev=>{ const a=ev.target&&ev.target.closest?ev.target.closest('a'):null; if(!a) return; const h=a.getAttribute('href')||''; const n=h.indexOf('tel:')===0?'tel':h.indexOf('sms:')===0?'sms':/kakao/.test(h)?'kakao':''; if(n) send(n); }, true);
 }catch(e){} })();
 
-window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, sendToServer, planFrom, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, SINGLE_PIPE_FROM, minHpFor, viewName, exVatHtml, brandLogo, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, withVat, vatOf, vatLabel, linesHtml, Booking, Member, LOGO_SVG};
+window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, sendToServer, planFrom, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, SINGLE_PIPE_FROM, minHpFor, viewName, vatIncHtml, brandLogo, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, withVat, vatOf, vatLabel, linesHtml, Booking, Member, LOGO_SVG};
 document.addEventListener('DOMContentLoaded', mountChrome);
 document.addEventListener('DOMContentLoaded', ()=>{ Member.sync(); });   /* 회원이면 쿠폰 목록을 서버에서 새로 받음 */
 /* 시작 화면은 각 페이지 <head>의 스크립트와 css(html.splash-on)가 처리. 화면을 누르면 바로 닫습니다 */

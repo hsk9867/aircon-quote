@@ -99,11 +99,11 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261119a"></script>
+<script src="js/common.js?v=20261119b"></script>
 <script>
 (function(){
 'use strict';
-const {TYPE_LABEL, RATES, BRANDS, $, won, manWon, rangeText, rangeShort, mul, add, radio, esc, isPeak, plusDays, applySeason, vatOf, vatLabel, linesHtml, Booking, pickOutdoor, kwOfPy, brandLogo, SINGLE_PIPE_FROM} = window.SSW;
+const {TYPE_LABEL, RATES, BRANDS, $, won, manWon, rangeText, rangeShort, mul, add, radio, esc, isPeak, plusDays, applySeason, vatOf, vatLabel, linesHtml, Booking, pickOutdoor, kwOfPy, brandLogo, SINGLE_PIPE_FROM, viewName} = window.SSW;
 
 const PY = [5,6,7,8,9,10,11,13,15,16,17,18,19,23,30,40];
 const ROOMS = ['매장','홀','사무실','회의실','대표실','교실','진료실','창고','주방'];
@@ -229,7 +229,7 @@ function renderResult(){
     '<div class="bcard'+(picked===b.id?' pick':'')+'">'+
       '<div class="hd"><h3>'+brandLogo(b)+esc(b.name)+(i===0?'<span class="tag ok">최저가</span>':'')+'</h3><div class="amt num">'+rangeShort(b.total[0],b.total[1])+'</div>'+
       '</div>'+
-      '<div class="models">'+b.models.map(m=>'<div><span>'+(m.outdoor?'<b>실외기</b> · ':esc(m.room)+' · ')+esc(m.name)+'</span><span class="num">'+won(m.price)+'</span></div>').join('')+'</div>'+
+      '<div class="models">'+b.models.map(m=>'<div><span>'+(m.outdoor?'':esc(m.room)+' · ')+esc(viewName(m))+'</span><span class="num">'+won(m.price)+'</span></div>').join('')+'</div>'+
       '<div class="split"><div><span>제품 금액 ('+b.models.length+'개)</span><b class="num">'+won(b.product)+'</b></div><div><span>설치비</span><b class="num">'+rangeText(b.labor[0],b.labor[1])+'</b></div>'+(b.vat[1]?'<div><span>'+vatLabel()+'</span><b class="num">'+rangeText(b.vat[0],b.vat[1])+'</b></div>':'')+'<div class="t"><span>총액 (제품 + 설치'+(b.vat[1]?' + 부가세':'')+')</span><b class="num">'+rangeText(b.total[0],b.total[1])+'</b></div></div>'+
       '<details><summary>설치비 내역 보기</summary>'+linesHtml(result.items, b.labor, '설치비 합계')+'<div style="height:12px"></div></details>'+
       '<div class="ft"><button class="btn '+(picked===b.id?'primary':'')+' block" type="button" data-pick="'+b.id+'">'+(picked===b.id?'선택됨 · 아래에서 예약':esc(b.name)+'으로 예약 신청')+'</button></div>'+
@@ -266,7 +266,7 @@ Booking.mount({ el: $('booking'), addrLabel:'설치할 주소', getQuote: ()=>{
   if(!result||!picked) return null;
   const b=result.brands.find(x=>x.id===picked); const inp=result.input;
   return { svc:'상가·사무실 구매+설치', summary:b.name+' '+inp.units.length+'대 구매 + 설치'+(isSystem(inp.units)?' (시스템)':''), items:result.items, labor:b.labor, total:b.total, product:b.product,
-    models:b.models.map(m=>m.room+' '+m.name), addr:inp.addr, date:inp.date,
+    models:b.models.map(m=>m.room+' '+m.name), modelsView:b.models.map(m=>(m.outdoor?'':m.room+' ')+viewName(m)), addr:inp.addr, date:inp.date,
     site:(HOME_SHORT[inp.home]||inp.home)+' · '+((inp.occupied==='empty'?'공실':'영업 중'))+(!isSystem(inp.units)?' · 배관 '+inp.units.map(u=>u.room+' '+(u.pipe==='unknown'?'미정':'약 '+u.pipe+'m')).join(', '):'')+(inp.memo?' · '+inp.memo:'') };
 }});
 

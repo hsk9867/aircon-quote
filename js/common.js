@@ -959,6 +959,13 @@ function pickOutdoor(brand, pys, key){
   const sorted = list.slice().sort((a,b)=>a.kw-b.kw);
   return sorted.find(o=>o.kw*1.3>=need && (!minHp || (+o.hp||0)>=minHp)) || sorted[sorted.length-1];
 }
+/* 고객 화면용 제품 이름: 천장형은 모델명·배관 방식 없이 "천장형 1WAY 18평", 실외기는 "실외기 1대" (관리자·예약 기록에는 원래 모델명) */
+function viewName(m){
+  if(!m) return '';
+  if(m.outdoor) return m.price ? '실외기 1대' : '실외기 (실내기 가격에 포함)';
+  if(m.type==='ceil' || m.type==='ceilMulti'){ const w=/([0-9])[ ]*WAY/i.exec(m.name||''); return '천장형 '+(w?w[1]+'WAY ':'')+m.py+'평'; }
+  return m.name;
+}
 /* 브랜드 로고: brand.logo(이미지 주소)가 있으면 <img>, 없으면 브랜드 색 글자 배지 */
 const BRAND_STYLE = { samsung:{text:'SAMSUNG',bg:'#1428A0',fg:'#fff',font:'700 .62rem/1 "IBM Plex Sans KR",Arial,sans-serif',pad:'0 7px',radius:'4px',ls:'.02em'},
   lg:{text:'LG',bg:'#A50034',fg:'#fff',font:'800 .78rem/1 Arial,sans-serif',pad:'0',radius:'50%',w:'26px'},
@@ -1159,7 +1166,7 @@ const Share = {
   },
   text(q){
     const brand=(SITE.brand||{}).name||'속시원';
-    const detail=q.models&&q.models.length ? q.models.join(' · ') : (q.items||[]).map(i=>i.label).join(' · ');
+    const mv=q.modelsView||q.models; const detail=mv&&mv.length ? mv.join(' · ') : (q.items||[]).map(i=>i.label).join(' · ');
     return { title: brand+' 견적 · '+q.svc, desc: q.summary+'\n예상 '+rangeShort(q.total[0],q.total[1])+(detail?'\n'+detail:''), url: location.origin+location.pathname };
   },
   mount(beforeEl){
@@ -1235,7 +1242,7 @@ const Booking = {
     el.innerHTML='<span class="eyebrow">견적 요약</span><div><b>'+esc(q.summary)+'</b></div>'+
       (dc ? '<div class="small muted">견적 <span class="num">'+rangeShort(q.total[0],q.total[1])+'</span> · 쿠폰 '+esc(cp.code)+' <span class="num">-'+rangeShort(dc[0],dc[1])+'</span></div><div class="amt num">'+rangeShort(Math.max(0,q.total[0]-dc[0]),Math.max(0,q.total[1]-dc[1]))+' <span class="tag ok">쿠폰 적용</span></div>'
           : '<div class="amt num">'+rangeShort(q.total[0],q.total[1])+'</div>')+
-      '<div class="small muted">'+(q.models?q.models.map(esc).join(' · '):q.items.map(i=>esc(i.label)).join(' · '))+'</div>';
+      '<div class="small muted">'+((q.modelsView||q.models)?(q.modelsView||q.models).map(esc).join(' · '):q.items.map(i=>esc(i.label)).join(' · '))+'</div>';
     if(q.addr && !$('b-addr').value) $('b-addr').value=q.addr;
     if(q.date && !$('b-date').value) $('b-date').value=q.date;
   },
@@ -1302,7 +1309,7 @@ const Booking = {
   document.addEventListener('click', ev=>{ const a=ev.target&&ev.target.closest?ev.target.closest('a'):null; if(!a) return; const h=a.getAttribute('href')||''; const n=h.indexOf('tel:')===0?'tel':h.indexOf('sms:')===0?'sms':/kakao/.test(h)?'kakao':''; if(n) send(n); }, true);
 }catch(e){} })();
 
-window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, sendToServer, planFrom, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, SINGLE_PIPE_FROM, minHpFor, brandLogo, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, withVat, vatOf, vatLabel, linesHtml, Booking, Member, LOGO_SVG};
+window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, sendToServer, planFrom, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, SINGLE_PIPE_FROM, minHpFor, viewName, brandLogo, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, withVat, vatOf, vatLabel, linesHtml, Booking, Member, LOGO_SVG};
 document.addEventListener('DOMContentLoaded', mountChrome);
 document.addEventListener('DOMContentLoaded', ()=>{ Member.sync(); });   /* 회원이면 쿠폰 목록을 서버에서 새로 받음 */
 /* 시작 화면은 각 페이지 <head>의 스크립트와 css(html.splash-on)가 처리. 화면을 누르면 바로 닫습니다 */

@@ -42,6 +42,14 @@
       </div>
       <span class="hint" id="ptype-hint"></span>
     </div>
+    <div class="fs" id="wmode-fs" hidden>
+      <div class="lbl"><span class="n"></span>벽걸이 냉방 방식</div>
+      <div class="seg" id="wmode-seg">
+        <label><input type="radio" name="wmode" value="cool" checked>냉방 전용<small>여름 냉방만</small></label>
+        <label><input type="radio" name="wmode" value="heat">냉난방 겸용<small>겨울 난방까지</small></label>
+      </div>
+      <span class="hint">냉난방 겸용은 냉난방 제품이 등록된 브랜드만 견적에 나옵니다.</span>
+    </div>
     <div class="fs">
       <div class="lbl"><span class="n"></span>설치 대수와 평수 <span class="hint">최대 6대</span></div>
       <div class="seg" id="count-seg">
@@ -111,7 +119,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261119e"></script>
+<script src="js/common.js?v=20261119f"></script>
 <script>
 (function(){
 'use strict';
@@ -165,6 +173,8 @@ function updateKinds(){
   document.querySelectorAll('#units .pl').forEach(el=>{ el.hidden = sys; });   /* 시스템 에어컨은 대당 배관 길이 입력 없음 */
   const gasChip = document.querySelector('input[name=opt][value=gas]'); if(gasChip){ gasChip.closest('.chip').hidden = sys; if(sys) gasChip.checked=false; }
   syncPaperChip(sys);
+  const hasWall = !sys && pt!=='two' && Array.from(document.querySelectorAll('#units .unit')).some((u,i)=>typeOf(+u.querySelector('[data-u=py]').value,i)==='wall');
+  $('wmode-fs').hidden = !hasWall;
   document.querySelectorAll('#units .unit').forEach((u,i)=>{ const py=+u.querySelector('[data-u=py]').value; const t=typeOf(py,i); u.querySelector('.kind').textContent = sys ? (n>=2?'천장형 실내기 · 실외기 1대 공용 (시스템 에어컨)':'천장형 실내기 · 실외기 1대') : pt==='two' ? TYPE_LABEL[t]+' 형 · 2in1 세트 (실외기 1대 공용)' : TYPE_LABEL[t]+' 형 · '+(t==='wall'?'벽 상단 설치, 실외기 소형':'바닥 설치, 실외기 대형'); });
   $('units-hint').textContent = sys
     ? (pt==='ceil' ? '천장형(시스템)으로 계산합니다. 천장 점검구·드레인 배관과 실크 도배 마감이 포함되고, 실내기는 실외기 1대에 묶습니다. 기존에 천장형이 달린 집에 추가 설치하는 경우는 참고 사항에 적어 주시면 기존 실외기 활용 여부를 상담에서 안내해 드립니다.' : '3대부터는 시스템 에어컨으로 계산합니다. 천장형 실내기를 실외기 1대에 묶는 구성이며 천장 점검구·드레인 배관과 실크 도배 마감이 항상 포함됩니다.')
@@ -176,6 +186,7 @@ function updateKinds(){
 $('count-seg').addEventListener('change', renderUnits);
 $('ptype-seg').addEventListener('change', renderUnits);
 $('units').addEventListener('change', updateKinds);
+$('wmode-seg').addEventListener('change', updateKinds);
 document.querySelectorAll('input[name=home]').forEach(r=>r.addEventListener('change', ()=>{
   const house = radio('home')==='house';
   $('addr-hint').textContent = house ? '주택은 실외기 자리(외벽·지상·옥상)와 배관 길이가 집마다 달라 범위가 넓어집니다. 참고 사항에 실외기 자리를 적어 주시면 좋습니다.' : '아파트 단지·평형을 적어 주시면 더 정확합니다. 부동산 플랫폼 연동 후에는 주소만으로 단지 구조(베란다 위치, 배관 길이)를 자동으로 파악할 예정입니다.';
@@ -194,7 +205,7 @@ document.querySelectorAll('input[name=opt]').forEach(c=>c.addEventListener('chan
 /* ---------- 견적 엔진 ---------- */
 function readInput(){
   const opts = Array.from(document.querySelectorAll('input[name=opt]:checked')).map(c=>c.value);
-  return {home:radio('home'), ptype:ptypeNow(), pipe:'unknown' /* 배관 방식 선택란 없음: 다배관 기준으로 계산 */, units:readUnits(), addr:$('addr').value.trim(), occupied:radio('occupied'), opts, date:$('q-date').value, memo:$('q-memo').value.trim()};
+  return {home:radio('home'), ptype:ptypeNow(), wmode:($('wmode-fs').hidden?'cool':(radio('wmode')||'cool')), pipe:'unknown' /* 배관 방식 선택란 없음: 다배관 기준으로 계산 */, units:readUnits(), addr:$('addr').value.trim(), occupied:radio('occupied'), opts, date:$('q-date').value, memo:$('q-memo').value.trim()};
 }
 function laborFor(inp){
   const items=[]; const house = inp.home==='house'; const n=inp.units.length; const typeOf=typeFor(inp.ptype);
@@ -262,9 +273,10 @@ function quoteAll(inp){
   const ceilKey = b => (multi && has(b,'ceilMulti')) ? 'ceilMulti' : 'ceil';
   const odKey = b => (multi && Array.isArray(b.models.outdoorsMulti) && b.models.outdoorsMulti.length) ? 'outdoorsMulti' : 'outdoors';
   const two = inp.ptype==='two';
-  const brands = BRANDS.filter(b=> two ? has(b,'two') : inp.units.every((u,i)=>has(b, sys?ceilKey(b):typeOf(u.py,i)))).map(b=>{
+  const mKey = (b,u,i) => { if(sys) return ceilKey(b); const t=typeOf(u.py,i); return (t==='wall' && inp.wmode==='heat') ? 'wallHeat' : t; };   /* 냉난방 겸용 벽걸이는 wallHeat 표 */
+  const brands = BRANDS.filter(b=> two ? has(b,'two') : inp.units.every((u,i)=>has(b, mKey(b,u,i)))).map(b=>{
     const models = two ? [Object.assign({room:inp.units.map(u=>u.room).join(' + ')}, pickModel(b, inp.units[0].py, 'two', typeOf))]
-                       : inp.units.map((u,i)=>Object.assign({room:u.room}, pickModel(b,u.py, sys?ceilKey(b):typeOf(u.py,i), typeOf)));
+                       : inp.units.map((u,i)=>Object.assign({room:u.room}, pickModel(b,u.py, mKey(b,u,i), typeOf)));
     if(sys){ const od=pickOutdoor(b, inp.units.map(u=>u.py), odKey(b)); if(od) models.push({room:'실외기', name:od.name+(od.kw?' · 실내기 합 '+inp.units.reduce((a,u)=>a+kwOfPy(u.py),0).toFixed(1)+'kW':''), price:od.price, type:'outdoor', outdoor:true}); }
     const prod = models.reduce((a,m)=>a+m.price,0);
     const supply=[prod+L.labor[0], prod+L.labor[1]], vat=vatOf(supply); /* 총액 = 제품 + 설치 + 부가세 */
@@ -281,7 +293,7 @@ function renderResult(){
   const hasStand = !sys && !two && inp.units.some((u,i)=>typeOf(u.py,i)==='stand'), hasWall = !sys && !two && inp.units.some((u,i)=>typeOf(u.py,i)==='wall');
   $('r-sum').innerHTML =
     '<span class="k">입력 조건</span>'+
-    '<div><b>'+(HOME_LABEL[inp.home]||inp.home)+'</b> · '+(two?'2in1 1세트':(inp.ptype==='auto'?'':PTYPE_LABEL[inp.ptype]+' ')+inp.units.length+'대')+' ('+inp.units.map((u,i)=>u.room+' '+u.py+'평'+(two?' '+TYPE_LABEL[typeOf(u.py,i)]:'')).join(', ')+')'+(sys?' · <b>'+(inp.units.length>=2?'시스템 에어컨 (천장형 '+inp.units.length+'대 + 실외기 1대)':'천장형 1대 + 실외기 1대')+'</b>':'')+' · '+(inp.occupied==='empty'?'공실':'거주 중')+(!sys?' · 배관 '+inp.units.map(u=>u.room+' '+(u.pipe==='unknown'?'미정':'약 '+u.pipe+'m')).join(', '):'')+(inp.opts.length?' · 옵션 '+inp.opts.map(o=>OPT_LABEL[o]).join(', '):'')+'</div>'+
+    '<div><b>'+(HOME_LABEL[inp.home]||inp.home)+'</b> · '+(two?'2in1 1세트':(inp.ptype==='auto'?'':PTYPE_LABEL[inp.ptype]+' ')+inp.units.length+'대')+' ('+inp.units.map((u,i)=>u.room+' '+u.py+'평'+(two?' '+TYPE_LABEL[typeOf(u.py,i)]:'')).join(', ')+')'+(sys?' · <b>'+(inp.units.length>=2?'시스템 에어컨 (천장형 '+inp.units.length+'대 + 실외기 1대)':'천장형 1대 + 실외기 1대')+'</b>':'')+(inp.wmode==='heat'?' · <b>벽걸이 냉난방 겸용</b>':'')+' · '+(inp.occupied==='empty'?'공실':'거주 중')+(!sys?' · 배관 '+inp.units.map(u=>u.room+' '+(u.pipe==='unknown'?'미정':'약 '+u.pipe+'m')).join(', '):'')+(inp.opts.length?' · 옵션 '+inp.opts.map(o=>OPT_LABEL[o]).join(', '):'')+'</div>'+
     '<div class="small muted">'+(inp.addr?esc(inp.addr):'주소 미입력')+(result.peak?' · <span class="tag warn">성수기</span>':' · <span class="tag ok">비수기</span>')+'</div>'+
     '<div class="small">설치비 합계 <b class="num">'+rangeText(result.labor[0],result.labor[1])+'</b> <span class="muted">(브랜드 공통)</span></div>';
   $('r-brands').innerHTML = result.brands.map((b,i)=>
@@ -293,6 +305,7 @@ function renderResult(){
       '<details><summary>설치비 내역 보기</summary>'+linesHtml(result.items, b.labor, '설치비 합계')+'<div style="height:12px"></div></details>'+
       '<div class="ft"><button class="btn '+(picked===b.id?'primary':'')+' block" type="button" data-pick="'+b.id+'">'+(picked===b.id?'선택됨 · 아래에서 예약':esc(b.name)+'으로 예약 신청')+'</button></div>'+
     '</div>').join('');
+  if(!result.brands.length) $('r-brands').innerHTML = '<div class="callout">'+(inp.wmode==='heat' ? '<b>벽걸이 냉난방 겸용</b> 제품은 아직 온라인 견적에 등록되지 않았습니다. 냉난방 겸용 금액은 상담으로 안내해 드리고, 냉방 전용으로 바꾸면 바로 견적을 볼 수 있어요.' : '선택한 조건에 맞는 제품이 아직 등록되지 않았습니다. 상담으로 안내해 드립니다.')+'</div>';
   if(sys && inp.ptype==='ceil') $('r-brands').insertAdjacentHTML('beforeend','<div class="callout"><b>천장형</b>으로 계산했습니다. '+(inp.units.length>=2?'천장형 실내기 '+inp.units.length+'대를 실외기 1대에 연결합니다. ':'')+'천장 점검구와 드레인 배관 작업, 실크 도배 마감이 포함됩니다. 기존에 천장형이 설치된 집이라면 기존 실외기 용량에 따라 실외기 없이 실내기만 추가할 수도 있어 상담에서 금액을 다시 안내합니다.</div>');
   else if(sys) $('r-brands').insertAdjacentHTML('beforeend','<div class="callout">3대 이상은 <b>시스템 에어컨</b>으로 계산했습니다. 천장형 실내기 '+inp.units.length+'대를 실외기 1대에 연결해 베란다 공간을 줄이고 배관을 천장 속으로 숨깁니다. 천장 점검구와 드레인 배관 작업이 포함되며, 거주 중 설치는 천장 작업 보양이 더해집니다.</div>');
   if(two) $('r-brands').insertAdjacentHTML('beforeend','<div class="callout"><b>2in1 세트</b>로 계산했습니다. 거실 스탠드와 방 벽걸이를 실외기 1대에 연결해 실외기 자리를 하나만 쓰고 설치비도 줄어듭니다. 두 대를 동시에 세게 틀면 냉방이 조금 약해질 수 있어 방 크기에 맞는 세트를 골라 드립니다.</div>');
@@ -328,7 +341,7 @@ Booking.mount({ el: $('booking'), addrLabel:'설치할 주소', getQuote: ()=>{
   const b=result.brands.find(x=>x.id===picked); const inp=result.input;
   return { svc:'구매+설치', summary:b.name+' '+(inp.ptype==='two'?'2in1 1세트':(inp.ptype==='auto'?'':PTYPE_LABEL[inp.ptype]+' ')+inp.units.length+'대')+' 구매 + 설치'+(isSystem(inp.units, inp.ptype)&&inp.ptype!=='ceil'?' (시스템)':''), items:result.items, labor:b.labor, total:b.total, product:b.product,
     models:b.models.map(m=>m.room+' '+m.name), modelsView:b.models.map(m=>(m.outdoor?'':m.room+' ')+viewName(m)), addr:inp.addr, date:inp.date,
-    site:(HOME_SHORT[inp.home]||inp.home)+' · '+(inp.ptype==='auto'?'자동 추천':PTYPE_LABEL[inp.ptype])+' · '+(inp.occupied==='empty'?'공실':'거주 중')+(!isSystem(inp.units, inp.ptype)?' · 배관 '+inp.units.map(u=>u.room+' '+(u.pipe==='unknown'?'미정':'약 '+u.pipe+'m')).join(', '):'')+(inp.memo?' · '+inp.memo:'') };
+    site:(HOME_SHORT[inp.home]||inp.home)+' · '+(inp.ptype==='auto'?'자동 추천':PTYPE_LABEL[inp.ptype])+(inp.wmode==='heat'?' · 벽걸이 냉난방 겸용':'')+' · '+(inp.occupied==='empty'?'공실':'거주 중')+(!isSystem(inp.units, inp.ptype)?' · 배관 '+inp.units.map(u=>u.room+' '+(u.pipe==='unknown'?'미정':'약 '+u.pipe+'m')).join(', '):'')+(inp.memo?' · '+inp.memo:'') };
 }});
 
 $('q-date').value = plusDays(5);

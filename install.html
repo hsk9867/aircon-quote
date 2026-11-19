@@ -111,7 +111,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261113d"></script>
+<script src="js/common.js?v=20261119a"></script>
 <script>
 (function(){
 'use strict';
@@ -258,7 +258,7 @@ function pickModel(brand, py, t, typeOf){ t = t || typeOf(py); const tbl=brand.m
 function quoteAll(inp){
   const L = laborFor(inp); const sys = isSystem(inp.units, inp.ptype); const typeOf=typeFor(inp.ptype);
   const has = (b,t)=> b.models[t] && Object.keys(b.models[t]).length>0;
-  const multi = sys && inp.units.length>=2 && inp.pipe!=='single';
+  const multi = sys && inp.units.length>=2 && inp.units.length<SINGLE_PIPE_FROM && inp.pipe!=='single';   /* 6대 이상은 단배관 */
   const ceilKey = b => (multi && has(b,'ceilMulti')) ? 'ceilMulti' : 'ceil';
   const odKey = b => (multi && Array.isArray(b.models.outdoorsMulti) && b.models.outdoorsMulti.length) ? 'outdoorsMulti' : 'outdoors';
   const two = inp.ptype==='two';

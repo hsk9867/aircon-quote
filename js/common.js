@@ -949,12 +949,15 @@ if(SITE.priceLabels && SITE.priceLabels.outdoorClean==='실외기 세척 (1대)'
 
 /* 시스템 에어컨 실외기 선택: 실내기 냉방 용량 합(평수 × 0.4kW)에 맞는 가장 작은 멀티 실외기. 조합률 130%까지 허용 */
 const kwOfPy = py => Math.round(py*0.4*10)/10;
+/* 천장형 6대 이상은 단배관 제품 + 실외기 6마력 이상으로 고정 */
+const SINGLE_PIPE_FROM = 6, MIN_HP_FROM_6 = 6;
+const minHpFor = n => n>=SINGLE_PIPE_FROM ? MIN_HP_FROM_6 : 0;
 function pickOutdoor(brand, pys, key){
   const list = brand.models[key||'outdoors'];
   if(!Array.isArray(list) || !list.length) return brand.models.outdoor ? {name:brand.models.outdoor[0], price:brand.models.outdoor[1], kw:0} : null;
-  const need = pys.reduce((a,p)=>a+kwOfPy(p),0);
+  const need = pys.reduce((a,p)=>a+kwOfPy(p),0); const minHp = minHpFor(pys.length);
   const sorted = list.slice().sort((a,b)=>a.kw-b.kw);
-  return sorted.find(o=>o.kw*1.3>=need) || sorted[sorted.length-1];
+  return sorted.find(o=>o.kw*1.3>=need && (!minHp || (+o.hp||0)>=minHp)) || sorted[sorted.length-1];
 }
 /* 브랜드 로고: brand.logo(이미지 주소)가 있으면 <img>, 없으면 브랜드 색 글자 배지 */
 const BRAND_STYLE = { samsung:{text:'SAMSUNG',bg:'#1428A0',fg:'#fff',font:'700 .62rem/1 "IBM Plex Sans KR",Arial,sans-serif',pad:'0 7px',radius:'4px',ls:'.02em'},
@@ -1299,7 +1302,7 @@ const Booking = {
   document.addEventListener('click', ev=>{ const a=ev.target&&ev.target.closest?ev.target.closest('a'):null; if(!a) return; const h=a.getAttribute('href')||''; const n=h.indexOf('tel:')===0?'tel':h.indexOf('sms:')===0?'sms':/kakao/.test(h)?'kakao':''; if(n) send(n); }, true);
 }catch(e){} })();
 
-window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, sendToServer, planFrom, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, brandLogo, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, withVat, vatOf, vatLabel, linesHtml, Booking, Member, LOGO_SVG};
+window.SSW = {TYPE_LABEL, RATES, BRANDS, RENT, SITE, CFG, PREVIEW, sendToServer, planFrom, DEFAULTS:{rates:RATES_DEFAULT, brands:BRANDS_DEFAULT, rent:RENT_DEFAULT, site:SITE_DEFAULT}, deepMerge, getPath, kwOfPy, pickOutdoor, SINGLE_PIPE_FROM, minHpFor, brandLogo, $, won, manWon, rangeText, rangeShort, mul, add, sumItems, radio, esc, isPeak, load, save, fmtDate, regionOnly, plusDays, applySeason, withVat, vatOf, vatLabel, linesHtml, Booking, Member, LOGO_SVG};
 document.addEventListener('DOMContentLoaded', mountChrome);
 document.addEventListener('DOMContentLoaded', ()=>{ Member.sync(); });   /* 회원이면 쿠폰 목록을 서버에서 새로 받음 */
 /* 시작 화면은 각 페이지 <head>의 스크립트와 css(html.splash-on)가 처리. 화면을 누르면 바로 닫습니다 */

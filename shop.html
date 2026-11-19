@@ -99,7 +99,7 @@
 </main>
 <footer></footer>
 <script>document.write('<script src="data/config.js?t='+Date.now()+'"><\/script>');</script>
-<script src="js/common.js?v=20261113d"></script>
+<script src="js/common.js?v=20261119a"></script>
 <script>
 (function(){
 'use strict';
@@ -202,7 +202,7 @@ function pickModel(brand, py, t){ t = t || typeOf(py); const tbl=brand.models[t]
 function quoteAll(inp){
   const L = laborFor(inp); const sys = isSystem(inp.units);
   const has = (b,t)=> b.models[t] && Object.keys(b.models[t]).length>0;
-  const multi = sys && inp.pipe!=='single';
+  const multi = sys && inp.units.length<SINGLE_PIPE_FROM && inp.pipe!=='single';   /* 6대 이상은 단배관 */
   const ceilKey = b => (multi && has(b,'ceilMulti')) ? 'ceilMulti' : 'ceil';
   const odKey = b => (multi && Array.isArray(b.models.outdoorsMulti) && b.models.outdoorsMulti.length) ? 'outdoorsMulti' : 'outdoors';
   const brands = BRANDS.filter(b=>inp.units.every(u=>has(b, sys?ceilKey(b):typeOf(u.py)))).map(b=>{
